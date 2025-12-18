@@ -16,8 +16,8 @@ const ReadOnlyField: React.FC<ReadOnlyFieldProps> = ({
   delay = 0
 }) => {
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-muted-foreground">
+    <div className="space-y-1.5">
+      <label className="block text-xs font-medium text-muted-foreground">
         {label}
       </label>
       <div 

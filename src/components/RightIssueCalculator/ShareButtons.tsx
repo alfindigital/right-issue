@@ -90,30 +90,30 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ resultRef, isCalculated, sh
   };
 
   return (
-    <div className="flex items-center gap-2 animate-fade-in">
+    <div className="flex items-center gap-1.5 animate-fade-in">
       <button
         onClick={saveAsImage}
-        className="p-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
+        className="p-2 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
         aria-label="Simpan sebagai gambar"
-        title="Simpan sebagai gambar"
+        title="Simpan gambar"
       >
-        <Download className="w-5 h-5" />
+        <Download className="w-4 h-4" />
       </button>
       <button
         onClick={copyLink}
-        className="p-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
+        className="p-2 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
         aria-label="Salin link"
         title="Salin link"
       >
-        <Link2 className="w-5 h-5" />
+        <Link2 className="w-4 h-4" />
       </button>
       <button
         onClick={shareNative}
-        className="p-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
+        className="p-2 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
         aria-label="Bagikan"
         title="Bagikan"
       >
-        <Share2 className="w-5 h-5" />
+        <Share2 className="w-4 h-4" />
       </button>
     </div>
   );

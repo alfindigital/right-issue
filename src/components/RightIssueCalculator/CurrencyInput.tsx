@@ -27,8 +27,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   };
 
   return (
-    <div className="space-y-2">
-      <label htmlFor={id} className="block text-sm font-medium text-foreground">
+    <div className="space-y-1.5">
+      <label htmlFor={id} className="block text-xs font-medium text-foreground">
         {label}
       </label>
       <input

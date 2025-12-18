@@ -24,28 +24,28 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
 }) => {
   return (
     <section className="card-calculator animate-fade-in">
-      <h2 className="section-title">Informasi Right Issue Saham</h2>
+      <h2 className="section-title">Info Right Issue</h2>
       
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-foreground">
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <label className="block text-xs font-medium text-foreground">
             Rasio (Lama : Baru)
           </label>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <input
               type="text"
               value={ratioOld}
               onChange={(e) => onRatioOldChange(e.target.value.replace(/\D/g, ''))}
-              placeholder="Rasio Lama"
+              placeholder="Lama"
               className="input-calculator flex-1"
               inputMode="numeric"
             />
-            <span className="text-xl font-bold text-muted-foreground">:</span>
+            <span className="text-lg font-bold text-muted-foreground">:</span>
             <input
               type="text"
               value={ratioNew}
               onChange={(e) => onRatioNewChange(e.target.value.replace(/\D/g, ''))}
-              placeholder="Rasio Baru"
+              placeholder="Baru"
               className="input-calculator flex-1"
               inputMode="numeric"
             />
@@ -54,14 +54,14 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
 
         <CurrencyInput
           id="right-price"
-          label="Harga Right Issue per lembar (Rp)"
+          label="Harga RI per lembar"
           value={rightPrice}
           onChange={onRightPriceChange}
         />
 
         <CurrencyInput
           id="cum-date-price"
-          label="Harga saham perkiraan saat Cum Date (Rp)"
+          label="Harga saham saat Cum Date"
           value={cumDatePrice}
           onChange={onCumDatePriceChange}
         />

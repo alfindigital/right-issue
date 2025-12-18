@@ -146,14 +146,14 @@ const RightIssueCalculator: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto px-3 py-4 md:px-4 md:py-6">
         {/* Header */}
-        <header className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+        <header className="mb-4 md:mb-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               Kalkulator Right Issue
             </h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <ShareButtons
                 resultRef={resultRef}
                 isCalculated={isCalculated}
@@ -169,37 +169,19 @@ const RightIssueCalculator: React.FC = () => {
               {isCalculated && (
                 <button
                   onClick={reset}
-                  className="p-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                  className="p-2 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
                   aria-label="Reset"
                 >
-                  <RotateCcw className="w-5 h-5" />
+                  <RotateCcw className="w-4 h-4" />
                 </button>
               )}
               <ThemeToggle />
             </div>
           </div>
-          <p className="text-muted-foreground leading-relaxed mb-4">
-            Jika Anda memiliki saham di Indonesia dan emitennya mengumumkan untuk Right Issue, 
-            Anda bisa gunakan Kalkulator ini untuk:
-          </p>
-          <ul className="text-muted-foreground space-y-2 list-disc list-inside mb-4">
-            <li>
-              Menghitung perkiraan <strong className="text-foreground">jumlah lembar Right Issue (RI)</strong> yang bisa Anda tebus,
-            </li>
-            <li>
-              Menghitung total <strong className="text-foreground">biaya yang dibutuhkan</strong> untuk menebus Right Issue (RI),
-            </li>
-            <li>
-              Melihat apakah Right Issue <strong className="text-foreground">perlu ditebus atau tidak</strong> setelah diketahui perkiraan average saham barunya jika ditebus.
-            </li>
-          </ul>
-          <p className="text-sm text-primary font-medium">
-            💡 Semakin rendah harga average barumu, semakin besar peluang profit dari penebusan Right Issue
-          </p>
         </header>
 
         {/* Main Content */}
-        <main ref={resultRef} className="space-y-6">
+        <main ref={resultRef} className="space-y-4">
           <RightIssueInfoSection
             ratioOld={ratioOld}
             ratioNew={ratioNew}
@@ -241,31 +223,24 @@ const RightIssueCalculator: React.FC = () => {
         </main>
 
         {/* Footer */}
-        <footer className="mt-12 pt-6 border-t border-border text-center">
-          <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-            <strong>Disclaimer:</strong> Not a financial advice, always DYOR (Do Your Own Research). 
-            Tidak ada data yang direkam maupun dikirim ke server, semua data diproses di browser Anda secara lokal.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            © 2025. Originally created by{' '}
+        <footer className="mt-8 pt-4 border-t border-border text-center group relative">
+          <p className="text-xs text-muted-foreground">
+            © 2025{' '}
             <a 
-              href="https://x.com/mikelsaham" 
+              href="https://alfindigital.com" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              @MikelSaham
-            </a>
-            , Vibe-coded by{' '}
-            <a 
-              href="https://x.com/ArnantoAkbar" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              @ArnantoAkbar
+              alfindigital
             </a>
           </p>
+          {/* Hover disclaimer */}
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-card border border-border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-[280px] md:w-[320px]">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Bukan saran investasi. DYOR. Data diproses lokal di browser.
+            </p>
+          </div>
         </footer>
       </div>
     </div>
