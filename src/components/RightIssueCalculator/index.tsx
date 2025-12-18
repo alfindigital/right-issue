@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RotateCcw } from 'lucide-react';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
 import ThemeToggle from './ThemeToggle';
+import ShareButtons from './ShareButtons';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -14,6 +15,8 @@ const formatNumber = (value: number): string => {
 };
 
 const RightIssueCalculator: React.FC = () => {
+  const resultRef = useRef<HTMLDivElement>(null);
+  
   // Right Issue Info
   const [ratioOld, setRatioOld] = useState('');
   const [ratioNew, setRatioNew] = useState('');
@@ -36,6 +39,26 @@ const RightIssueCalculator: React.FC = () => {
   const [recommendation, setRecommendation] = useState<'positive' | 'negative' | null>(null);
   const [recommendationText, setRecommendationText] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
+
+  // Parse URL params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ro = params.get('ro');
+    const rn = params.get('rn');
+    const rp = params.get('rp');
+    const cp = params.get('cp');
+    const cs = params.get('cs');
+    const ca = params.get('ca');
+
+    if (ro && rn && rp && cp && cs && ca) {
+      setRatioOld(ro);
+      setRatioNew(rn);
+      setRightPrice(rp);
+      setCumDatePrice(cp);
+      setCurrentShares(cs);
+      setCurrentAvgPrice(ca);
+    }
+  }, []);
 
   const isCalculateEnabled = !!(
     ratioOld && ratioNew && rightPrice && cumDatePrice && currentShares && currentAvgPrice
@@ -131,6 +154,18 @@ const RightIssueCalculator: React.FC = () => {
               Kalkulator Right Issue
             </h1>
             <div className="flex items-center gap-2">
+              <ShareButtons
+                resultRef={resultRef}
+                isCalculated={isCalculated}
+                shareData={{
+                  ratioOld,
+                  ratioNew,
+                  rightPrice,
+                  cumDatePrice,
+                  currentShares,
+                  currentAvgPrice,
+                }}
+              />
               {isCalculated && (
                 <button
                   onClick={reset}
@@ -164,7 +199,7 @@ const RightIssueCalculator: React.FC = () => {
         </header>
 
         {/* Main Content */}
-        <main className="space-y-6">
+        <main ref={resultRef} className="space-y-6">
           <RightIssueInfoSection
             ratioOld={ratioOld}
             ratioNew={ratioNew}
