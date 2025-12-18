@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { RotateCcw } from 'lucide-react';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
@@ -97,6 +98,29 @@ const RightIssueCalculator: React.FC = () => {
     setIsCalculated(true);
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentShares, currentAvgPrice]);
 
+  const reset = useCallback(() => {
+    // Reset inputs
+    setRatioOld('');
+    setRatioNew('');
+    setRightPrice('');
+    setCumDatePrice('');
+    setCurrentShares('');
+    setCurrentAvgPrice('');
+    
+    // Reset calculated values
+    setCurrentTotalValue('Rp 0');
+    setNewSharesCount('0');
+    setNewAvgPrice('Rp 0');
+    setNewTotalValue('Rp 0');
+    setFinalShares('0');
+    setFinalAvgPrice('Rp 0');
+    setFinalTotalValue('Rp 0');
+    setTheoreticalPrice('-');
+    setRecommendation(null);
+    setRecommendationText('');
+    setIsCalculated(false);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-4 py-8">
@@ -106,7 +130,18 @@ const RightIssueCalculator: React.FC = () => {
             <h1 className="text-3xl md:text-4xl font-bold text-foreground">
               Kalkulator Right Issue
             </h1>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              {isCalculated && (
+                <button
+                  onClick={reset}
+                  className="p-2.5 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                  aria-label="Reset"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                </button>
+              )}
+              <ThemeToggle />
+            </div>
           </div>
           <p className="text-muted-foreground leading-relaxed mb-4">
             Jika Anda memiliki saham di Indonesia dan emitennya mengumumkan untuk Right Issue, 
