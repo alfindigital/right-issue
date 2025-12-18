@@ -190,6 +190,7 @@ const RightIssueCalculator: React.FC = () => {
             onCurrentAvgPriceChange={setCurrentAvgPrice}
             onCalculate={calculate}
             isCalculateEnabled={isCalculateEnabled}
+            isCalculated={isCalculated}
           />
 
           <ConclusionSection
