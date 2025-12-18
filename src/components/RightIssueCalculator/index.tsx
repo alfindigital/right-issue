@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
+import ThemeToggle from './ThemeToggle';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -101,9 +102,12 @@ const RightIssueCalculator: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Kalkulator Right Issue
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+              Kalkulator Right Issue
+            </h1>
+            <ThemeToggle />
+          </div>
           <p className="text-muted-foreground leading-relaxed mb-4">
             Jika Anda memiliki saham di Indonesia dan emitennya mengumumkan untuk Right Issue, 
             Anda bisa gunakan Kalkulator ini untuk:
