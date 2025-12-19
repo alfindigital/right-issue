@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { Download, Link2, Share2, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import ExportTemplate from './ExportTemplate';
+import { createRoot } from 'react-dom/client';
 
 interface ShareButtonsProps {
   resultRef: React.RefObject<HTMLDivElement>;
@@ -17,28 +19,73 @@ interface ShareButtonsProps {
     ratioNew: string;
     rightPrice: string;
     cumDatePrice: string;
-    currentShares: string;
+    currentLots: string;
     currentAvgPrice: string;
+  };
+  exportData: {
+    currentTotalValue: string;
+    newSharesCount: string;
+    newTotalValue: string;
+    finalShares: string;
+    finalAvgPrice: string;
+    finalTotalValue: string;
+    theoreticalPrice: string;
+    recommendation: 'positive' | 'negative' | null;
+    recommendationText: string;
+    hasWarrant: boolean;
+    warrantCount: string;
   };
 }
 
-const ShareButtons: React.FC<ShareButtonsProps> = ({ resultRef, isCalculated, shareData }) => {
+const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, exportData }) => {
+  const exportContainerRef = useRef<HTMLDivElement>(null);
+
   if (!isCalculated) return null;
 
   const saveAsImage = async () => {
-    if (!resultRef.current) return;
-    
     try {
-      const canvas = await html2canvas(resultRef.current, {
+      // Create a temporary container
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+
+      // Create root and render the export template
+      const root = createRoot(container);
+      root.render(
+        <ExportTemplate 
+          data={{
+            ...shareData,
+            ...exportData
+          }} 
+        />
+      );
+
+      // Wait for render
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const exportElement = container.querySelector('#export-template') as HTMLElement;
+      
+      if (!exportElement) {
+        throw new Error('Export template not found');
+      }
+
+      const canvas = await html2canvas(exportElement, {
         backgroundColor: null,
         scale: 2,
         useCORS: true,
+        logging: false,
       });
       
       const link = document.createElement('a');
       link.download = `right-issue-calculator-${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
+      
+      // Cleanup
+      root.unmount();
+      document.body.removeChild(container);
       
       toast.success('Hasil berhasil disimpan sebagai gambar!');
     } catch (error) {
@@ -53,7 +100,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ resultRef, isCalculated, sh
       rn: shareData.ratioNew,
       rp: shareData.rightPrice,
       cp: shareData.cumDatePrice,
-      cs: shareData.currentShares,
+      cs: shareData.currentLots,
       ca: shareData.currentAvgPrice,
     });
     
@@ -72,7 +119,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ resultRef, isCalculated, sh
       rn: shareData.ratioNew,
       rp: shareData.rightPrice,
       cp: shareData.cumDatePrice,
-      cs: shareData.currentShares,
+      cs: shareData.currentLots,
       ca: shareData.currentAvgPrice,
     });
     

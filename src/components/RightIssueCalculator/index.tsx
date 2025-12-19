@@ -25,8 +25,8 @@ const RightIssueCalculator: React.FC = () => {
   const [rightPrice, setRightPrice] = useState('');
   const [cumDatePrice, setCumDatePrice] = useState('');
 
-  // Current Ownership
-  const [currentShares, setCurrentShares] = useState('');
+  // Current Ownership (in lots)
+  const [currentLots, setCurrentLots] = useState('');
   const [currentAvgPrice, setCurrentAvgPrice] = useState('');
 
   // Warrant
@@ -63,29 +63,31 @@ const RightIssueCalculator: React.FC = () => {
       setRatioNew(rn);
       setRightPrice(rp);
       setCumDatePrice(cp);
-      setCurrentShares(cs);
+      setCurrentLots(cs);
       setCurrentAvgPrice(ca);
     }
   }, []);
 
   const isCalculateEnabled = !!(
-    ratioOld && ratioNew && rightPrice && cumDatePrice && currentShares && currentAvgPrice
+    ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice
   );
 
   // Calculate current total value on input change
   useEffect(() => {
-    const shares = parseInt(currentShares) || 0;
+    const lots = parseInt(currentLots) || 0;
+    const shares = lots * 100; // Convert lots to shares
     const avgPrice = parseInt(currentAvgPrice) || 0;
     const totalValue = shares * avgPrice;
     setCurrentTotalValue(formatCurrency(totalValue));
-  }, [currentShares, currentAvgPrice]);
+  }, [currentLots, currentAvgPrice]);
 
   const calculate = useCallback(() => {
     const rOld = parseInt(ratioOld) || 0;
     const rNew = parseInt(ratioNew) || 0;
     const riPrice = parseInt(rightPrice) || 0;
     const cumPrice = parseInt(cumDatePrice) || 0;
-    const shares = parseInt(currentShares) || 0;
+    const lots = parseInt(currentLots) || 0;
+    const shares = lots * 100; // Convert lots to shares
     const avgPrice = parseInt(currentAvgPrice) || 0;
 
     if (rOld === 0 || rNew === 0) return;
@@ -141,7 +143,7 @@ const RightIssueCalculator: React.FC = () => {
     }
 
     setIsCalculated(true);
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentShares, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew]);
 
   const reset = useCallback(() => {
     // Reset inputs
@@ -149,7 +151,7 @@ const RightIssueCalculator: React.FC = () => {
     setRatioNew('');
     setRightPrice('');
     setCumDatePrice('');
-    setCurrentShares('');
+    setCurrentLots('');
     setCurrentAvgPrice('');
     setHasWarrant(false);
     setWarrantRatioOld('');
@@ -187,8 +189,21 @@ const RightIssueCalculator: React.FC = () => {
                 ratioNew,
                 rightPrice,
                 cumDatePrice,
-                currentShares,
+                currentLots,
                 currentAvgPrice,
+              }}
+              exportData={{
+                currentTotalValue,
+                newSharesCount,
+                newTotalValue,
+                finalShares,
+                finalAvgPrice,
+                finalTotalValue,
+                theoreticalPrice,
+                recommendation,
+                recommendationText,
+                hasWarrant,
+                warrantCount,
               }}
             />
             {isCalculated && (
@@ -219,7 +234,7 @@ const RightIssueCalculator: React.FC = () => {
         />
 
         <OwnershipSection
-          currentShares={currentShares}
+          currentLots={currentLots}
           currentAvgPrice={currentAvgPrice}
           currentTotalValue={currentTotalValue}
           newSharesCount={newSharesCount}
@@ -228,7 +243,7 @@ const RightIssueCalculator: React.FC = () => {
           finalShares={finalShares}
           finalAvgPrice={finalAvgPrice}
           finalTotalValue={finalTotalValue}
-          onCurrentSharesChange={setCurrentShares}
+          onCurrentLotsChange={setCurrentLots}
           onCurrentAvgPriceChange={setCurrentAvgPrice}
           onCalculate={calculate}
           isCalculateEnabled={isCalculateEnabled}
@@ -249,8 +264,8 @@ const RightIssueCalculator: React.FC = () => {
         <LotOptimizationSection
           ratioOld={ratioOld}
           ratioNew={ratioNew}
-          currentShares={currentShares}
-          onCurrentSharesChange={setCurrentShares}
+          currentLots={currentLots}
+          onCurrentLotsChange={setCurrentLots}
           isCalculated={isCalculated}
         />
 

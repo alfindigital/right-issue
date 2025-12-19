@@ -1,7 +1,6 @@
 import React from 'react';
-import { Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Checkbox } from '@/components/ui/checkbox';
+import InfoTooltip from './InfoTooltip';
 
 interface WarrantSectionProps {
   hasWarrant: boolean;
@@ -13,21 +12,6 @@ interface WarrantSectionProps {
   warrantCount: string;
   isCalculated: boolean;
 }
-
-const InfoTooltip: React.FC<{ text: string }> = ({ text }) => (
-  <TooltipProvider delayDuration={100}>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary cursor-help transition-colors ml-1">
-          <Info size={10} />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-[200px] text-xs">
-        {text}
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-);
 
 const WarrantSection: React.FC<WarrantSectionProps> = ({
   hasWarrant,
@@ -52,7 +36,7 @@ const WarrantSection: React.FC<WarrantSectionProps> = ({
           className="text-sm font-bold text-foreground cursor-pointer flex items-center"
         >
           Bonus Waran
-          <InfoTooltip text="Centang jika Right Issue ini memberikan bonus waran" />
+          <InfoTooltip text="Centang jika right issue ini memberikan bonus waran." />
         </label>
       </div>
 
@@ -61,7 +45,7 @@ const WarrantSection: React.FC<WarrantSectionProps> = ({
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-foreground flex items-center">
               Rasio Waran (RI : Waran)
-              <InfoTooltip text="Contoh: 1:1 berarti setiap 1 lembar RI mendapat 1 waran" />
+              <InfoTooltip text="Contoh: 1:1 berarti setiap 1 lembar RI mendapat 1 waran." />
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -87,7 +71,7 @@ const WarrantSection: React.FC<WarrantSectionProps> = ({
           <div className={`space-y-1 transition-all duration-500 ${isCalculated ? 'opacity-100' : 'opacity-50'}`}>
             <label className="text-xs font-medium text-muted-foreground flex items-center">
               Total Waran
-              <InfoTooltip text="Jumlah waran yang akan Anda dapatkan" />
+              <InfoTooltip text="Jumlah waran yang akan Anda dapatkan." />
             </label>
             <div className={`read-only-value ${isCalculated ? 'animate-number-pop' : ''}`}>
               {warrantCount}
