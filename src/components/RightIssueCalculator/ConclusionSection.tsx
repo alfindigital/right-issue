@@ -1,7 +1,6 @@
 import React from 'react';
 import SummaryItem from './SummaryItem';
-import { Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import InfoTooltip from './InfoTooltip';
 
 interface ConclusionSectionProps {
   newShares: string;
@@ -13,21 +12,6 @@ interface ConclusionSectionProps {
   recommendationText: string;
   isCalculated: boolean;
 }
-
-const InfoTooltip: React.FC<{ text: string }> = ({ text }) => (
-  <TooltipProvider delayDuration={100}>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary cursor-help transition-colors ml-1">
-          <Info size={10} />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-[200px] text-xs">
-        {text}
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-);
 
 const ConclusionSection: React.FC<ConclusionSectionProps> = ({
   newShares,
@@ -43,27 +27,27 @@ const ConclusionSection: React.FC<ConclusionSectionProps> = ({
     <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.2s' }}>
       <h2 className="section-title flex items-center">
         Kesimpulan
-        <InfoTooltip text="Ringkasan dan rekomendasi berdasarkan kalkulasi" />
+        <InfoTooltip text="Ringkasan dan rekomendasi berdasarkan kalkulasi." />
       </h2>
       
       <div className="space-y-1 mb-4">
-        <SummaryItem label="Jatah RI" value={newShares} tooltip="Jumlah lembar saham RI yang berhak ditebus" />
-        <SummaryItem label="Harga Tebus" value={exercisePrice} tooltip="Harga per lembar untuk menebus RI" />
-        <SummaryItem label="Total Biaya" value={totalCost} highlight tooltip="Dana yang dibutuhkan untuk tebus semua jatah RI" />
+        <SummaryItem label="Jatah RI" value={newShares} tooltip="Jumlah lembar saham RI yang berhak ditebus." />
+        <SummaryItem label="Harga Tebus" value={exercisePrice} tooltip="Harga per lembar untuk menebus RI." />
+        <SummaryItem label="Total Biaya" value={totalCost} highlight tooltip="Dana yang dibutuhkan untuk tebus semua jatah RI." />
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="info-box">
           <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5 flex items-center">
             Avg Baru
-            <InfoTooltip text="Harga rata-rata setelah tebus RI" />
+            <InfoTooltip text="Harga rata-rata setelah tebus RI." />
           </div>
           <div className="text-base md:text-lg font-bold text-foreground">{newAvgPrice}</div>
         </div>
         <div className="info-box border-primary/40">
           <div className="text-[10px] text-primary uppercase tracking-wide mb-0.5 flex items-center">
             TERP
-            <InfoTooltip text="Theoretical Ex-Right Price: (Harga cum × Lama + Harga RI × Baru) / (Lama + Baru)" />
+            <InfoTooltip text="Theoretical ex-right price: (harga cum × lama + harga RI × baru) / (lama + baru)." />
           </div>
           <div className="text-base md:text-lg font-bold text-primary">{theoreticalPrice}</div>
         </div>

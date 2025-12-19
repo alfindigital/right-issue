@@ -1,7 +1,6 @@
 import React from 'react';
 import CurrencyInput from './CurrencyInput';
-import { Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import InfoTooltip from './InfoTooltip';
 
 interface RightIssueInfoSectionProps {
   ratioOld: string;
@@ -13,21 +12,6 @@ interface RightIssueInfoSectionProps {
   onRightPriceChange: (value: string) => void;
   onCumDatePriceChange: (value: string) => void;
 }
-
-const InfoTooltip: React.FC<{ text: string }> = ({ text }) => (
-  <TooltipProvider delayDuration={100}>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted text-muted-foreground hover:bg-primary/20 hover:text-primary cursor-help transition-colors ml-1">
-          <Info size={10} />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-[200px] text-xs">
-        {text}
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-);
 
 const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   ratioOld,
@@ -43,14 +27,14 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
     <section className="card-calculator animate-fade-in">
       <h2 className="section-title flex items-center">
         Info Right Issue
-        <InfoTooltip text="Informasi tentang Right Issue yang diterbitkan emiten" />
+        <InfoTooltip text="Informasi tentang right issue yang diterbitkan emiten." />
       </h2>
       
       <div className="space-y-3">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-foreground flex items-center">
             Rasio (Lama : Baru)
-            <InfoTooltip text="Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru" />
+            <InfoTooltip text="Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru." />
           </label>
           <div className="flex items-center gap-2">
             <input
@@ -78,7 +62,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           label="Harga RI per lembar"
           value={rightPrice}
           onChange={onRightPriceChange}
-          tooltip="Harga tebus untuk setiap lembar saham baru"
+          tooltip="Harga tebus untuk setiap lembar saham baru."
         />
 
         <CurrencyInput
@@ -86,7 +70,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           label="Harga Cum Date"
           value={cumDatePrice}
           onChange={onCumDatePriceChange}
-          tooltip="Harga saham saat terakhir berhak mendapat RI"
+          tooltip="Harga saham saat terakhir berhak mendapat RI."
         />
       </div>
     </section>
