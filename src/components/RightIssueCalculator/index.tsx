@@ -3,6 +3,8 @@ import { RotateCcw } from 'lucide-react';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
+import WarrantSection from './WarrantSection';
+import LotOptimizationSection from './LotOptimizationSection';
 import ThemeToggle from './ThemeToggle';
 import ShareButtons from './ShareButtons';
 
@@ -26,6 +28,12 @@ const RightIssueCalculator: React.FC = () => {
   // Current Ownership
   const [currentShares, setCurrentShares] = useState('');
   const [currentAvgPrice, setCurrentAvgPrice] = useState('');
+
+  // Warrant
+  const [hasWarrant, setHasWarrant] = useState(false);
+  const [warrantRatioOld, setWarrantRatioOld] = useState('');
+  const [warrantRatioNew, setWarrantRatioNew] = useState('');
+  const [warrantCount, setWarrantCount] = useState('0');
 
   // Calculated Values
   const [currentTotalValue, setCurrentTotalValue] = useState('Rp 0');
@@ -105,6 +113,20 @@ const RightIssueCalculator: React.FC = () => {
     const terp = ((cumPrice * rOld) + (riPrice * rNew)) / (rOld + rNew);
     setTheoreticalPrice(formatCurrency(Math.round(terp)));
 
+    // Calculate warrant count if enabled
+    if (hasWarrant) {
+      const wOld = parseInt(warrantRatioOld) || 0;
+      const wNew = parseInt(warrantRatioNew) || 0;
+      if (wOld > 0 && wNew > 0) {
+        const warrants = Math.floor((newShares / wOld) * wNew);
+        setWarrantCount(formatNumber(warrants));
+      } else {
+        setWarrantCount('0');
+      }
+    } else {
+      setWarrantCount('0');
+    }
+
     // Determine recommendation
     if (finalAvg < terp) {
       setRecommendation('positive');
@@ -119,7 +141,7 @@ const RightIssueCalculator: React.FC = () => {
     }
 
     setIsCalculated(true);
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentShares, currentAvgPrice]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentShares, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew]);
 
   const reset = useCallback(() => {
     // Reset inputs
@@ -129,6 +151,9 @@ const RightIssueCalculator: React.FC = () => {
     setCumDatePrice('');
     setCurrentShares('');
     setCurrentAvgPrice('');
+    setHasWarrant(false);
+    setWarrantRatioOld('');
+    setWarrantRatioNew('');
     
     // Reset calculated values
     setCurrentTotalValue('Rp 0');
@@ -139,6 +164,7 @@ const RightIssueCalculator: React.FC = () => {
     setFinalAvgPrice('Rp 0');
     setFinalTotalValue('Rp 0');
     setTheoreticalPrice('-');
+    setWarrantCount('0');
     setRecommendation(null);
     setRecommendationText('');
     setIsCalculated(false);
@@ -152,7 +178,7 @@ const RightIssueCalculator: React.FC = () => {
           <h1 className="text-base md:text-lg font-bold">
             Kalkulator Right Issue
           </h1>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <ShareButtons
               resultRef={resultRef}
               isCalculated={isCalculated}
@@ -206,6 +232,25 @@ const RightIssueCalculator: React.FC = () => {
           onCurrentAvgPriceChange={setCurrentAvgPrice}
           onCalculate={calculate}
           isCalculateEnabled={isCalculateEnabled}
+          isCalculated={isCalculated}
+        />
+
+        <WarrantSection
+          hasWarrant={hasWarrant}
+          onHasWarrantChange={setHasWarrant}
+          warrantRatioOld={warrantRatioOld}
+          warrantRatioNew={warrantRatioNew}
+          onWarrantRatioOldChange={setWarrantRatioOld}
+          onWarrantRatioNewChange={setWarrantRatioNew}
+          warrantCount={warrantCount}
+          isCalculated={isCalculated}
+        />
+
+        <LotOptimizationSection
+          ratioOld={ratioOld}
+          ratioNew={ratioNew}
+          currentShares={currentShares}
+          onCurrentSharesChange={setCurrentShares}
           isCalculated={isCalculated}
         />
 
