@@ -1,7 +1,13 @@
-import React, { useRef } from 'react';
-import { Download, Link2, Share2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, Link2, Share2, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ShareButtonsProps {
   resultRef: React.RefObject<HTMLDivElement>;
@@ -34,7 +40,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ resultRef, isCalculated, sh
       link.href = canvas.toDataURL('image/png');
       link.click();
       
-      toast.success('Hasil kalkulasi berhasil disimpan sebagai gambar!');
+      toast.success('Hasil berhasil disimpan sebagai gambar!');
     } catch (error) {
       toast.error('Gagal menyimpan gambar');
       console.error(error);
@@ -54,7 +60,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ resultRef, isCalculated, sh
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     
     navigator.clipboard.writeText(url).then(() => {
-      toast.success('Link berhasil disalin ke clipboard!');
+      toast.success('Link berhasil disalin!');
     }).catch(() => {
       toast.error('Gagal menyalin link');
     });
@@ -90,32 +96,28 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ resultRef, isCalculated, sh
   };
 
   return (
-    <div className="flex items-center gap-1 animate-fade-in">
-      <button
-        onClick={saveAsImage}
-        className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
-        aria-label="Simpan sebagai gambar"
-        title="Simpan gambar"
-      >
-        <Download className="w-4 h-4" />
-      </button>
-      <button
-        onClick={copyLink}
-        className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
-        aria-label="Salin link"
-        title="Salin link"
-      >
-        <Link2 className="w-4 h-4" />
-      </button>
-      <button
-        onClick={shareNative}
-        className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
-        aria-label="Bagikan"
-        title="Bagikan"
-      >
-        <Share2 className="w-4 h-4" />
-      </button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="flex items-center gap-1 px-2 py-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors text-xs font-medium"
+          aria-label="Share"
+        >
+          <Share2 className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Share</span>
+          <ChevronDown className="w-3 h-3" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
+          <Download className="w-4 h-4 mr-2" />
+          Download Gambar
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
+          <Link2 className="w-4 h-4 mr-2" />
+          Bagikan Link
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

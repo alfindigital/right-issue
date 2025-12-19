@@ -96,6 +96,15 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
             value={currentTotalValue}
             tooltip="Total nilai investasi saat ini"
           />
+
+          {/* Calculate button - visible on mobile, placed here for mobile UX */}
+          <button
+            onClick={onCalculate}
+            disabled={!isCalculateEnabled}
+            className="btn-calculate md:hidden"
+          >
+            Hitung
+          </button>
         </div>
 
         {/* Right Issue Allocation */}
@@ -138,10 +147,11 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         <SummaryItem label="Total Value Akhir" value={finalTotalValue} highlight animated={isCalculated} delay={200} tooltip="Total nilai investasi setelah tebus RI" />
       </div>
 
+      {/* Calculate button - visible on desktop only */}
       <button
         onClick={onCalculate}
         disabled={!isCalculateEnabled}
-        className="btn-calculate"
+        className="btn-calculate hidden md:block"
       >
         Hitung
       </button>
