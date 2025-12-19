@@ -145,104 +145,104 @@ const RightIssueCalculator: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-3 py-4 md:px-4 md:py-6">
-        {/* Header */}
-        <header className="mb-4 md:mb-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl md:text-2xl font-bold text-foreground">
-              Kalkulator Right Issue
-            </h1>
-            <div className="flex items-center gap-1.5">
-              <ShareButtons
-                resultRef={resultRef}
-                isCalculated={isCalculated}
-                shareData={{
-                  ratioOld,
-                  ratioNew,
-                  rightPrice,
-                  cumDatePrice,
-                  currentShares,
-                  currentAvgPrice,
-                }}
-              />
-              {isCalculated && (
-                <button
-                  onClick={reset}
-                  className="p-2 rounded-full bg-secondary hover:bg-secondary/80 text-foreground transition-all duration-300 hover:scale-105"
-                  aria-label="Reset"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </button>
-              )}
-              <ThemeToggle />
-            </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <header className="header-bar py-3 px-4">
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <h1 className="text-base md:text-lg font-bold">
+            Kalkulator Right Issue
+          </h1>
+          <div className="flex items-center gap-1">
+            <ShareButtons
+              resultRef={resultRef}
+              isCalculated={isCalculated}
+              shareData={{
+                ratioOld,
+                ratioNew,
+                rightPrice,
+                cumDatePrice,
+                currentShares,
+                currentAvgPrice,
+              }}
+            />
+            {isCalculated && (
+              <button
+                onClick={reset}
+                className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
+                aria-label="Reset"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            )}
+            <ThemeToggle />
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Main Content */}
-        <main ref={resultRef} className="space-y-4">
-          <RightIssueInfoSection
-            ratioOld={ratioOld}
-            ratioNew={ratioNew}
-            rightPrice={rightPrice}
-            cumDatePrice={cumDatePrice}
-            onRatioOldChange={setRatioOld}
-            onRatioNewChange={setRatioNew}
-            onRightPriceChange={setRightPrice}
-            onCumDatePriceChange={setCumDatePrice}
-          />
+      {/* Main Content */}
+      <main ref={resultRef} className="flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 space-y-3">
+        <RightIssueInfoSection
+          ratioOld={ratioOld}
+          ratioNew={ratioNew}
+          rightPrice={rightPrice}
+          cumDatePrice={cumDatePrice}
+          onRatioOldChange={setRatioOld}
+          onRatioNewChange={setRatioNew}
+          onRightPriceChange={setRightPrice}
+          onCumDatePriceChange={setCumDatePrice}
+        />
 
-          <OwnershipSection
-            currentShares={currentShares}
-            currentAvgPrice={currentAvgPrice}
-            currentTotalValue={currentTotalValue}
-            newSharesCount={newSharesCount}
-            newAvgPrice={newAvgPrice}
-            newTotalValue={newTotalValue}
-            finalShares={finalShares}
-            finalAvgPrice={finalAvgPrice}
-            finalTotalValue={finalTotalValue}
-            onCurrentSharesChange={setCurrentShares}
-            onCurrentAvgPriceChange={setCurrentAvgPrice}
-            onCalculate={calculate}
-            isCalculateEnabled={isCalculateEnabled}
-            isCalculated={isCalculated}
-          />
+        <OwnershipSection
+          currentShares={currentShares}
+          currentAvgPrice={currentAvgPrice}
+          currentTotalValue={currentTotalValue}
+          newSharesCount={newSharesCount}
+          newAvgPrice={newAvgPrice}
+          newTotalValue={newTotalValue}
+          finalShares={finalShares}
+          finalAvgPrice={finalAvgPrice}
+          finalTotalValue={finalTotalValue}
+          onCurrentSharesChange={setCurrentShares}
+          onCurrentAvgPriceChange={setCurrentAvgPrice}
+          onCalculate={calculate}
+          isCalculateEnabled={isCalculateEnabled}
+          isCalculated={isCalculated}
+        />
 
-          <ConclusionSection
-            newShares={newSharesCount}
-            exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
-            totalCost={newTotalValue}
-            newAvgPrice={isCalculated ? finalAvgPrice : '-'}
-            theoreticalPrice={theoreticalPrice}
-            recommendation={recommendation}
-            recommendationText={recommendationText}
-            isCalculated={isCalculated}
-          />
-        </main>
+        <ConclusionSection
+          newShares={newSharesCount}
+          exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
+          totalCost={newTotalValue}
+          newAvgPrice={isCalculated ? finalAvgPrice : '-'}
+          theoreticalPrice={theoreticalPrice}
+          recommendation={recommendation}
+          recommendationText={recommendationText}
+          isCalculated={isCalculated}
+        />
+      </main>
 
-        {/* Footer */}
-        <footer className="mt-8 pt-4 border-t border-border text-center group relative">
-          <p className="text-xs text-muted-foreground">
+      {/* Footer */}
+      <footer className="header-bar py-2.5 px-4">
+        <div className="max-w-2xl mx-auto flex items-center justify-center group relative">
+          <p className="text-xs opacity-80">
             © 2025{' '}
             <a 
               href="https://alfindigital.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="font-medium hover:underline"
             >
               alfindigital
             </a>
           </p>
           {/* Hover disclaimer */}
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-card border border-border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-[280px] md:w-[320px]">
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Bukan saran investasi. DYOR. Data diproses lokal di browser.
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-card text-foreground border border-border rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-[260px]">
+            <p className="text-xs text-muted-foreground leading-relaxed text-center">
+              Bukan saran investasi. DYOR. Data diproses lokal.
             </p>
           </div>
-        </footer>
-      </div>
+        </div>
+      </footer>
     </div>
   );
 };
