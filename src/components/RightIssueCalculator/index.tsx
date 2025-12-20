@@ -5,8 +5,10 @@ import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
 import WarrantSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
+import HistorySection from './HistorySection';
 import ThemeToggle from './ThemeToggle';
 import ShareButtons from './ShareButtons';
+import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -18,6 +20,7 @@ const formatNumber = (value: number): string => {
 
 const RightIssueCalculator: React.FC = () => {
   const resultRef = useRef<HTMLDivElement>(null);
+  const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
   
   // Right Issue Info
   const [ratioOld, setRatioOld] = useState('');
@@ -116,15 +119,13 @@ const RightIssueCalculator: React.FC = () => {
     setTheoreticalPrice(formatCurrency(Math.round(terp)));
 
     // Calculate warrant count if enabled
-    if (hasWarrant) {
-      const wOld = parseInt(warrantRatioOld) || 0;
-      const wNew = parseInt(warrantRatioNew) || 0;
-      if (wOld > 0 && wNew > 0) {
-        const warrants = Math.floor((newShares / wOld) * wNew);
-        setWarrantCount(formatNumber(warrants));
-      } else {
-        setWarrantCount('0');
-      }
+    const wOld = parseInt(warrantRatioOld) || 0;
+    const wNew = parseInt(warrantRatioNew) || 0;
+    let calculatedWarrantCount = '0';
+    if (hasWarrant && wOld > 0 && wNew > 0) {
+      const warrants = Math.floor((newShares / wOld) * wNew);
+      calculatedWarrantCount = formatNumber(warrants);
+      setWarrantCount(calculatedWarrantCount);
     } else {
       setWarrantCount('0');
     }
@@ -143,7 +144,31 @@ const RightIssueCalculator: React.FC = () => {
     }
 
     setIsCalculated(true);
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew]);
+
+    // Save to history
+    addToHistory({
+      inputs: {
+        ratioOld,
+        ratioNew,
+        rightPrice,
+        cumDatePrice,
+        currentLots,
+        currentAvgPrice,
+        hasWarrant,
+        warrantRatioOld,
+        warrantRatioNew,
+      },
+      results: {
+        newSharesCount: formatNumber(newShares),
+        finalShares: formatNumber(totalShares),
+        finalAvgPrice: formatCurrency(finalAvg),
+        finalTotalValue: formatCurrency(totalValue),
+        theoreticalPrice: formatCurrency(Math.round(terp)),
+        warrantCount: calculatedWarrantCount,
+        recommendation: finalAvg < terp ? 'positive' : 'negative',
+      },
+    });
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, addToHistory]);
 
   const reset = useCallback(() => {
     // Reset inputs
@@ -170,6 +195,54 @@ const RightIssueCalculator: React.FC = () => {
     setRecommendation(null);
     setRecommendationText('');
     setIsCalculated(false);
+  }, []);
+
+  // Load calculation from history
+  const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
+    setRatioOld(item.inputs.ratioOld);
+    setRatioNew(item.inputs.ratioNew);
+    setRightPrice(item.inputs.rightPrice);
+    setCumDatePrice(item.inputs.cumDatePrice);
+    setCurrentLots(item.inputs.currentLots);
+    setCurrentAvgPrice(item.inputs.currentAvgPrice);
+    setHasWarrant(item.inputs.hasWarrant);
+    setWarrantRatioOld(item.inputs.warrantRatioOld);
+    setWarrantRatioNew(item.inputs.warrantRatioNew);
+    
+    // Set calculated results
+    setNewSharesCount(item.results.newSharesCount);
+    setFinalShares(item.results.finalShares);
+    setFinalAvgPrice(item.results.finalAvgPrice);
+    setFinalTotalValue(item.results.finalTotalValue);
+    setTheoreticalPrice(item.results.theoreticalPrice);
+    setWarrantCount(item.results.warrantCount);
+    setRecommendation(item.results.recommendation);
+    
+    // Calculate total values
+    const lots = parseInt(item.inputs.currentLots) || 0;
+    const shares = lots * 100;
+    const avgPrice = parseInt(item.inputs.currentAvgPrice) || 0;
+    setCurrentTotalValue(formatCurrency(shares * avgPrice));
+    
+    const riPrice = parseInt(item.inputs.rightPrice) || 0;
+    const newShares = parseInt(item.results.newSharesCount.replace(/\./g, '')) || 0;
+    setNewAvgPrice(formatCurrency(riPrice));
+    setNewTotalValue(formatCurrency(newShares * riPrice));
+    
+    // Set recommendation text
+    const finalAvg = item.results.finalAvgPrice;
+    const terp = item.results.theoreticalPrice;
+    if (item.results.recommendation === 'positive') {
+      setRecommendationText(
+        `✅ LAYAK DITEBUS! Average harga baru Anda (${finalAvg}) lebih rendah dari Harga Teoritis (${terp}). Dengan menebus Right Issue, potensi profit Anda semakin besar.`
+      );
+    } else {
+      setRecommendationText(
+        `⚠️ PERTIMBANGKAN KEMBALI! Average harga baru Anda (${finalAvg}) lebih tinggi atau sama dengan Harga Teoritis (${terp}). Menebus Right Issue mungkin kurang menguntungkan.`
+      );
+    }
+    
+    setIsCalculated(true);
   }, []);
 
   return (
@@ -278,6 +351,13 @@ const RightIssueCalculator: React.FC = () => {
           recommendation={recommendation}
           recommendationText={recommendationText}
           isCalculated={isCalculated}
+        />
+
+        <HistorySection
+          history={history}
+          onSelectHistory={loadFromHistory}
+          onRemoveHistory={removeFromHistory}
+          onClearHistory={clearHistory}
         />
       </main>
 
