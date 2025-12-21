@@ -2,6 +2,7 @@ import React from 'react';
 
 interface ExportTemplateProps {
   data: {
+    stockCode?: string;
     ratioOld: string;
     ratioNew: string;
     rightPrice: string;
@@ -42,6 +43,19 @@ const ExportTemplate: React.FC<ExportTemplateProps> = ({ data }) => {
     >
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+        {data.stockCode && (
+          <div style={{
+            display: 'inline-block',
+            padding: '4px 12px',
+            background: 'rgba(59, 130, 246, 0.3)',
+            borderRadius: '6px',
+            marginBottom: '8px',
+          }}>
+            <span style={{ fontSize: '16px', fontWeight: '700', letterSpacing: '2px' }}>
+              {data.stockCode}
+            </span>
+          </div>
+        )}
         <h1 style={{ 
           fontSize: '18px', 
           fontWeight: '700', 
