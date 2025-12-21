@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 export interface CalculationHistoryItem {
   id: string;
   timestamp: number;
+  stockCode?: string;
   inputs: {
     ratioOld: string;
     ratioNew: string;

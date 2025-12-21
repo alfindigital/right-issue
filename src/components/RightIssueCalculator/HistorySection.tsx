@@ -66,6 +66,11 @@ const HistorySection: React.FC<HistorySectionProps> = ({
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
+                  {item.stockCode && (
+                    <span className="text-xs font-bold bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+                      {item.stockCode}
+                    </span>
+                  )}
                   <span className="text-xs font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded">
                     {item.inputs.ratioOld}:{item.inputs.ratioNew}
                   </span>

@@ -8,6 +8,8 @@ import LotOptimizationSection from './LotOptimizationSection';
 import HistorySection from './HistorySection';
 import ThemeToggle from './ThemeToggle';
 import ShareButtons from './ShareButtons';
+import StockCodeInput from './StockCodeInput';
+import AdvancedAnalysisSection from './AdvancedAnalysisSection';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 
 const formatCurrency = (value: number): string => {
@@ -21,6 +23,9 @@ const formatNumber = (value: number): string => {
 const RightIssueCalculator: React.FC = () => {
   const resultRef = useRef<HTMLDivElement>(null);
   const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
+  
+  // Stock Code
+  const [stockCode, setStockCode] = useState('');
   
   // Right Issue Info
   const [ratioOld, setRatioOld] = useState('');
@@ -54,6 +59,7 @@ const RightIssueCalculator: React.FC = () => {
   // Parse URL params on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const sc = params.get('sc');
     const ro = params.get('ro');
     const rn = params.get('rn');
     const rp = params.get('rp');
@@ -61,6 +67,7 @@ const RightIssueCalculator: React.FC = () => {
     const cs = params.get('cs');
     const ca = params.get('ca');
 
+    if (sc) setStockCode(sc);
     if (ro && rn && rp && cp && cs && ca) {
       setRatioOld(ro);
       setRatioNew(rn);
@@ -147,6 +154,7 @@ const RightIssueCalculator: React.FC = () => {
 
     // Save to history
     addToHistory({
+      stockCode: stockCode || undefined,
       inputs: {
         ratioOld,
         ratioNew,
@@ -168,10 +176,11 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terp ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, addToHistory]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory]);
 
   const reset = useCallback(() => {
     // Reset inputs
+    setStockCode('');
     setRatioOld('');
     setRatioNew('');
     setRightPrice('');
@@ -199,6 +208,7 @@ const RightIssueCalculator: React.FC = () => {
 
   // Load calculation from history
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
+    setStockCode(item.stockCode || '');
     setRatioOld(item.inputs.ratioOld);
     setRatioNew(item.inputs.ratioNew);
     setRightPrice(item.inputs.rightPrice);
@@ -258,6 +268,7 @@ const RightIssueCalculator: React.FC = () => {
               resultRef={resultRef}
               isCalculated={isCalculated}
               shareData={{
+                stockCode,
                 ratioOld,
                 ratioNew,
                 rightPrice,
@@ -295,6 +306,8 @@ const RightIssueCalculator: React.FC = () => {
 
       {/* Main Content */}
       <main ref={resultRef} className="flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 space-y-3">
+        <StockCodeInput value={stockCode} onChange={setStockCode} />
+
         <RightIssueInfoSection
           ratioOld={ratioOld}
           ratioNew={ratioNew}
@@ -351,6 +364,19 @@ const RightIssueCalculator: React.FC = () => {
           recommendation={recommendation}
           recommendationText={recommendationText}
           isCalculated={isCalculated}
+        />
+
+        <AdvancedAnalysisSection
+          isCalculated={isCalculated}
+          cumPrice={parseInt(cumDatePrice) || 0}
+          riPrice={parseInt(rightPrice) || 0}
+          ratioOld={parseInt(ratioOld) || 0}
+          ratioNew={parseInt(ratioNew) || 0}
+          newSharesCount={parseInt(newSharesCount.replace(/\./g, '')) || 0}
+          totalModal={(parseInt(currentLots) || 0) * 100 * (parseInt(currentAvgPrice) || 0) + (parseInt(newSharesCount.replace(/\./g, '')) || 0) * (parseInt(rightPrice) || 0)}
+          totalShares={(parseInt(currentLots) || 0) * 100 + (parseInt(newSharesCount.replace(/\./g, '')) || 0)}
+          avgBaru={parseInt(finalAvgPrice.replace(/[^\d]/g, '')) || 0}
+          terp={parseInt(theoreticalPrice.replace(/[^\d]/g, '')) || 0}
         />
 
         <HistorySection

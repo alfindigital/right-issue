@@ -15,6 +15,7 @@ interface ShareButtonsProps {
   resultRef: React.RefObject<HTMLDivElement>;
   isCalculated: boolean;
   shareData: {
+    stockCode?: string;
     ratioOld: string;
     ratioNew: string;
     rightPrice: string;
@@ -96,6 +97,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
 
   const copyLink = () => {
     const params = new URLSearchParams({
+      ...(shareData.stockCode && { sc: shareData.stockCode }),
       ro: shareData.ratioOld,
       rn: shareData.ratioNew,
       rp: shareData.rightPrice,
@@ -115,6 +117,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
 
   const shareNative = async () => {
     const params = new URLSearchParams({
+      ...(shareData.stockCode && { sc: shareData.stockCode }),
       ro: shareData.ratioOld,
       rn: shareData.ratioNew,
       rp: shareData.rightPrice,
