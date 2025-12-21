@@ -10,6 +10,7 @@ import ThemeToggle from './ThemeToggle';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import AdvancedAnalysisSection from './AdvancedAnalysisSection';
+import BackToTopButton from './BackToTopButton';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 
 const formatCurrency = (value: number): string => {
@@ -141,12 +142,12 @@ const RightIssueCalculator: React.FC = () => {
     if (finalAvg < terp) {
       setRecommendation('positive');
       setRecommendationText(
-        `✅ LAYAK DITEBUS! Average harga baru Anda (${formatCurrency(finalAvg)}) lebih rendah dari Harga Teoritis (${formatCurrency(Math.round(terp))}). Dengan menebus Right Issue, potensi profit Anda semakin besar.`
+        `✅ Layak ditebus! Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) lebih rendah dari harga teoritis (${formatCurrency(Math.round(terp))}). Dengan menebus right issue, potensi keuntungan Anda semakin besar.`
       );
     } else {
       setRecommendation('negative');
       setRecommendationText(
-        `⚠️ PERTIMBANGKAN KEMBALI! Average harga baru Anda (${formatCurrency(finalAvg)}) lebih tinggi atau sama dengan Harga Teoritis (${formatCurrency(Math.round(terp))}). Menebus Right Issue mungkin kurang menguntungkan.`
+        `⚠️ Pertimbangkan kembali! Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) lebih tinggi atau sama dengan harga teoritis (${formatCurrency(Math.round(terp))}). Menebus right issue mungkin kurang menguntungkan.`
       );
     }
 
@@ -244,11 +245,11 @@ const RightIssueCalculator: React.FC = () => {
     const terp = item.results.theoreticalPrice;
     if (item.results.recommendation === 'positive') {
       setRecommendationText(
-        `✅ LAYAK DITEBUS! Average harga baru Anda (${finalAvg}) lebih rendah dari Harga Teoritis (${terp}). Dengan menebus Right Issue, potensi profit Anda semakin besar.`
+        `✅ Layak ditebus! Harga rata-rata baru Anda (${finalAvg}) lebih rendah dari harga teoritis (${terp}). Dengan menebus right issue, potensi keuntungan Anda semakin besar.`
       );
     } else {
       setRecommendationText(
-        `⚠️ PERTIMBANGKAN KEMBALI! Average harga baru Anda (${finalAvg}) lebih tinggi atau sama dengan Harga Teoritis (${terp}). Menebus Right Issue mungkin kurang menguntungkan.`
+        `⚠️ Pertimbangkan kembali! Harga rata-rata baru Anda (${finalAvg}) lebih tinggi atau sama dengan harga teoritis (${terp}). Menebus right issue mungkin kurang menguntungkan.`
       );
     }
     
@@ -390,8 +391,10 @@ const RightIssueCalculator: React.FC = () => {
       {/* Footer */}
       <footer className="header-bar py-2.5 px-4">
         <div className="max-w-2xl mx-auto flex items-center justify-center group relative">
-          <p className="text-xs opacity-80">
-            © 2025{' '}
+          <p className="text-xs opacity-80 flex items-center gap-1">
+            made with{' '}
+            <span className="text-red-400">♥</span>
+            {' '}by{' '}
             <a 
               href="https://alfindigital.com" 
               target="_blank" 
@@ -409,6 +412,8 @@ const RightIssueCalculator: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      <BackToTopButton />
     </div>
   );
 };
