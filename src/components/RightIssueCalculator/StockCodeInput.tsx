@@ -23,7 +23,7 @@ const StockCodeInput: React.FC<StockCodeInputProps> = ({ value, onChange }) => {
         type="text"
         value={value}
         onChange={handleChange}
-        placeholder="BBRI, PANI, BRIS..."
+        placeholder="BRPT, MDKA, BRIS..."
         className="input-calculator text-center font-bold tracking-widest text-lg"
         maxLength={4}
       />

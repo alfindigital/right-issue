@@ -54,8 +54,8 @@ const ConclusionSection: React.FC<ConclusionSectionProps> = ({
       </div>
 
       {isCalculated && recommendation && (
-        <div className={`text-sm ${recommendation === 'positive' ? 'recommendation-positive' : 'recommendation-negative'}`}>
-          <p className="font-medium">{recommendationText}</p>
+        <div className={`text-sm p-3 rounded-lg ${recommendation === 'positive' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
+          <p className="font-medium text-foreground">{recommendationText}</p>
         </div>
       )}
     </section>

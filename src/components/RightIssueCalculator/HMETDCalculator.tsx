@@ -70,7 +70,7 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
           {isSellBetter && (
             <div className="mt-2 flex items-center gap-1 text-green-600">
               <TrendingUp className="w-3 h-3" />
-              <span className="text-[10px] font-semibold">LEBIH UNTUNG</span>
+              <span className="text-[10px] font-semibold">Lebih untung</span>
             </div>
           )}
         </div>
@@ -98,7 +98,7 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
           {!isSellBetter && (
             <div className="mt-2 flex items-center gap-1 text-green-600">
               <TrendingUp className="w-3 h-3" />
-              <span className="text-[10px] font-semibold">LEBIH UNTUNG</span>
+              <span className="text-[10px] font-semibold">Lebih untung</span>
             </div>
           )}
         </div>
