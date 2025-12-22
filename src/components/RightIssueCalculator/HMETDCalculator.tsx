@@ -39,7 +39,7 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
   return (
     <div className="space-y-4">
       {/* Nilai Teoritis HMETD */}
-      <div className="text-center p-4 bg-primary/10 rounded-lg border border-primary/20">
+      <div className="stagger-item text-center p-4 bg-gradient-to-br from-primary/15 to-primary/5 rounded-xl border border-primary/20" style={{ animationDelay: '0ms' }}>
         <p className="text-xs text-muted-foreground mb-1">Nilai Teoritis HMETD</p>
         <p className="text-2xl font-bold text-primary">{formatCurrency(hmetdValue)}</p>
         <p className="text-xs text-muted-foreground mt-1">per lembar hak</p>
@@ -48,11 +48,11 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
       {/* Perbandingan Cards */}
       <div className="grid grid-cols-2 gap-3">
         {/* Jual HMETD */}
-        <div className={`p-3 rounded-lg border-2 transition-all ${
+        <div className={`stagger-item p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-md ${
           isSellBetter 
             ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
             : 'border-border bg-muted/30'
-        }`}>
+        }`} style={{ animationDelay: '100ms' }}>
           <div className="flex items-center gap-1.5 mb-2">
             <Wallet className="w-4 h-4 text-amber-600" />
             <span className="text-xs font-semibold">Jual HMETD</span>
@@ -76,11 +76,11 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
         </div>
 
         {/* Tebus RI */}
-        <div className={`p-3 rounded-lg border-2 transition-all ${
+        <div className={`stagger-item p-3 rounded-xl border-2 transition-all duration-300 hover:shadow-md ${
           !isSellBetter 
             ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
             : 'border-border bg-muted/30'
-        }`}>
+        }`} style={{ animationDelay: '200ms' }}>
           <div className="flex items-center gap-1.5 mb-2">
             <ArrowRightLeft className="w-4 h-4 text-primary" />
             <span className="text-xs font-semibold">Tebus RI</span>
@@ -105,11 +105,11 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
       </div>
 
       {/* Rekomendasi */}
-      <div className={`p-3 rounded-lg text-center ${
+      <div className={`stagger-item p-3 rounded-xl text-center transition-all duration-300 ${
         isSellBetter 
-          ? 'bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800' 
-          : 'bg-green-50 border border-green-200 dark:bg-green-950/30 dark:border-green-800'
-      }`}>
+          ? 'bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200 dark:from-amber-950/30 dark:to-amber-900/20 dark:border-amber-800' 
+          : 'bg-gradient-to-r from-green-50 to-green-100/50 border border-green-200 dark:from-green-950/30 dark:to-green-900/20 dark:border-green-800'
+      }`} style={{ animationDelay: '300ms' }}>
         <p className={`text-sm font-bold ${isSellBetter ? 'text-amber-700 dark:text-amber-400' : 'text-green-700 dark:text-green-400'}`}>
           {isSellBetter ? '💰 Jual HMETD lebih menguntungkan' : '🔄 Tebus RI lebih menguntungkan'}
         </p>
