@@ -37,7 +37,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
   return (
     <div className="space-y-3">
       {/* Break-Even Price - Featured */}
-      <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+      <div className="stagger-item p-4 bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 rounded-xl border border-primary/20 transition-all duration-300 hover:border-primary/40" style={{ animationDelay: '0ms' }}>
         <div className="flex items-center gap-2 mb-2">
           <Target className="w-4 h-4 text-primary" />
           <span className="text-xs font-semibold text-muted-foreground">BREAK-EVEN PRICE</span>
@@ -49,7 +49,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
       {/* ROI & Target Cards */}
       <div className="grid grid-cols-2 gap-2">
         {/* ROI @ TERP */}
-        <div className="p-3 bg-card rounded-lg border border-border">
+        <div className="stagger-item p-3 bg-card rounded-xl border border-border transition-all duration-300 hover:border-primary/30 hover:shadow-sm" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center gap-1.5 mb-1">
             <Percent className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-[10px] text-muted-foreground">ROI @ TERP</span>
@@ -60,7 +60,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
         </div>
 
         {/* TERP Reminder */}
-        <div className="p-3 bg-card rounded-lg border border-border">
+        <div className="stagger-item p-3 bg-card rounded-xl border border-border transition-all duration-300 hover:border-primary/30 hover:shadow-sm" style={{ animationDelay: '150ms' }}>
           <div className="flex items-center gap-1.5 mb-1">
             <Calculator className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-[10px] text-muted-foreground">Harga TERP</span>
@@ -69,7 +69,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
         </div>
 
         {/* Target +10% */}
-        <div className="p-3 bg-card rounded-lg border border-border">
+        <div className="stagger-item p-3 bg-card rounded-xl border border-border transition-all duration-300 hover:border-green-500/30 hover:shadow-sm" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingUp className="w-3.5 h-3.5 text-green-600" />
             <span className="text-[10px] text-muted-foreground">Target +10%</span>
@@ -78,7 +78,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
         </div>
 
         {/* Target +20% */}
-        <div className="p-3 bg-card rounded-lg border border-border">
+        <div className="stagger-item p-3 bg-card rounded-xl border border-border transition-all duration-300 hover:border-green-500/30 hover:shadow-sm" style={{ animationDelay: '250ms' }}>
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingUp className="w-3.5 h-3.5 text-green-600" />
             <span className="text-[10px] text-muted-foreground">Target +20%</span>
@@ -88,7 +88,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
       </div>
 
       {/* Quick Summary */}
-      <div className="p-2.5 bg-muted/50 rounded-lg text-center">
+      <div className="stagger-item p-2.5 bg-muted/50 rounded-xl text-center" style={{ animationDelay: '300ms' }}>
         <p className="text-xs text-muted-foreground">
           Jual di <span className="font-semibold text-foreground">{formatCurrency(terp)}</span> → profit{' '}
           <span className={`font-semibold ${getRoiColor(roiAtTerp)}`}>

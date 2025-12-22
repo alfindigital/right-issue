@@ -54,7 +54,11 @@ const ConclusionSection: React.FC<ConclusionSectionProps> = ({
       </div>
 
       {isCalculated && recommendation && (
-        <div className={`text-sm p-3 rounded-lg ${recommendation === 'positive' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
+        <div className={`text-sm p-3 rounded-xl transition-all duration-300 ${
+          recommendation === 'positive' 
+            ? 'bg-gradient-to-r from-green-100 to-green-50 border border-green-200 dark:from-green-900/30 dark:to-green-950/20 dark:border-green-800' 
+            : 'bg-gradient-to-r from-red-100 to-red-50 border border-red-200 dark:from-red-900/30 dark:to-red-950/20 dark:border-red-800'
+        }`}>
           <p className="font-medium text-foreground">{recommendationText}</p>
         </div>
       )}

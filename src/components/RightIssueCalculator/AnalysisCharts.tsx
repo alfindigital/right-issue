@@ -63,7 +63,15 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
                 tickLine={false}
                 width={35}
               />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
+              <Bar 
+                dataKey="value" 
+                radius={[0, 6, 6, 0]} 
+                barSize={20}
+                isAnimationActive={true}
+                animationBegin={0}
+                animationDuration={800}
+                animationEasing="ease-out"
+              >
                 {priceData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -94,7 +102,15 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
                 tickLine={false}
                 width={60}
               />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
+              <Bar 
+                dataKey="value" 
+                radius={[0, 6, 6, 0]} 
+                barSize={24}
+                isAnimationActive={true}
+                animationBegin={200}
+                animationDuration={800}
+                animationEasing="ease-out"
+              >
                 {comparisonData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}

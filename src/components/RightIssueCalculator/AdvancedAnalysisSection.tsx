@@ -41,14 +41,14 @@ const AdvancedAnalysisSection: React.FC<AdvancedAnalysisSectionProps> = ({
   const breakEven = totalShares > 0 ? totalModal / totalShares : 0;
 
   return (
-    <div className="card-calculator animate-slide-up">
+    <div className="card-calculator animate-slide-up overflow-hidden">
       <div className="flex items-center gap-2 mb-3">
         <BarChart3 className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-bold">Analisis Lanjutan</h3>
       </div>
 
       <Tabs defaultValue="hmetd" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-3">
+        <TabsList className="grid w-full grid-cols-3 mb-3 p-1 bg-muted/60 rounded-xl">
           <TabsTrigger value="hmetd" className="text-xs gap-1">
             <Calculator className="w-3 h-3" />
             <span className="hidden sm:inline">HMETD</span>
