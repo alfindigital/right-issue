@@ -12,6 +12,7 @@ import StockCodeInput from './StockCodeInput';
 import AdvancedAnalysisSection from './AdvancedAnalysisSection';
 import BackToTopButton from './BackToTopButton';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
+import { parseDecimalId } from '@/lib/parseDecimal';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -93,8 +94,8 @@ const RightIssueCalculator: React.FC = () => {
   }, [currentLots, currentAvgPrice]);
 
   const calculate = useCallback(() => {
-    const rOld = parseInt(ratioOld) || 0;
-    const rNew = parseInt(ratioNew) || 0;
+    const rOld = parseDecimalId(ratioOld);
+    const rNew = parseDecimalId(ratioNew);
     const riPrice = parseInt(rightPrice) || 0;
     const cumPrice = parseInt(cumDatePrice) || 0;
     const lots = parseInt(currentLots) || 0;
@@ -127,8 +128,8 @@ const RightIssueCalculator: React.FC = () => {
     setTheoreticalPrice(formatCurrency(Math.round(terp)));
 
     // Calculate warrant count if enabled
-    const wOld = parseInt(warrantRatioOld) || 0;
-    const wNew = parseInt(warrantRatioNew) || 0;
+    const wOld = parseDecimalId(warrantRatioOld);
+    const wNew = parseDecimalId(warrantRatioNew);
     let calculatedWarrantCount = '0';
     if (hasWarrant && wOld > 0 && wNew > 0) {
       const warrants = Math.floor((newShares / wOld) * wNew);
@@ -371,8 +372,8 @@ const RightIssueCalculator: React.FC = () => {
           isCalculated={isCalculated}
           cumPrice={parseInt(cumDatePrice) || 0}
           riPrice={parseInt(rightPrice) || 0}
-          ratioOld={parseInt(ratioOld) || 0}
-          ratioNew={parseInt(ratioNew) || 0}
+          ratioOld={parseDecimalId(ratioOld)}
+          ratioNew={parseDecimalId(ratioNew)}
           newSharesCount={parseInt(newSharesCount.replace(/\./g, '')) || 0}
           totalModal={(parseInt(currentLots) || 0) * 100 * (parseInt(currentAvgPrice) || 0) + (parseInt(newSharesCount.replace(/\./g, '')) || 0) * (parseInt(rightPrice) || 0)}
           totalShares={(parseInt(currentLots) || 0) * 100 + (parseInt(newSharesCount.replace(/\./g, '')) || 0)}

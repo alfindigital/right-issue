@@ -1,5 +1,6 @@
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
+import RatioInput from './RatioInput';
 import InfoTooltip from './InfoTooltip';
 
 interface WarrantSectionProps {
@@ -48,22 +49,16 @@ const WarrantSection: React.FC<WarrantSectionProps> = ({
               <InfoTooltip text="Contoh: 1:1 berarti setiap 1 lembar RI mendapat 1 waran." />
             </label>
             <div className="flex items-center gap-2">
-              <input
-                type="text"
+              <RatioInput
                 value={warrantRatioOld}
-                onChange={(e) => onWarrantRatioOldChange(e.target.value.replace(/\D/g, ''))}
+                onChange={onWarrantRatioOldChange}
                 placeholder="RI"
-                className="input-calculator flex-1"
-                inputMode="numeric"
               />
               <span className="text-lg font-bold text-muted-foreground">:</span>
-              <input
-                type="text"
+              <RatioInput
                 value={warrantRatioNew}
-                onChange={(e) => onWarrantRatioNewChange(e.target.value.replace(/\D/g, ''))}
+                onChange={onWarrantRatioNewChange}
                 placeholder="Waran"
-                className="input-calculator flex-1"
-                inputMode="numeric"
               />
             </div>
           </div>
