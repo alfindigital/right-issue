@@ -12,6 +12,7 @@ interface WarrantSectionProps {
   onWarrantRatioNewChange: (value: string) => void;
   warrantCount: string;
   isCalculated: boolean;
+  warrantRatioError?: string;
 }
 
 const WarrantSection: React.FC<WarrantSectionProps> = ({
@@ -22,7 +23,8 @@ const WarrantSection: React.FC<WarrantSectionProps> = ({
   onWarrantRatioOldChange,
   onWarrantRatioNewChange,
   warrantCount,
-  isCalculated
+  isCalculated,
+  warrantRatioError
 }) => {
   return (
     <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.15s' }}>
@@ -61,6 +63,9 @@ const WarrantSection: React.FC<WarrantSectionProps> = ({
                 placeholder="Waran"
               />
             </div>
+            {warrantRatioError && (
+              <p className="text-xs text-destructive mt-1 animate-fade-in">{warrantRatioError}</p>
+            )}
           </div>
 
           <div className={`space-y-1 transition-all duration-500 ${isCalculated ? 'opacity-100' : 'opacity-50'}`}>
