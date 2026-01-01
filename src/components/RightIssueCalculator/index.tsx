@@ -13,6 +13,8 @@ import AdvancedAnalysisSection from './AdvancedAnalysisSection';
 import BackToTopButton from './BackToTopButton';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { toast } from '@/hooks/use-toast';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -25,6 +27,8 @@ const formatNumber = (value: number): string => {
 const RightIssueCalculator: React.FC = () => {
   const resultRef = useRef<HTMLDivElement>(null);
   const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
+  const { saveToStorage, loadFromStorage, clearStorage } = useAutoSave();
+  const hasRestoredRef = useRef(false);
   
   // Stock Code
   const [stockCode, setStockCode] = useState('');
@@ -58,8 +62,11 @@ const RightIssueCalculator: React.FC = () => {
   const [recommendationText, setRecommendationText] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
 
-  // Parse URL params on mount
+  // Parse URL params or restore from auto-save on mount
   useEffect(() => {
+    if (hasRestoredRef.current) return;
+    hasRestoredRef.current = true;
+
     const params = new URLSearchParams(window.location.search);
     const sc = params.get('sc');
     const ro = params.get('ro');
@@ -69,6 +76,7 @@ const RightIssueCalculator: React.FC = () => {
     const cs = params.get('cs');
     const ca = params.get('ca');
 
+    // Priority: URL params > auto-save
     if (sc) setStockCode(sc);
     if (ro && rn && rp && cp && cs && ca) {
       setRatioOld(ro);
@@ -77,8 +85,49 @@ const RightIssueCalculator: React.FC = () => {
       setCumDatePrice(cp);
       setCurrentLots(cs);
       setCurrentAvgPrice(ca);
+    } else {
+      // Try to restore from auto-save
+      const saved = loadFromStorage();
+      if (saved) {
+        setStockCode(saved.stockCode);
+        setRatioOld(saved.ratioOld);
+        setRatioNew(saved.ratioNew);
+        setRightPrice(saved.rightPrice);
+        setCumDatePrice(saved.cumDatePrice);
+        setCurrentLots(saved.currentLots);
+        setCurrentAvgPrice(saved.currentAvgPrice);
+        setHasWarrant(saved.hasWarrant);
+        setWarrantRatioOld(saved.warrantRatioOld);
+        setWarrantRatioNew(saved.warrantRatioNew);
+        
+        toast({
+          title: "Data dipulihkan",
+          description: "Input terakhir Anda telah dipulihkan.",
+          duration: 3000,
+        });
+      }
     }
-  }, []);
+  }, [loadFromStorage]);
+
+  // Auto-save on input change
+  useEffect(() => {
+    // Skip if nothing has been entered yet
+    const hasData = stockCode || ratioOld || ratioNew || rightPrice || cumDatePrice || currentLots || currentAvgPrice;
+    if (!hasData) return;
+
+    saveToStorage({
+      stockCode,
+      ratioOld,
+      ratioNew,
+      rightPrice,
+      cumDatePrice,
+      currentLots,
+      currentAvgPrice,
+      hasWarrant,
+      warrantRatioOld,
+      warrantRatioNew,
+    });
+  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, saveToStorage]);
 
   const isCalculateEnabled = !!(
     ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice
@@ -206,7 +255,10 @@ const RightIssueCalculator: React.FC = () => {
     setRecommendation(null);
     setRecommendationText('');
     setIsCalculated(false);
-  }, []);
+
+    // Clear auto-save
+    clearStorage();
+  }, [clearStorage]);
 
   // Load calculation from history
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
