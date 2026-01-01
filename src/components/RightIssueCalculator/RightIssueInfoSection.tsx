@@ -12,6 +12,7 @@ interface RightIssueInfoSectionProps {
   onRatioNewChange: (value: string) => void;
   onRightPriceChange: (value: string) => void;
   onCumDatePriceChange: (value: string) => void;
+  ratioError?: string;
 }
 
 const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
@@ -22,7 +23,8 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   onRatioOldChange,
   onRatioNewChange,
   onRightPriceChange,
-  onCumDatePriceChange
+  onCumDatePriceChange,
+  ratioError
 }) => {
   return (
     <section className="card-calculator animate-fade-in">
@@ -50,6 +52,9 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               placeholder="Baru"
             />
           </div>
+          {ratioError && (
+            <p className="text-xs text-destructive mt-1 animate-fade-in">{ratioError}</p>
+          )}
         </div>
 
         <CurrencyInput

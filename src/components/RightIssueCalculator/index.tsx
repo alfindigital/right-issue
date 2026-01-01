@@ -62,6 +62,10 @@ const RightIssueCalculator: React.FC = () => {
   const [recommendationText, setRecommendationText] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
 
+  // Validation errors
+  const [ratioError, setRatioError] = useState('');
+  const [warrantRatioError, setWarrantRatioError] = useState('');
+
   // Parse URL params or restore from auto-save on mount
   useEffect(() => {
     if (hasRestoredRef.current) return;
@@ -129,8 +133,40 @@ const RightIssueCalculator: React.FC = () => {
     });
   }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, saveToStorage]);
 
+  // Validate ratios
+  useEffect(() => {
+    const rOld = parseDecimalId(ratioOld);
+    const rNew = parseDecimalId(ratioNew);
+    
+    if (ratioOld && rOld === 0) {
+      setRatioError('Rasio lama tidak boleh 0');
+    } else if (ratioNew && rNew === 0) {
+      setRatioError('Rasio baru tidak boleh 0');
+    } else {
+      setRatioError('');
+    }
+  }, [ratioOld, ratioNew]);
+
+  useEffect(() => {
+    if (!hasWarrant) {
+      setWarrantRatioError('');
+      return;
+    }
+    
+    const wOld = parseDecimalId(warrantRatioOld);
+    const wNew = parseDecimalId(warrantRatioNew);
+    
+    if (warrantRatioOld && wOld === 0) {
+      setWarrantRatioError('Rasio RI tidak boleh 0');
+    } else if (warrantRatioNew && wNew === 0) {
+      setWarrantRatioError('Rasio waran tidak boleh 0');
+    } else {
+      setWarrantRatioError('');
+    }
+  }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
+
   const isCalculateEnabled = !!(
-    ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice
+    ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice && !ratioError
   );
 
   // Calculate current total value on input change
@@ -371,6 +407,7 @@ const RightIssueCalculator: React.FC = () => {
           onRatioNewChange={setRatioNew}
           onRightPriceChange={setRightPrice}
           onCumDatePriceChange={setCumDatePrice}
+          ratioError={ratioError}
         />
 
         <OwnershipSection
@@ -399,6 +436,7 @@ const RightIssueCalculator: React.FC = () => {
           onWarrantRatioNewChange={setWarrantRatioNew}
           warrantCount={warrantCount}
           isCalculated={isCalculated}
+          warrantRatioError={warrantRatioError}
         />
 
         <LotOptimizationSection
