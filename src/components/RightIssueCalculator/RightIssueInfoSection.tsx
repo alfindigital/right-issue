@@ -1,5 +1,6 @@
 import React from 'react';
 import CurrencyInput from './CurrencyInput';
+import RatioInput from './RatioInput';
 import InfoTooltip from './InfoTooltip';
 
 interface RightIssueInfoSectionProps {
@@ -37,22 +38,16 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             <InfoTooltip text="Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru." />
           </label>
           <div className="flex items-center gap-2">
-            <input
-              type="text"
+            <RatioInput
               value={ratioOld}
-              onChange={(e) => onRatioOldChange(e.target.value.replace(/\D/g, ''))}
+              onChange={onRatioOldChange}
               placeholder="Lama"
-              className="input-calculator flex-1"
-              inputMode="numeric"
             />
             <span className="text-lg font-bold text-muted-foreground">:</span>
-            <input
-              type="text"
+            <RatioInput
               value={ratioNew}
-              onChange={(e) => onRatioNewChange(e.target.value.replace(/\D/g, ''))}
+              onChange={onRatioNewChange}
               placeholder="Baru"
-              className="input-calculator flex-1"
-              inputMode="numeric"
             />
           </div>
         </div>

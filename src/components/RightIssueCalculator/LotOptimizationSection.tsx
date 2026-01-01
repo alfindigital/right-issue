@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calculator } from 'lucide-react';
 import InfoTooltip from './InfoTooltip';
+import { parseDecimalId } from '@/lib/parseDecimal';
 
 interface LotOptimizationSectionProps {
   ratioOld: string;
@@ -17,8 +18,8 @@ const LotOptimizationSection: React.FC<LotOptimizationSectionProps> = ({
   onCurrentLotsChange,
   isCalculated
 }) => {
-  const rOld = parseInt(ratioOld) || 0;
-  const rNew = parseInt(ratioNew) || 0;
+  const rOld = parseDecimalId(ratioOld);
+  const rNew = parseDecimalId(ratioNew);
   const lots = parseInt(currentLots) || 0;
 
   // Calculate minimum lots needed to get full lots from RI
