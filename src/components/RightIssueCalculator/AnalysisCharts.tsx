@@ -30,21 +30,33 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
   sellHmetdValue,
   exerciseGain,
 }) => {
+  // Guard against all zero/invalid values
+  const hasValidPriceData = cumPrice > 0 || riPrice > 0 || terp > 0 || avgBaru > 0;
+  const hasValidComparisonData = sellHmetdValue > 0 || exerciseGain > 0;
+
+  if (!hasValidPriceData && !hasValidComparisonData) {
+    return (
+      <div className="text-center p-4 text-muted-foreground text-sm">
+        Data tidak tersedia untuk grafik
+      </div>
+    );
+  }
+
   const priceData = [
     { name: 'Cum', value: cumPrice, color: '#6366f1' },
     { name: 'RI', value: riPrice, color: '#f59e0b' },
     { name: 'TERP', value: terp, color: '#3b82f6' },
     { name: 'Avg', value: avgBaru, color: '#10b981' },
     { name: 'BEP', value: breakEven, color: '#ef4444' },
-  ];
+  ].filter(item => item.value > 0);
 
   const comparisonData = [
     { name: 'Jual HMETD', value: sellHmetdValue, color: '#f59e0b' },
     { name: 'Tebus RI', value: exerciseGain, color: '#10b981' },
-  ];
+  ].filter(item => item.value > 0);
 
-  const maxPrice = Math.max(...priceData.map(d => d.value)) * 1.15;
-  const maxComparison = Math.max(...comparisonData.map(d => d.value)) * 1.15;
+  const maxPrice = priceData.length > 0 ? Math.max(...priceData.map(d => d.value)) * 1.15 : 100;
+  const maxComparison = comparisonData.length > 0 ? Math.max(...comparisonData.map(d => d.value)) * 1.15 : 100;
 
   return (
     <div className="space-y-4">
