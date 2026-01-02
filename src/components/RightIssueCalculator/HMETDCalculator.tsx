@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, Wallet, ArrowRightLeft } from 'lucide-react';
+import { TrendingUp, Wallet, ArrowRightLeft } from 'lucide-react';
 
 interface HMETDCalculatorProps {
   cumPrice: number;
@@ -20,6 +20,15 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
   ratioNew,
   newSharesCount,
 }) => {
+  // Guard against invalid data
+  if (ratioOld === 0 || ratioNew === 0 || cumPrice === 0) {
+    return (
+      <div className="text-center p-4 text-muted-foreground text-sm">
+        Data tidak tersedia
+      </div>
+    );
+  }
+
   // Nilai Teoritis HMETD = (Harga Cum - Harga RI) / ((Rasio Lama / Rasio Baru) + 1)
   const hmetdValue = (cumPrice - riPrice) / ((ratioOld / ratioNew) + 1);
   
@@ -42,7 +51,7 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
       <div className="stagger-item text-center p-4 bg-gradient-to-br from-primary/15 to-primary/5 rounded-xl border border-primary/20" style={{ animationDelay: '0ms' }}>
         <p className="text-xs text-muted-foreground mb-1">Nilai Teoritis HMETD</p>
         <p className="text-2xl font-bold text-primary">{formatCurrency(hmetdValue)}</p>
-        <p className="text-xs text-muted-foreground mt-1">per lembar hak</p>
+        <p className="text-xs text-muted-foreground mt-1">per hak</p>
       </div>
 
       {/* Perbandingan Cards */}
@@ -111,13 +120,10 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
           : 'bg-gradient-to-r from-green-50 to-green-100/50 border border-green-200 dark:from-green-950/30 dark:to-green-900/20 dark:border-green-800'
       }`} style={{ animationDelay: '300ms' }}>
         <p className={`text-sm font-bold ${isSellBetter ? 'text-amber-700 dark:text-amber-400' : 'text-green-700 dark:text-green-400'}`}>
-          {isSellBetter ? '💰 Jual HMETD lebih menguntungkan' : '🔄 Tebus RI lebih menguntungkan'}
+          {isSellBetter ? 'Jual HMETD lebih menguntungkan' : 'Tebus RI lebih menguntungkan'}
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          {isSellBetter 
-            ? `Selisih: +${formatCurrency(sellProfit - exercisePotentialGain)}`
-            : `Selisih: +${formatCurrency(exercisePotentialGain - sellProfit)}`
-          }
+          Selisih: +{formatCurrency(Math.abs(sellProfit - exercisePotentialGain))}
         </p>
       </div>
     </div>

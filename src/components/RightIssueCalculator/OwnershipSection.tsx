@@ -8,10 +8,10 @@ interface OwnershipSectionProps {
   currentLots: string;
   currentAvgPrice: string;
   currentTotalValue: string;
-  newSharesCount: string;
+  newLotsCount: string;
   newAvgPrice: string;
   newTotalValue: string;
-  finalShares: string;
+  finalLots: string;
   finalAvgPrice: string;
   finalTotalValue: string;
   onCurrentLotsChange: (value: string) => void;
@@ -25,10 +25,10 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   currentLots,
   currentAvgPrice,
   currentTotalValue,
-  newSharesCount,
+  newLotsCount,
   newAvgPrice,
   newTotalValue,
-  finalShares,
+  finalLots,
   finalAvgPrice,
   finalTotalValue,
   onCurrentLotsChange,
@@ -95,14 +95,14 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         <div className={`space-y-3 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-50'}`}>
           <h3 className="subsection-title flex items-center">
             Jatah RI
-            <InfoTooltip text="Jumlah saham baru yang berhak Anda tebus." />
+            <InfoTooltip text="Jumlah lot baru yang berhak Anda tebus." />
           </h3>
           
           <ReadOnlyField
-            label="Total Lembar RI"
-            value={newSharesCount}
+            label="Jatah Lot RI"
+            value={`${newLotsCount} lot`}
             animated={isCalculated}
-            tooltip="Jumlah lembar saham baru dari RI."
+            tooltip="Jumlah lot baru dari right issue."
           />
 
           <ReadOnlyField
@@ -126,7 +126,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
       <div className="my-4 border-t border-border" />
 
       <div className={`space-y-1 mb-4 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-70'}`}>
-        <SummaryItem label="Total Lembar Akhir" value={finalShares} animated={isCalculated} tooltip="Jumlah saham setelah tebus RI." />
+        <SummaryItem label="Total Lot Akhir" value={`${finalLots} lot`} animated={isCalculated} tooltip="Jumlah lot setelah tebus RI." />
         <SummaryItem label="Avg Akhir" value={finalAvgPrice} animated={isCalculated} delay={100} tooltip="Harga rata-rata setelah tebus RI." />
         <SummaryItem label="Total Value Akhir" value={finalTotalValue} highlight animated={isCalculated} delay={200} tooltip="Total nilai investasi setelah tebus RI." />
       </div>

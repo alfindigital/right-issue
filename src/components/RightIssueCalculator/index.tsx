@@ -5,7 +5,7 @@ import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
 import WarrantSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
-import HistorySection from './HistorySection';
+import HistoryDropdown from './HistoryDropdown';
 import ThemeToggle from './ThemeToggle';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
@@ -49,18 +49,27 @@ const RightIssueCalculator: React.FC = () => {
   const [warrantRatioNew, setWarrantRatioNew] = useState('');
   const [warrantCount, setWarrantCount] = useState('0');
 
-  // Calculated Values
+  // Calculated Values (display formatted)
   const [currentTotalValue, setCurrentTotalValue] = useState('Rp 0');
-  const [newSharesCount, setNewSharesCount] = useState('0');
+  const [newLotsCount, setNewLotsCount] = useState('0');
   const [newAvgPrice, setNewAvgPrice] = useState('Rp 0');
   const [newTotalValue, setNewTotalValue] = useState('Rp 0');
-  const [finalShares, setFinalShares] = useState('0');
+  const [finalLots, setFinalLots] = useState('0');
   const [finalAvgPrice, setFinalAvgPrice] = useState('Rp 0');
   const [finalTotalValue, setFinalTotalValue] = useState('Rp 0');
   const [theoreticalPrice, setTheoreticalPrice] = useState('-');
   const [recommendation, setRecommendation] = useState<'positive' | 'negative' | null>(null);
   const [recommendationText, setRecommendationText] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
+
+  // Raw numeric values for charts (to avoid parsing formatted strings)
+  const [numericValues, setNumericValues] = useState({
+    newSharesCount: 0,
+    totalShares: 0,
+    totalModal: 0,
+    avgBaru: 0,
+    terp: 0,
+  });
 
   // Validation errors
   const [ratioError, setRatioError] = useState('');
@@ -191,7 +200,11 @@ const RightIssueCalculator: React.FC = () => {
 
     // Calculate new shares from right issue
     const newShares = Math.floor((shares / rOld) * rNew);
-    setNewSharesCount(formatNumber(newShares));
+    const newLots = newShares / 100;
+    
+    // Check if it's a fractional lot
+    const isWholeLot = Number.isInteger(newLots);
+    setNewLotsCount(isWholeLot ? formatNumber(newLots) : newLots.toFixed(2).replace('.', ','));
     setNewAvgPrice(formatCurrency(riPrice));
     
     const newValue = newShares * riPrice;
@@ -199,7 +212,9 @@ const RightIssueCalculator: React.FC = () => {
 
     // Calculate final totals
     const totalShares = shares + newShares;
-    setFinalShares(formatNumber(totalShares));
+    const totalLotsNum = totalShares / 100;
+    const isWholeFinalLot = Number.isInteger(totalLotsNum);
+    setFinalLots(isWholeFinalLot ? formatNumber(totalLotsNum) : totalLotsNum.toFixed(2).replace('.', ','));
 
     const currentValue = shares * avgPrice;
     const totalValue = currentValue + newValue;
@@ -210,7 +225,17 @@ const RightIssueCalculator: React.FC = () => {
 
     // Calculate TERP (Theoretical Ex-Right Price)
     const terp = ((cumPrice * rOld) + (riPrice * rNew)) / (rOld + rNew);
-    setTheoreticalPrice(formatCurrency(Math.round(terp)));
+    const terpRounded = Math.round(terp);
+    setTheoreticalPrice(formatCurrency(terpRounded));
+
+    // Store raw numeric values for charts
+    setNumericValues({
+      newSharesCount: newShares,
+      totalShares: totalShares,
+      totalModal: totalValue,
+      avgBaru: finalAvg,
+      terp: terpRounded,
+    });
 
     // Calculate warrant count if enabled
     const wOld = parseDecimalId(warrantRatioOld);
@@ -224,16 +249,22 @@ const RightIssueCalculator: React.FC = () => {
       setWarrantCount('0');
     }
 
-    // Determine recommendation
-    if (finalAvg < terp) {
+    // Calculate difference for recommendation
+    const priceDiff = terpRounded - finalAvg;
+    const priceDiffPercent = finalAvg > 0 ? ((priceDiff / finalAvg) * 100).toFixed(2) : '0';
+
+    // Determine recommendation (neutral language)
+    if (finalAvg < terpRounded) {
       setRecommendation('positive');
       setRecommendationText(
-        `✅ Layak ditebus! Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) lebih rendah dari harga teoritis (${formatCurrency(Math.round(terp))}). Dengan menebus right issue, potensi keuntungan Anda semakin besar.`
+        `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
       );
     } else {
       setRecommendation('negative');
+      const negativeDiff = Math.abs(priceDiff);
+      const negativeDiffPercent = finalAvg > 0 ? ((negativeDiff / finalAvg) * 100).toFixed(2) : '0';
       setRecommendationText(
-        `⚠️ Pertimbangkan kembali! Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) lebih tinggi atau sama dengan harga teoritis (${formatCurrency(Math.round(terp))}). Menebus right issue mungkin kurang menguntungkan.`
+        `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(negativeDiff)} (${negativeDiffPercent}%) di atas atau sama dengan TERP (${formatCurrency(terpRounded)}). Pertimbangkan alternatif seperti menjual HMETD.`
       );
     }
 
@@ -254,13 +285,13 @@ const RightIssueCalculator: React.FC = () => {
         warrantRatioNew,
       },
       results: {
-        newSharesCount: formatNumber(newShares),
-        finalShares: formatNumber(totalShares),
+        newSharesCount: formatNumber(newLots),
+        finalShares: formatNumber(totalLotsNum),
         finalAvgPrice: formatCurrency(finalAvg),
         finalTotalValue: formatCurrency(totalValue),
-        theoreticalPrice: formatCurrency(Math.round(terp)),
+        theoreticalPrice: formatCurrency(terpRounded),
         warrantCount: calculatedWarrantCount,
-        recommendation: finalAvg < terp ? 'positive' : 'negative',
+        recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory]);
@@ -280,10 +311,10 @@ const RightIssueCalculator: React.FC = () => {
     
     // Reset calculated values
     setCurrentTotalValue('Rp 0');
-    setNewSharesCount('0');
+    setNewLotsCount('0');
     setNewAvgPrice('Rp 0');
     setNewTotalValue('Rp 0');
-    setFinalShares('0');
+    setFinalLots('0');
     setFinalAvgPrice('Rp 0');
     setFinalTotalValue('Rp 0');
     setTheoreticalPrice('-');
@@ -291,6 +322,13 @@ const RightIssueCalculator: React.FC = () => {
     setRecommendation(null);
     setRecommendationText('');
     setIsCalculated(false);
+    setNumericValues({
+      newSharesCount: 0,
+      totalShares: 0,
+      totalModal: 0,
+      avgBaru: 0,
+      terp: 0,
+    });
 
     // Clear auto-save
     clearStorage();
@@ -310,8 +348,8 @@ const RightIssueCalculator: React.FC = () => {
     setWarrantRatioNew(item.inputs.warrantRatioNew);
     
     // Set calculated results
-    setNewSharesCount(item.results.newSharesCount);
-    setFinalShares(item.results.finalShares);
+    setNewLotsCount(item.results.newSharesCount);
+    setFinalLots(item.results.finalShares);
     setFinalAvgPrice(item.results.finalAvgPrice);
     setFinalTotalValue(item.results.finalTotalValue);
     setTheoreticalPrice(item.results.theoreticalPrice);
@@ -325,20 +363,36 @@ const RightIssueCalculator: React.FC = () => {
     setCurrentTotalValue(formatCurrency(shares * avgPrice));
     
     const riPrice = parseInt(item.inputs.rightPrice) || 0;
-    const newShares = parseInt(item.results.newSharesCount.replace(/\./g, '')) || 0;
+    const newLots = parseFloat(item.results.newSharesCount.replace(/\./g, '').replace(',', '.')) || 0;
+    const newShares = newLots * 100;
     setNewAvgPrice(formatCurrency(riPrice));
     setNewTotalValue(formatCurrency(newShares * riPrice));
     
-    // Set recommendation text
-    const finalAvg = item.results.finalAvgPrice;
-    const terp = item.results.theoreticalPrice;
+    // Parse values for numeric state
+    const finalAvg = parseInt(item.results.finalAvgPrice.replace(/[^\d]/g, '')) || 0;
+    const terp = parseInt(item.results.theoreticalPrice.replace(/[^\d]/g, '')) || 0;
+    const totalShares = shares + newShares;
+    const totalValue = parseInt(item.results.finalTotalValue.replace(/[^\d]/g, '')) || 0;
+    
+    setNumericValues({
+      newSharesCount: newShares,
+      totalShares: totalShares,
+      totalModal: totalValue,
+      avgBaru: finalAvg,
+      terp: terp,
+    });
+    
+    // Set recommendation text (neutral)
+    const priceDiff = terp - finalAvg;
+    const priceDiffPercent = finalAvg > 0 ? ((Math.abs(priceDiff) / finalAvg) * 100).toFixed(2) : '0';
+    
     if (item.results.recommendation === 'positive') {
       setRecommendationText(
-        `✅ Layak ditebus! Harga rata-rata baru Anda (${finalAvg}) lebih rendah dari harga teoritis (${terp}). Dengan menebus right issue, potensi keuntungan Anda semakin besar.`
+        `Harga rata-rata baru Anda (${item.results.finalAvgPrice}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${item.results.theoreticalPrice}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
       );
     } else {
       setRecommendationText(
-        `⚠️ Pertimbangkan kembali! Harga rata-rata baru Anda (${finalAvg}) lebih tinggi atau sama dengan harga teoritis (${terp}). Menebus right issue mungkin kurang menguntungkan.`
+        `Harga rata-rata baru Anda (${item.results.finalAvgPrice}) berada Rp ${formatNumber(Math.abs(priceDiff))} (${priceDiffPercent}%) di atas atau sama dengan TERP (${item.results.theoreticalPrice}). Pertimbangkan alternatif seperti menjual HMETD.`
       );
     }
     
@@ -368,9 +422,9 @@ const RightIssueCalculator: React.FC = () => {
               }}
               exportData={{
                 currentTotalValue,
-                newSharesCount,
+                newSharesCount: newLotsCount,
                 newTotalValue,
-                finalShares,
+                finalShares: finalLots,
                 finalAvgPrice,
                 finalTotalValue,
                 theoreticalPrice,
@@ -379,6 +433,12 @@ const RightIssueCalculator: React.FC = () => {
                 hasWarrant,
                 warrantCount,
               }}
+            />
+            <HistoryDropdown
+              history={history}
+              onSelectHistory={loadFromHistory}
+              onRemoveHistory={removeFromHistory}
+              onClearHistory={clearHistory}
             />
             {isCalculated && (
               <button
@@ -414,10 +474,10 @@ const RightIssueCalculator: React.FC = () => {
           currentLots={currentLots}
           currentAvgPrice={currentAvgPrice}
           currentTotalValue={currentTotalValue}
-          newSharesCount={newSharesCount}
+          newLotsCount={newLotsCount}
           newAvgPrice={newAvgPrice}
           newTotalValue={newTotalValue}
-          finalShares={finalShares}
+          finalLots={finalLots}
           finalAvgPrice={finalAvgPrice}
           finalTotalValue={finalTotalValue}
           onCurrentLotsChange={setCurrentLots}
@@ -448,7 +508,7 @@ const RightIssueCalculator: React.FC = () => {
         />
 
         <ConclusionSection
-          newShares={newSharesCount}
+          newLots={newLotsCount}
           exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
           totalCost={newTotalValue}
           newAvgPrice={isCalculated ? finalAvgPrice : '-'}
@@ -464,43 +524,23 @@ const RightIssueCalculator: React.FC = () => {
           riPrice={parseInt(rightPrice) || 0}
           ratioOld={parseDecimalId(ratioOld)}
           ratioNew={parseDecimalId(ratioNew)}
-          newSharesCount={parseInt(newSharesCount.replace(/\./g, '')) || 0}
-          totalModal={(parseInt(currentLots) || 0) * 100 * (parseInt(currentAvgPrice) || 0) + (parseInt(newSharesCount.replace(/\./g, '')) || 0) * (parseInt(rightPrice) || 0)}
-          totalShares={(parseInt(currentLots) || 0) * 100 + (parseInt(newSharesCount.replace(/\./g, '')) || 0)}
-          avgBaru={parseInt(finalAvgPrice.replace(/[^\d]/g, '')) || 0}
-          terp={parseInt(theoreticalPrice.replace(/[^\d]/g, '')) || 0}
-        />
-
-        <HistorySection
-          history={history}
-          onSelectHistory={loadFromHistory}
-          onRemoveHistory={removeFromHistory}
-          onClearHistory={clearHistory}
+          newSharesCount={numericValues.newSharesCount}
+          totalModal={numericValues.totalModal}
+          totalShares={numericValues.totalShares}
+          avgBaru={numericValues.avgBaru}
+          terp={numericValues.terp}
         />
       </main>
 
       {/* Footer */}
-      <footer className="header-bar py-2.5 px-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-center group relative">
-          <p className="text-xs opacity-80 flex items-center gap-1">
-            made with{' '}
-            <span className="text-red-400">♥</span>
-            {' '}by{' '}
-            <a 
-              href="https://alfindigital.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="font-medium hover:underline"
-            >
-              alfindigital
-            </a>
+      <footer className="py-4 px-4 border-t border-border mt-auto">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-xs text-muted-foreground">
+            Dibuat dengan ❤️ untuk investor Indonesia
           </p>
-          {/* Hover disclaimer */}
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-card text-foreground border border-border rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none w-[260px]">
-            <p className="text-xs text-muted-foreground leading-relaxed text-center">
-              Bukan saran investasi. DYOR. Data diproses lokal.
-            </p>
-          </div>
+          <p className="text-[10px] text-muted-foreground/70 mt-1">
+            Kalkulator ini hanya sebagai alat bantu perhitungan
+          </p>
         </div>
       </footer>
 
