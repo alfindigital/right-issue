@@ -20,11 +20,13 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
   ratioNew,
   newSharesCount,
 }) => {
-  // Guard against invalid data
-  if (ratioOld === 0 || ratioNew === 0 || cumPrice === 0) {
+  // Guard against truly invalid data (only when no ratio is set)
+  const hasValidData = ratioOld > 0 && ratioNew > 0;
+  
+  if (!hasValidData) {
     return (
       <div className="text-center p-4 text-muted-foreground text-sm">
-        Data tidak tersedia
+        Masukkan data rasio RI terlebih dahulu
       </div>
     );
   }

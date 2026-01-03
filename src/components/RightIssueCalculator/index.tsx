@@ -546,6 +546,9 @@ const RightIssueCalculator: React.FC = () => {
           <p className="text-[10px] text-muted-foreground/70 mt-1">
             Kalkulator ini hanya sebagai alat bantu perhitungan
           </p>
+          <p className="text-[10px] text-muted-foreground/70 mt-2">
+            © <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
+          </p>
         </div>
       </footer>
 
