@@ -3,7 +3,7 @@ import { RotateCcw } from 'lucide-react';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
-import WarrantSection from './WarrantSection';
+import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import ThemeToggle from './ThemeToggle';
@@ -468,6 +468,13 @@ const RightIssueCalculator: React.FC = () => {
           onRightPriceChange={setRightPrice}
           onCumDatePriceChange={setCumDatePrice}
           ratioError={ratioError}
+          hasWarrant={hasWarrant}
+          onHasWarrantChange={setHasWarrant}
+          warrantRatioOld={warrantRatioOld}
+          warrantRatioNew={warrantRatioNew}
+          onWarrantRatioOldChange={setWarrantRatioOld}
+          onWarrantRatioNewChange={setWarrantRatioNew}
+          warrantRatioError={warrantRatioError}
         />
 
         <OwnershipSection
@@ -487,17 +494,12 @@ const RightIssueCalculator: React.FC = () => {
           isCalculated={isCalculated}
         />
 
-        <WarrantSection
-          hasWarrant={hasWarrant}
-          onHasWarrantChange={setHasWarrant}
-          warrantRatioOld={warrantRatioOld}
-          warrantRatioNew={warrantRatioNew}
-          onWarrantRatioOldChange={setWarrantRatioOld}
-          onWarrantRatioNewChange={setWarrantRatioNew}
-          warrantCount={warrantCount}
-          isCalculated={isCalculated}
-          warrantRatioError={warrantRatioError}
-        />
+        {hasWarrant && (
+          <WarrantResultSection
+            warrantCount={warrantCount}
+            isCalculated={isCalculated}
+          />
+        )}
 
         <LotOptimizationSection
           ratioOld={ratioOld}
@@ -505,6 +507,9 @@ const RightIssueCalculator: React.FC = () => {
           currentLots={currentLots}
           onCurrentLotsChange={setCurrentLots}
           isCalculated={isCalculated}
+          hasWarrant={hasWarrant}
+          warrantRatioOld={warrantRatioOld}
+          warrantRatioNew={warrantRatioNew}
         />
 
         <ConclusionSection
