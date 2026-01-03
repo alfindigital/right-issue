@@ -18,6 +18,14 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
   avgBaru,
   terp,
 }) => {
+  // Guard against truly invalid data
+  if (totalShares === 0 || avgBaru === 0) {
+    return (
+      <div className="text-center p-4 text-muted-foreground text-sm">
+        Klik "Hitung" terlebih dahulu untuk melihat analisis ROI
+      </div>
+    );
+  }
   // Break-Even Price = Total Modal / Total Shares
   const breakEvenPrice = totalShares > 0 ? totalModal / totalShares : 0;
   
