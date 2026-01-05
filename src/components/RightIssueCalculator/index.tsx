@@ -530,7 +530,6 @@ const RightIssueCalculator: React.FC = () => {
           ratioOld={parseDecimalId(ratioOld)}
           ratioNew={parseDecimalId(ratioNew)}
           newSharesCount={numericValues.newSharesCount}
-          totalModal={numericValues.totalModal}
           totalShares={numericValues.totalShares}
           avgBaru={numericValues.avgBaru}
           terp={numericValues.terp}

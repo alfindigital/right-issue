@@ -125,20 +125,20 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
 
       <div className="my-4 border-t border-border" />
 
-      <div className={`space-y-1 mb-4 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-70'}`}>
+      {/* Calculate button - moved above summary */}
+      <button
+        onClick={onCalculate}
+        disabled={!isCalculateEnabled}
+        className="btn-calculate hidden md:block mb-4"
+      >
+        Hitung
+      </button>
+
+      <div className={`space-y-1 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-70'}`}>
         <SummaryItem label="Total Lot Akhir" value={`${finalLots} lot`} animated={isCalculated} tooltip="Jumlah lot setelah tebus RI." />
         <SummaryItem label="Avg Akhir" value={finalAvgPrice} animated={isCalculated} delay={100} tooltip="Harga rata-rata setelah tebus RI." />
         <SummaryItem label="Total Value Akhir" value={finalTotalValue} highlight animated={isCalculated} delay={200} tooltip="Total nilai investasi setelah tebus RI." />
       </div>
-
-      {/* Calculate button - visible on desktop only */}
-      <button
-        onClick={onCalculate}
-        disabled={!isCalculateEnabled}
-        className="btn-calculate hidden md:block"
-      >
-        Hitung
-      </button>
     </section>
   );
 };
