@@ -32,9 +32,11 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
   }
 
   // Nilai Teoritis HMETD = (Harga Cum - Harga RI) / ((Rasio Lama / Rasio Baru) + 1)
-  const hmetdValue = (cumPrice - riPrice) / ((ratioOld / ratioNew) + 1);
+  // Rumus ini memastikan nilai HMETD mencerminkan "dilusi" dari rasio
+  const hmetdValue = Math.max(0, (cumPrice - riPrice) / ((ratioOld / ratioNew) + 1));
   
   // Jual HMETD: Dapat = Jatah RI x Nilai HMETD, Modal = 0
+  // Ini adalah cash yang diterima sekarang
   const sellProfit = newSharesCount * hmetdValue;
   
   // Tebus RI: Bayar = Total Biaya Tebus, Dapat = Saham baru
@@ -42,9 +44,12 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
   
   // TERP untuk estimasi gain
   const terp = ((cumPrice * ratioOld) + (riPrice * ratioNew)) / (ratioOld + ratioNew);
+  
+  // Potensi gain dari tebus = (TERP - Harga RI) x jumlah saham baru
+  // Ini adalah unrealized gain (belum pasti karena tergantung harga pasar)
   const exercisePotentialGain = newSharesCount * (terp - riPrice);
   
-  // Rekomendasi: bandingkan nilai jual HMETD vs potential gain tebus
+  // Perbandingan: jual HMETD = cash sekarang vs tebus = potensi nilai lebih tinggi
   const isSellBetter = sellProfit > exercisePotentialGain;
 
   return (

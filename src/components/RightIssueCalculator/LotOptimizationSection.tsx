@@ -39,34 +39,51 @@ const LotOptimizationSection: React.FC<LotOptimizationSectionProps> = ({
   const calculateOptimalLots = () => {
     if (rOld === 0 || rNew === 0) return null;
     
-    // For RI to be full lots: (currentLots * 100 / rOld) * rNew must be divisible by 100
-    // currentLots must be divisible by (rOld / gcd(rNew * 100, rOld * 100) * 100)
-    // Simplified: currentLots must be divisible by (rOld / gcd(rOld, rNew))
+    // For RI calculation: riShares = (lots * 100 / rOld) * rNew
+    // For riShares to be divisible by 100 (full lots):
+    // (lots * 100 * rNew) / rOld must be divisible by 100
+    // lots * rNew / rOld must be integer
+    // lots must be multiple of rOld / gcd(rOld, rNew)
     
-    const g = gcd(rOld, rNew);
-    let multiplier = rOld / g;
+    const riGcd = gcd(rOld, rNew);
+    let multiplier = rOld / riGcd;
     
     // If warrant is enabled, also consider warrant ratio
-    // For warrant to be whole number: (riShares / wOld) * wNew must be integer
-    // riShares = (currentLots * 100 / rOld) * rNew
-    // So: ((currentLots * 100 / rOld) * rNew / wOld) * wNew must be integer
-    
-    let warrantMultiplier = 1;
     if (hasWarrant && wOld > 0 && wNew > 0) {
-      // Find LCM of RI multiplier and warrant requirement
-      // Warrant needs riShares to be divisible by wOld
+      // For warrants: warrants = (riShares / wOld) * wNew
       // riShares = (lots * 100 * rNew) / rOld
-      // So (lots * 100 * rNew) / rOld must be divisible by wOld
-      // lots must be divisible by (wOld * rOld) / gcd(100 * rNew, wOld * rOld)
-      const warrantGcd = gcd(100 * rNew, wOld * rOld);
-      warrantMultiplier = (wOld * rOld) / warrantGcd;
+      // For warrants to be integer: (lots * 100 * rNew * wNew) / (rOld * wOld) must be integer
+      // 
+      // Simplified approach: 
+      // 1. riShares must be divisible by wOld for whole warrants
+      // 2. riShares = lots * 100 * rNew / rOld
+      // 3. So (lots * 100 * rNew / rOld) must be divisible by wOld
+      // 4. lots must make (lots * 100 * rNew) divisible by (rOld * wOld)
       
-      // Combine with RI multiplier
+      // Calculate the combined requirement
+      const riSharesNumerator = 100 * rNew; // per lot
+      const riSharesDenominator = rOld;
+      
+      // We need (lots * riSharesNumerator / riSharesDenominator) % wOld === 0
+      // Simplify: lots must be multiple of (riSharesDenominator * wOld) / gcd(riSharesNumerator, riSharesDenominator * wOld)
+      const combinedGcd = gcd(riSharesNumerator, riSharesDenominator * wOld);
+      const warrantMultiplier = (riSharesDenominator * wOld) / combinedGcd;
+      
+      // Take LCM of RI multiplier and warrant multiplier
       multiplier = lcm(multiplier, warrantMultiplier);
     }
     
+    // Cap multiplier to prevent unreasonably large numbers
+    if (multiplier > 10000) {
+      // If multiplier is too large, just use RI optimization only
+      multiplier = rOld / riGcd;
+    }
+    
     // Find the nearest multiple of multiplier that's >= current lots
-    const optimalLots = Math.max(multiplier, Math.ceil(lots / multiplier) * multiplier);
+    // If lots is 0, suggest the minimum multiplier
+    const optimalLots = lots === 0 
+      ? multiplier 
+      : Math.max(multiplier, Math.ceil(lots / multiplier) * multiplier);
     const additionalLots = optimalLots - lots;
     
     // Calculate resulting RI shares and lots
@@ -79,13 +96,17 @@ const LotOptimizationSection: React.FC<LotOptimizationSectionProps> = ({
       warrants = Math.floor((riShares / wOld) * wNew);
     }
     
+    // Verify the optimization is actually whole numbers
+    const isRiWhole = Number.isInteger(riLots);
+    const isWarrantWhole = !hasWarrant || wOld === 0 || wNew === 0 || Number.isInteger(warrants);
+    
     return {
       optimalLots,
       additionalLots,
       riShares,
       riLots,
       warrants,
-      isAlreadyOptimal: additionalLots === 0 && lots > 0
+      isAlreadyOptimal: additionalLots === 0 && lots > 0 && isRiWhole && isWarrantWhole
     };
   };
 
