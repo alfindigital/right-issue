@@ -538,18 +538,10 @@ const RightIssueCalculator: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-4 px-4 border-t border-border mt-auto">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-xs text-muted-foreground">
-            Dibuat dengan ❤️ untuk investor Indonesia
-          </p>
-          <p className="text-[10px] text-muted-foreground/70 mt-1">
-            Kalkulator ini hanya sebagai alat bantu perhitungan
-          </p>
-          <p className="text-[10px] text-muted-foreground/70 mt-2">
-            © <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
-          </p>
-        </div>
+      <footer className="py-3 px-4 border-t border-border mt-auto">
+        <p className="text-center text-[10px] text-muted-foreground/70">
+          © <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
+        </p>
       </footer>
 
       <BackToTopButton />
