@@ -34,11 +34,11 @@ const AdvancedAnalysisSection: React.FC<AdvancedAnalysisSectionProps> = ({
     return null;
   }
 
-  // Calculate HMETD value for charts
-  const hmetdValue = (cumPrice - riPrice) / ((ratioOld / ratioNew) + 1);
+  // Calculate HMETD value for charts (menggunakan rumus standar)
+  const hmetdValue = Math.max(0, (cumPrice - riPrice) / ((ratioOld / ratioNew) + 1));
   const sellHmetdProfit = newSharesCount * hmetdValue;
   const exercisePotentialGain = newSharesCount * (terp - riPrice);
-  const breakEven = totalShares > 0 ? totalModal / totalShares : 0;
+  const breakEven = avgBaru; // Break-even = avg baru (totalModal / totalShares = avgBaru)
 
   return (
     <div className="card-calculator animate-slide-up overflow-hidden">

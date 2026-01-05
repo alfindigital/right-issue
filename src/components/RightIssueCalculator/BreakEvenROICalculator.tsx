@@ -26,13 +26,14 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
       </div>
     );
   }
-  // Break-Even Price = Total Modal / Total Shares
+  // Break-Even Price = Total Modal / Total Shares (sama dengan avgBaru seharusnya)
   const breakEvenPrice = totalShares > 0 ? totalModal / totalShares : 0;
   
-  // ROI jika harga = TERP
+  // ROI jika harga = TERP, dihitung dari break-even (avgBaru)
+  // Formula: (TERP - avgBaru) / avgBaru * 100
   const roiAtTerp = avgBaru > 0 ? ((terp - avgBaru) / avgBaru) * 100 : 0;
   
-  // Target harga untuk ROI tertentu
+  // Target harga untuk ROI tertentu (dari break-even / avgBaru)
   const targetFor10 = avgBaru * 1.10;
   const targetFor20 = avgBaru * 1.20;
 
