@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const PWAUpdatePrompt = () => {
   const [needRefresh, setNeedRefresh] = useState(false);
   const [updateSW, setUpdateSW] = useState<(() => Promise<void>) | null>(null);
+  const { language } = useLanguage();
 
   useEffect(() => {
     const initSW = async () => {
@@ -43,10 +45,10 @@ export const PWAUpdatePrompt = () => {
         <RefreshCw className="h-5 w-5 text-primary mt-0.5" />
         <div className="flex-1">
           <p className="text-sm font-medium text-foreground">
-            Versi baru tersedia
+            {language === 'id' ? 'Versi baru tersedia' : 'New version available'}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Klik untuk memperbarui aplikasi
+            {language === 'id' ? 'Klik untuk memperbarui aplikasi' : 'Click to update the app'}
           </p>
         </div>
       </div>
@@ -57,7 +59,7 @@ export const PWAUpdatePrompt = () => {
           className="flex-1"
           onClick={() => setNeedRefresh(false)}
         >
-          Nanti
+          {language === 'id' ? 'Nanti' : 'Later'}
         </Button>
         <Button
           size="sm"
