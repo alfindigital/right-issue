@@ -7,6 +7,7 @@ import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import ThemeToggle from './ThemeToggle';
+import LanguageToggle from './LanguageToggle';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import AdvancedAnalysisSection from './AdvancedAnalysisSection';
@@ -15,6 +16,7 @@ import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalcul
 import { parseDecimalId } from '@/lib/parseDecimal';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { toast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -449,6 +451,7 @@ const RightIssueCalculator: React.FC = () => {
                 <RotateCcw className="w-4 h-4" />
               </button>
             )}
+            <LanguageToggle />
             <ThemeToggle />
           </div>
         </div>
