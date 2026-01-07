@@ -3,6 +3,7 @@ import CurrencyInput from './CurrencyInput';
 import RatioInput from './RatioInput';
 import InfoTooltip from './InfoTooltip';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface RightIssueInfoSectionProps {
   ratioOld: string;
@@ -42,30 +43,32 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   onWarrantRatioNewChange,
   warrantRatioError
 }) => {
+  const { t, language } = useLanguage();
+  
   return (
     <section className="card-calculator animate-fade-in">
       <h2 className="section-title flex items-center">
-        Info Right Issue
-        <InfoTooltip text="Informasi tentang right issue yang diterbitkan emiten." />
+        {t('rightIssue.title')}
+        <InfoTooltip text={language === 'id' ? "Informasi tentang right issue yang diterbitkan emiten." : "Information about the right issue issued by the company."} />
       </h2>
       
       <div className="space-y-3">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-foreground flex items-center">
-            Rasio (Lama : Baru)
-            <InfoTooltip text="Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru." />
+            {t('rightIssue.ratio')} ({t('rightIssue.ratioOld')} : {t('rightIssue.ratioNew')})
+            <InfoTooltip text={language === 'id' ? "Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru." : "Example: 2:1 means every 2 old shares entitled to 1 new share."} />
           </label>
           <div className="flex items-center gap-2">
             <RatioInput
               value={ratioOld}
               onChange={onRatioOldChange}
-              placeholder="Lama"
+              placeholder={language === 'id' ? "Lama" : "Old"}
             />
             <span className="text-lg font-bold text-muted-foreground">:</span>
             <RatioInput
               value={ratioNew}
               onChange={onRatioNewChange}
-              placeholder="Baru"
+              placeholder={language === 'id' ? "Baru" : "New"}
             />
           </div>
           {ratioError && (
@@ -75,18 +78,18 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
 
         <CurrencyInput
           id="right-price"
-          label="Harga RI per lembar"
+          label={t('rightIssue.price')}
           value={rightPrice}
           onChange={onRightPriceChange}
-          tooltip="Harga tebus untuk setiap lembar saham baru."
+          tooltip={t('rightIssue.priceHelp')}
         />
 
         <CurrencyInput
           id="cum-date-price"
-          label="Harga Cum Date"
+          label={t('rightIssue.cumPrice')}
           value={cumDatePrice}
           onChange={onCumDatePriceChange}
-          tooltip="Harga saham saat terakhir berhak mendapat RI."
+          tooltip={t('rightIssue.cumPriceHelp')}
         />
 
         {/* Bonus Warrant Section */}
@@ -101,8 +104,8 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               htmlFor="has-warrant" 
               className="text-xs font-medium text-foreground cursor-pointer flex items-center"
             >
-              Bonus Waran
-              <InfoTooltip text="Centang jika right issue ini memberikan bonus waran." />
+              {t('rightIssue.hasWarrant')}
+              <InfoTooltip text={language === 'id' ? "Centang jika right issue ini memberikan bonus waran." : "Check if this right issue provides bonus warrants."} />
             </label>
           </div>
 
@@ -110,8 +113,8 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             <div className="mt-3 animate-fade-in">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground flex items-center">
-                  Rasio Waran (RI : Waran)
-                  <InfoTooltip text="Contoh: 1:1 berarti setiap 1 lembar RI mendapat 1 waran." />
+                  {t('rightIssue.warrantRatio')}
+                  <InfoTooltip text={language === 'id' ? "Contoh: 1:1 berarti setiap 1 lembar RI mendapat 1 waran." : "Example: 1:1 means every 1 RI share receives 1 warrant."} />
                 </label>
                 <div className="flex items-center gap-2">
                   <RatioInput
@@ -123,7 +126,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                   <RatioInput
                     value={warrantRatioNew}
                     onChange={onWarrantRatioNewChange}
-                    placeholder="Waran"
+                    placeholder={language === 'id' ? "Waran" : "Warrant"}
                   />
                 </div>
                 {warrantRatioError && (
