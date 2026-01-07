@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ExportTemplate from './ExportTemplate';
 import { createRoot } from 'react-dom/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ShareButtonsProps {
   resultRef: React.RefObject<HTMLDivElement>;
@@ -40,19 +41,18 @@ interface ShareButtonsProps {
 
 const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, exportData }) => {
   const exportContainerRef = useRef<HTMLDivElement>(null);
+  const { t, language } = useLanguage();
 
   if (!isCalculated) return null;
 
   const saveAsImage = async () => {
     try {
-      // Create a temporary container
       const container = document.createElement('div');
       container.style.position = 'fixed';
       container.style.left = '-9999px';
       container.style.top = '0';
       document.body.appendChild(container);
 
-      // Create root and render the export template
       const root = createRoot(container);
       root.render(
         <ExportTemplate 
@@ -63,7 +63,6 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
         />
       );
 
-      // Wait for render
       await new Promise(resolve => setTimeout(resolve, 100));
 
       const exportElement = container.querySelector('#export-template') as HTMLElement;
@@ -84,13 +83,12 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
       link.href = canvas.toDataURL('image/png');
       link.click();
       
-      // Cleanup
       root.unmount();
       document.body.removeChild(container);
       
-      toast.success('Hasil berhasil disimpan sebagai gambar!');
+      toast.success(language === 'id' ? 'Hasil berhasil disimpan sebagai gambar!' : 'Result saved as image!');
     } catch (error) {
-      toast.error('Gagal menyimpan gambar');
+      toast.error(language === 'id' ? 'Gagal menyimpan gambar' : 'Failed to save image');
       console.error(error);
     }
   };
@@ -109,9 +107,9 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     
     navigator.clipboard.writeText(url).then(() => {
-      toast.success('Link berhasil disalin!');
+      toast.success(t('toast.copied'));
     }).catch(() => {
-      toast.error('Gagal menyalin link');
+      toast.error(language === 'id' ? 'Gagal menyalin link' : 'Failed to copy link');
     });
   };
 
@@ -131,8 +129,8 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Kalkulator Right Issue',
-          text: 'Lihat hasil kalkulasi Right Issue saya!',
+          title: language === 'id' ? 'Kalkulator Right Issue' : 'Right Issue Calculator',
+          text: language === 'id' ? 'Lihat hasil kalkulasi Right Issue saya!' : 'Check out my Right Issue calculation!',
           url: url,
         });
       } catch (error) {
@@ -153,18 +151,18 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
           aria-label="Share"
         >
           <Share2 className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Share</span>
+          <span className="hidden sm:inline">{t('action.share')}</span>
           <ChevronDown className="w-3 h-3" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
           <Download className="w-4 h-4 mr-2" />
-          Download Gambar
+          {language === 'id' ? 'Download Gambar' : 'Download Image'}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
           <Link2 className="w-4 h-4 mr-2" />
-          Bagikan Link
+          {language === 'id' ? 'Bagikan Link' : 'Share Link'}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

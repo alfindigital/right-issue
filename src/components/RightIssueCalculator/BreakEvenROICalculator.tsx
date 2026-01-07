@@ -1,8 +1,9 @@
 import React from 'react';
 import { Target, TrendingUp, Percent, Calculator } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BreakEvenROICalculatorProps {
-  totalModal: number; // current value + RI cost
+  totalModal: number;
   totalShares: number;
   avgBaru: number;
   terp: number;
@@ -18,22 +19,20 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
   avgBaru,
   terp,
 }) => {
-  // Guard against truly invalid data
+  const { language } = useLanguage();
+  
   if (totalShares === 0 || avgBaru === 0) {
     return (
       <div className="text-center p-4 text-muted-foreground text-sm">
-        Klik "Hitung" terlebih dahulu untuk melihat analisis ROI
+        {language === 'id' 
+          ? 'Klik "Hitung" terlebih dahulu untuk melihat analisis ROI'
+          : 'Click "Calculate" first to see ROI analysis'}
       </div>
     );
   }
-  // Break-Even Price = Total Modal / Total Shares (sama dengan avgBaru seharusnya)
+  
   const breakEvenPrice = totalShares > 0 ? totalModal / totalShares : 0;
-  
-  // ROI jika harga = TERP, dihitung dari break-even (avgBaru)
-  // Formula: (TERP - avgBaru) / avgBaru * 100
   const roiAtTerp = avgBaru > 0 ? ((terp - avgBaru) / avgBaru) * 100 : 0;
-  
-  // Target harga untuk ROI tertentu (dari break-even / avgBaru)
   const targetFor10 = avgBaru * 1.10;
   const targetFor20 = avgBaru * 1.20;
 
@@ -49,10 +48,14 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
       <div className="stagger-item p-4 bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 rounded-xl border border-primary/20 transition-all duration-300 hover:border-primary/40" style={{ animationDelay: '0ms' }}>
         <div className="flex items-center gap-2 mb-2">
           <Target className="w-4 h-4 text-primary" />
-          <span className="text-xs font-semibold text-muted-foreground">BREAK-EVEN PRICE</span>
+          <span className="text-xs font-semibold text-muted-foreground">
+            {language === 'id' ? 'BREAK-EVEN PRICE' : 'BREAK-EVEN PRICE'}
+          </span>
         </div>
         <p className="text-2xl font-bold text-primary">{formatCurrency(breakEvenPrice)}</p>
-        <p className="text-xs text-muted-foreground mt-1">Harga minimal agar tidak rugi</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          {language === 'id' ? 'Harga minimal agar tidak rugi' : 'Minimum price to break even'}
+        </p>
       </div>
 
       {/* ROI & Target Cards */}
@@ -72,7 +75,9 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
         <div className="stagger-item p-3 bg-card rounded-xl border border-border transition-all duration-300 hover:border-primary/30 hover:shadow-sm" style={{ animationDelay: '150ms' }}>
           <div className="flex items-center gap-1.5 mb-1">
             <Calculator className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-[10px] text-muted-foreground">Harga TERP</span>
+            <span className="text-[10px] text-muted-foreground">
+              {language === 'id' ? 'Harga TERP' : 'TERP Price'}
+            </span>
           </div>
           <p className="text-lg font-bold">{formatCurrency(terp)}</p>
         </div>
@@ -99,7 +104,8 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
       {/* Quick Summary */}
       <div className="stagger-item p-2.5 bg-muted/50 rounded-xl text-center" style={{ animationDelay: '300ms' }}>
         <p className="text-xs text-muted-foreground">
-          Jual di <span className="font-semibold text-foreground">{formatCurrency(terp)}</span> → profit{' '}
+          {language === 'id' ? 'Jual di' : 'Sell at'}{' '}
+          <span className="font-semibold text-foreground">{formatCurrency(terp)}</span> → profit{' '}
           <span className={`font-semibold ${getRoiColor(roiAtTerp)}`}>
             {roiAtTerp >= 0 ? '+' : ''}{roiAtTerp.toFixed(1)}%
           </span>

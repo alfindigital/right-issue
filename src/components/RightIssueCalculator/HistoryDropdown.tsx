@@ -6,6 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HistoryDropdownProps {
   history: CalculationHistoryItem[];
@@ -14,39 +15,40 @@ interface HistoryDropdownProps {
   onClearHistory: () => void;
 }
 
-const formatDate = (timestamp: number): string => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Baru saja';
-  if (diffMins < 60) return `${diffMins}m`;
-  if (diffHours < 24) return `${diffHours}j`;
-  if (diffDays < 7) return `${diffDays}h`;
-  
-  return date.toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-  });
-};
-
 const HistoryDropdown: React.FC<HistoryDropdownProps> = ({
   history,
   onSelectHistory,
   onRemoveHistory,
   onClearHistory,
 }) => {
+  const { t, language } = useLanguage();
   const [open, setOpen] = React.useState(false);
+
+  const formatDate = (timestamp: number): string => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return language === 'id' ? 'Baru saja' : 'Just now';
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}${language === 'id' ? 'j' : 'h'}`;
+    if (diffDays < 7) return `${diffDays}${language === 'id' ? 'h' : 'd'}`;
+    
+    return date.toLocaleDateString(language === 'id' ? 'id-ID' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+    });
+  };
 
   if (history.length === 0) {
     return (
       <button
         className="p-1.5 rounded-md bg-white/10 text-white/50 cursor-not-allowed"
         disabled
-        aria-label="History (kosong)"
+        aria-label={language === 'id' ? 'History (kosong)' : 'History (empty)'}
       >
         <History className="w-4 h-4" />
       </button>
@@ -74,7 +76,7 @@ const HistoryDropdown: React.FC<HistoryDropdownProps> = ({
         <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30">
           <div className="flex items-center gap-2">
             <History className="w-4 h-4 text-primary" />
-            <h3 className="text-sm font-semibold">Riwayat</h3>
+            <h3 className="text-sm font-semibold">{t('history.title')}</h3>
             <span className="text-xs text-muted-foreground">({history.length})</span>
           </div>
           <button
@@ -85,7 +87,7 @@ const HistoryDropdown: React.FC<HistoryDropdownProps> = ({
             className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
           >
             <Trash2 className="w-3 h-3" />
-            Hapus
+            {t('history.clear')}
           </button>
         </div>
         
@@ -132,7 +134,7 @@ const HistoryDropdown: React.FC<HistoryDropdownProps> = ({
                       onRemoveHistory(item.id);
                     }}
                     className="p-1 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                    aria-label="Hapus"
+                    aria-label={t('history.delete')}
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>

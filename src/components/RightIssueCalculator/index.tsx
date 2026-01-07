@@ -30,6 +30,7 @@ const RightIssueCalculator: React.FC = () => {
   const resultRef = useRef<HTMLDivElement>(null);
   const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
   const { saveToStorage, loadFromStorage, clearStorage } = useAutoSave();
+  const { t } = useLanguage();
   const hasRestoredRef = useRef(false);
   
   // Stock Code
@@ -407,7 +408,7 @@ const RightIssueCalculator: React.FC = () => {
       <header className="header-bar py-3 px-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <h1 className="text-base md:text-lg font-bold">
-            Kalkulator Right Issue
+            {t('app.title')}
           </h1>
           <div className="flex items-center gap-1.5">
             <ShareButtons
