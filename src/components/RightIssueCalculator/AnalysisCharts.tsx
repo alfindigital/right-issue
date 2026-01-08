@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList } from 'recharts';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AnalysisChartsProps {
   cumPrice: number;
@@ -30,6 +31,8 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
   sellHmetdValue,
   exerciseGain,
 }) => {
+  const { t, language } = useLanguage();
+
   // Guard against all zero/invalid values
   const hasValidPriceData = cumPrice > 0 || riPrice > 0 || terp > 0 || avgBaru > 0;
   const hasValidComparisonData = sellHmetdValue > 0 || exerciseGain > 0;
@@ -37,7 +40,7 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
   if (!hasValidPriceData && !hasValidComparisonData) {
     return (
       <div className="text-center p-4 text-muted-foreground text-sm">
-        Data tidak tersedia untuk grafik
+        {t('charts.noData')}
       </div>
     );
   }
@@ -51,18 +54,28 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
   ].filter(item => item.value > 0);
 
   const comparisonData = [
-    { name: 'Jual HMETD', value: sellHmetdValue, color: '#f59e0b' },
-    { name: 'Tebus RI', value: exerciseGain, color: '#10b981' },
+    { name: t('charts.sellHmetd'), value: sellHmetdValue, color: '#f59e0b' },
+    { name: t('charts.exerciseRi'), value: exerciseGain, color: '#10b981' },
   ].filter(item => item.value > 0);
 
   const maxPrice = priceData.length > 0 ? Math.max(...priceData.map(d => d.value)) * 1.15 : 100;
   const maxComparison = comparisonData.length > 0 ? Math.max(...comparisonData.map(d => d.value)) * 1.15 : 100;
 
+  // Currency format based on language
+  const formatCurrency = (v: number) => {
+    if (language === 'en') {
+      if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+      if (v >= 1000) return `$${(v / 1000).toFixed(0)}K`;
+      return `$${v}`;
+    }
+    return `Rp${formatCurrencyShort(v)}`;
+  };
+
   return (
     <div className="space-y-4">
       {/* Price Comparison Chart */}
       <div>
-        <p className="text-xs font-semibold text-muted-foreground mb-2">Perbandingan Harga</p>
+        <p className="text-xs font-semibold text-muted-foreground mb-2">{t('charts.priceComparison')}</p>
         <div className="h-[140px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={priceData} layout="vertical" margin={{ top: 5, right: 50, left: 35, bottom: 5 }}>
@@ -90,7 +103,7 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
                 <LabelList 
                   dataKey="value" 
                   position="right" 
-                  formatter={(v: number) => `Rp${formatCurrencyShort(v)}`}
+                  formatter={formatCurrency}
                   style={{ fontSize: 10, fill: 'hsl(var(--foreground))' }}
                 />
               </Bar>
@@ -101,10 +114,10 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
 
       {/* HMETD vs Exercise Comparison */}
       <div>
-        <p className="text-xs font-semibold text-muted-foreground mb-2">Jual HMETD vs Tebus</p>
+        <p className="text-xs font-semibold text-muted-foreground mb-2">{t('charts.hmetdVsExercise')}</p>
         <div className="h-[80px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={comparisonData} layout="vertical" margin={{ top: 5, right: 60, left: 60, bottom: 5 }}>
+            <BarChart data={comparisonData} layout="vertical" margin={{ top: 5, right: 60, left: 70, bottom: 5 }}>
               <XAxis type="number" domain={[0, maxComparison]} hide />
               <YAxis 
                 type="category" 
@@ -112,7 +125,7 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
                 tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                 axisLine={false}
                 tickLine={false}
-                width={60}
+                width={70}
               />
               <Bar 
                 dataKey="value" 
@@ -129,7 +142,7 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
                 <LabelList 
                   dataKey="value" 
                   position="right" 
-                  formatter={(v: number) => `Rp${formatCurrencyShort(v)}`}
+                  formatter={formatCurrency}
                   style={{ fontSize: 11, fontWeight: 600, fill: 'hsl(var(--foreground))' }}
                 />
               </Bar>

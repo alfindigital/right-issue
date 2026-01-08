@@ -1,6 +1,7 @@
 import React from 'react';
 import { BarChart3 } from 'lucide-react';
 import AnalysisCharts from './AnalysisCharts';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AdvancedAnalysisSectionProps {
   isCalculated: boolean;
@@ -24,6 +25,8 @@ const AdvancedAnalysisSection: React.FC<AdvancedAnalysisSectionProps> = ({
   avgBaru,
   terp,
 }) => {
+  const { t } = useLanguage();
+
   if (!isCalculated) {
     return null;
   }
@@ -38,7 +41,7 @@ const AdvancedAnalysisSection: React.FC<AdvancedAnalysisSectionProps> = ({
     <div className="card-calculator animate-slide-up overflow-hidden">
       <div className="flex items-center gap-2 mb-3">
         <BarChart3 className="w-4 h-4 text-primary" />
-        <h3 className="text-sm font-bold">Analisis Grafik</h3>
+        <h3 className="text-sm font-bold">{t('charts.title')}</h3>
       </div>
 
       <AnalysisCharts

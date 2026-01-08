@@ -123,7 +123,20 @@ const translations: Record<Language, Record<string, string>> = {
     // Offline
     'offline.message': 'Anda sedang offline. Semua data tersimpan lokal.',
     'pwa.updateAvailable': 'Versi baru tersedia',
+    'pwa.updateDesc': 'Klik untuk memperbarui aplikasi',
     'pwa.update': 'Update',
+    'pwa.later': 'Nanti',
+    
+    // Charts
+    'charts.title': 'Analisis Grafik',
+    'charts.priceComparison': 'Perbandingan Harga',
+    'charts.hmetdVsExercise': 'Jual HMETD vs Tebus',
+    'charts.noData': 'Data tidak tersedia untuk grafik',
+    'charts.sellHmetd': 'Jual HMETD',
+    'charts.exerciseRi': 'Tebus RI',
+    
+    // Back to top
+    'backToTop.label': 'Kembali ke atas',
     
     // Footer
     'footer.copyright': '©',
@@ -239,7 +252,20 @@ const translations: Record<Language, Record<string, string>> = {
     // Offline
     'offline.message': 'You are offline. All data is saved locally.',
     'pwa.updateAvailable': 'New version available',
+    'pwa.updateDesc': 'Click to update the app',
     'pwa.update': 'Update',
+    'pwa.later': 'Later',
+    
+    // Charts
+    'charts.title': 'Chart Analysis',
+    'charts.priceComparison': 'Price Comparison',
+    'charts.hmetdVsExercise': 'Sell HMETD vs Exercise',
+    'charts.noData': 'No data available for chart',
+    'charts.sellHmetd': 'Sell HMETD',
+    'charts.exerciseRi': 'Exercise RI',
+    
+    // Back to top
+    'backToTop.label': 'Back to top',
     
     // Footer
     'footer.copyright': '©',
