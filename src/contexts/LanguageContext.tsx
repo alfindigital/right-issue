@@ -140,6 +140,26 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Footer
     'footer.copyright': '©',
+    
+    // Keyboard Shortcuts
+    'shortcuts.title': 'Pintasan Keyboard',
+    'shortcuts.calculate': 'Hitung',
+    'shortcuts.reset': 'Reset form',
+    'shortcuts.share': 'Salin link',
+    'shortcuts.escape': 'Tutup fokus',
+    'shortcuts.help': 'Bantuan pintasan',
+    
+    // Embed Widget
+    'embed.title': 'Embed Kalkulator',
+    'embed.preview': 'Pratinjau',
+    'embed.size': 'Ukuran',
+    'embed.small': 'Kecil',
+    'embed.medium': 'Sedang',
+    'embed.large': 'Besar',
+    'embed.theme': 'Tema',
+    'embed.copyCode': 'Salin Kode',
+    'embed.copied': 'Kode berhasil disalin!',
+    'embed.poweredBy': 'Dibuat dengan',
   },
   en: {
     // Header
@@ -269,6 +289,26 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Footer
     'footer.copyright': '©',
+    
+    // Keyboard Shortcuts
+    'shortcuts.title': 'Keyboard Shortcuts',
+    'shortcuts.calculate': 'Calculate',
+    'shortcuts.reset': 'Reset form',
+    'shortcuts.share': 'Copy link',
+    'shortcuts.escape': 'Close focus',
+    'shortcuts.help': 'Shortcut help',
+    
+    // Embed Widget
+    'embed.title': 'Embed Calculator',
+    'embed.preview': 'Preview',
+    'embed.size': 'Size',
+    'embed.small': 'Small',
+    'embed.medium': 'Medium',
+    'embed.large': 'Large',
+    'embed.theme': 'Theme',
+    'embed.copyCode': 'Copy Code',
+    'embed.copied': 'Code copied!',
+    'embed.poweredBy': 'Powered by',
   },
 };
 

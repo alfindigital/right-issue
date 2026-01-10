@@ -12,9 +12,12 @@ import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import AdvancedAnalysisSection from './AdvancedAnalysisSection';
 import BackToTopButton from './BackToTopButton';
+import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
+import EmbedCodeModal from './EmbedCodeModal';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -337,6 +340,34 @@ const RightIssueCalculator: React.FC = () => {
     clearStorage();
   }, [clearStorage]);
 
+  // Share function for keyboard shortcuts
+  const handleShare = useCallback(() => {
+    const params = new URLSearchParams();
+    if (stockCode) params.set('sc', stockCode);
+    if (ratioOld) params.set('ro', ratioOld);
+    if (ratioNew) params.set('rn', ratioNew);
+    if (rightPrice) params.set('rp', rightPrice);
+    if (cumDatePrice) params.set('cp', cumDatePrice);
+    if (currentLots) params.set('cs', currentLots);
+    if (currentAvgPrice) params.set('ca', currentAvgPrice);
+    
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: t('toast.copied'),
+      description: t('toast.copiedDesc'),
+      duration: 3000,
+    });
+  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, t]);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onCalculate: calculate,
+    onReset: reset,
+    onShare: handleShare,
+    isCalculateEnabled,
+  });
+
   // Load calculation from history
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
     setStockCode(item.stockCode || '');
@@ -452,6 +483,8 @@ const RightIssueCalculator: React.FC = () => {
                 <RotateCcw className="w-4 h-4" />
               </button>
             )}
+            <KeyboardShortcutsHelp />
+            <EmbedCodeModal />
             <LanguageToggle />
             <ThemeToggle />
           </div>
