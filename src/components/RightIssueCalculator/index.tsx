@@ -14,6 +14,7 @@ import AdvancedAnalysisSection from './AdvancedAnalysisSection';
 import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
+import ScenarioComparison from './ScenarioComparison';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
 import { useAutoSave } from '@/hooks/useAutoSave';
@@ -558,6 +559,18 @@ const RightIssueCalculator: React.FC = () => {
           recommendation={recommendation}
           recommendationText={recommendationText}
           isCalculated={isCalculated}
+        />
+
+        <ScenarioComparison
+          isCalculated={isCalculated}
+          cumPrice={parseInt(cumDatePrice) || 0}
+          riPrice={parseInt(rightPrice) || 0}
+          terp={numericValues.terp}
+          ratioOld={parseDecimalId(ratioOld)}
+          ratioNew={parseDecimalId(ratioNew)}
+          currentShares={(parseInt(currentLots) || 0) * 100}
+          newSharesCount={numericValues.newSharesCount}
+          currentAvgPrice={parseInt(currentAvgPrice) || 0}
         />
 
         <AdvancedAnalysisSection
