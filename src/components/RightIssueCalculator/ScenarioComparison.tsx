@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
-import { Scale, TrendingUp, TrendingDown, DollarSign, Percent } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Scale, TrendingUp, DollarSign, Percent } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList, ReferenceLine } from 'recharts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Slider } from '@/components/ui/slider';
 
 interface ScenarioComparisonProps {
   isCalculated: boolean;
@@ -58,7 +59,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
   newSharesCount,
   currentAvgPrice,
 }) => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
+  const [partialPercent, setPartialPercent] = useState(50);
 
   const scenarios = useMemo((): Scenario[] => {
     if (!isCalculated || ratioOld === 0) return [];
@@ -76,8 +78,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
       ? ((fullExerciseProfit / fullExerciseInitialValue) * 100)
       : 0;
 
-    // Scenario 2: Partial Exercise (50%)
-    const partialNewShares = Math.floor(newSharesCount / 2);
+    // Scenario 2: Partial Exercise (dynamic percentage)
+    const partialNewShares = Math.floor(newSharesCount * (partialPercent / 100));
     const partialSellShares = newSharesCount - partialNewShares;
     const partialExerciseCost = partialNewShares * riPrice;
     const partialHmetdProfit = partialSellShares * hmetdValue;
@@ -113,8 +115,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
       },
       {
         id: 'partial',
-        name: t('scenario.partialExercise'),
-        description: t('scenario.partialExerciseDesc'),
+        name: `${t('scenario.partialExercise')} (${partialPercent}%)`,
+        description: `${t('scenario.exercise')} ${partialPercent}% + ${t('scenario.sell')} ${100 - partialPercent}% HMETD`,
         profit: partialProfit,
         percentage: partialPercentage,
         totalCost: partialExerciseCost,
@@ -136,16 +138,16 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
         icon: <DollarSign className="w-4 h-4" />,
       },
     ];
-  }, [isCalculated, cumPrice, riPrice, terp, ratioOld, ratioNew, currentShares, newSharesCount, t]);
+  }, [isCalculated, cumPrice, riPrice, terp, ratioOld, ratioNew, currentShares, newSharesCount, partialPercent, t]);
 
   const chartData = useMemo(() => {
     return scenarios.map(s => ({
-      name: s.name.split(' ')[0],
+      name: s.id === 'partial' ? `${partialPercent}%` : s.name.split(' ')[0],
       profit: s.profit,
       color: s.color,
       fullName: s.name,
     }));
-  }, [scenarios]);
+  }, [scenarios, partialPercent]);
 
   const bestScenario = useMemo(() => {
     if (scenarios.length === 0) return null;
@@ -167,6 +169,41 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
       <div className="flex items-center gap-2 mb-4">
         <Scale className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-bold">{t('scenario.title')}</h3>
+      </div>
+
+      {/* Partial Exercise Slider */}
+      <div className="mb-4 p-3 bg-muted/30 rounded-lg">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-medium text-muted-foreground">{t('scenario.partialPercent')}</span>
+          <span className="text-sm font-bold text-primary">{partialPercent}%</span>
+        </div>
+        <Slider
+          value={[partialPercent]}
+          onValueChange={(value) => setPartialPercent(value[0])}
+          min={0}
+          max={100}
+          step={5}
+          className="w-full"
+        />
+        <div className="flex justify-between mt-1">
+          <span className="text-[10px] text-muted-foreground">0%</span>
+          <div className="flex gap-2">
+            {[25, 50, 75].map((preset) => (
+              <button
+                key={preset}
+                onClick={() => setPartialPercent(preset)}
+                className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
+                  partialPercent === preset 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                }`}
+              >
+                {preset}%
+              </button>
+            ))}
+          </div>
+          <span className="text-[10px] text-muted-foreground">100%</span>
+        </div>
       </div>
 
       <Tabs defaultValue="chart" className="w-full">
@@ -249,7 +286,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             {scenarios.map((s) => (
               <div key={s.id} className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded" style={{ backgroundColor: s.color }} />
-                <span className="text-[10px] text-muted-foreground">{s.name}</span>
+                <span className="text-[10px] text-muted-foreground">{s.id === 'partial' ? `${t('scenario.partialExercise')} ${partialPercent}%` : s.name}</span>
               </div>
             ))}
           </div>
