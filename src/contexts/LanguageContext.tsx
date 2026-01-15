@@ -160,6 +160,24 @@ const translations: Record<Language, Record<string, string>> = {
     'embed.copyCode': 'Salin Kode',
     'embed.copied': 'Kode berhasil disalin!',
     'embed.poweredBy': 'Dibuat dengan',
+    
+    // Scenario Comparison
+    'scenario.title': 'Perbandingan Skenario',
+    'scenario.chartView': 'Grafik',
+    'scenario.detailView': 'Detail',
+    'scenario.fullExercise': 'Tebus Penuh',
+    'scenario.fullExerciseDesc': 'Tebus semua hak HMETD',
+    'scenario.partialExercise': 'Tebus Sebagian',
+    'scenario.partialExerciseDesc': 'Tebus 50% + Jual 50% HMETD',
+    'scenario.sellHmetd': 'Jual HMETD',
+    'scenario.sellHmetdDesc': 'Jual semua hak HMETD',
+    'scenario.bestOption': 'Opsi Terbaik',
+    'scenario.best': 'Terbaik',
+    'scenario.potentialProfit': 'Potensi Keuntungan',
+    'scenario.cost': 'Biaya',
+    'scenario.finalShares': 'Saham Akhir',
+    'scenario.finalValue': 'Nilai Akhir',
+    'scenario.profitLoss': 'Profit/Loss',
   },
   en: {
     // Header
@@ -309,6 +327,24 @@ const translations: Record<Language, Record<string, string>> = {
     'embed.copyCode': 'Copy Code',
     'embed.copied': 'Code copied!',
     'embed.poweredBy': 'Powered by',
+    
+    // Scenario Comparison
+    'scenario.title': 'Scenario Comparison',
+    'scenario.chartView': 'Chart',
+    'scenario.detailView': 'Details',
+    'scenario.fullExercise': 'Full Exercise',
+    'scenario.fullExerciseDesc': 'Exercise all HMETD rights',
+    'scenario.partialExercise': 'Partial Exercise',
+    'scenario.partialExerciseDesc': 'Exercise 50% + Sell 50% HMETD',
+    'scenario.sellHmetd': 'Sell HMETD',
+    'scenario.sellHmetdDesc': 'Sell all HMETD rights',
+    'scenario.bestOption': 'Best Option',
+    'scenario.best': 'Best',
+    'scenario.potentialProfit': 'Potential Profit',
+    'scenario.cost': 'Cost',
+    'scenario.finalShares': 'Final Shares',
+    'scenario.finalValue': 'Final Value',
+    'scenario.profitLoss': 'Profit/Loss',
   },
 };
 
