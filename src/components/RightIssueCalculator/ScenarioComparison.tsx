@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Scale, TrendingUp, DollarSign, Percent } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList, ReferenceLine, Tooltip } from 'recharts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
@@ -146,6 +146,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
       profit: s.profit,
       color: s.color,
       fullName: s.name,
+      description: s.description,
+      percentage: s.percentage,
+      totalCost: s.totalCost,
+      finalValue: s.finalValue,
+      finalShares: s.finalShares,
     }));
   }, [scenarios, partialPercent]);
 
@@ -235,6 +240,42 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                   }}
                 />
                 <ReferenceLine y={0} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+                <Tooltip 
+                  cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
+                  content={({ active, payload }) => {
+                    if (!active || !payload || !payload.length) return null;
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-popover border border-border rounded-lg shadow-lg p-3 min-w-[180px]">
+                        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border">
+                          <div className="w-3 h-3 rounded" style={{ backgroundColor: data.color }} />
+                          <span className="font-semibold text-sm">{data.fullName}</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground mb-2">{data.description}</p>
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">{t('scenario.cost')}:</span>
+                            <span className="font-medium">{formatCurrency(data.totalCost)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">{t('scenario.finalShares')}:</span>
+                            <span className="font-medium">{formatNumber(data.finalShares)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">{t('scenario.finalValue')}:</span>
+                            <span className="font-medium">{formatCurrency(data.finalValue)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs pt-1 border-t border-border">
+                            <span className="text-muted-foreground font-medium">{t('scenario.profitLoss')}:</span>
+                            <span className={`font-bold ${data.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                              {formatCurrency(data.profit)} ({formatPercent(data.percentage)})
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }}
+                />
                 <Bar 
                   dataKey="profit" 
                   radius={[6, 6, 0, 0]}
