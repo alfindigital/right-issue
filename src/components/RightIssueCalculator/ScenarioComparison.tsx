@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { Scale, TrendingUp, DollarSign, Percent } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList, ReferenceLine, Tooltip } from 'recharts';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -61,6 +61,39 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 }) => {
   const { t } = useLanguage();
   const [partialPercent, setPartialPercent] = useState(50);
+  const [isSliding, setIsSliding] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
+  const slideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Trigger chart re-animation when slider stops
+  useEffect(() => {
+    return () => {
+      if (slideTimeoutRef.current) {
+        clearTimeout(slideTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleSliderChange = (value: number[]) => {
+    setPartialPercent(value[0]);
+    setIsSliding(true);
+    
+    // Clear previous timeout
+    if (slideTimeoutRef.current) {
+      clearTimeout(slideTimeoutRef.current);
+    }
+    
+    // Set timeout to trigger animation after sliding stops
+    slideTimeoutRef.current = setTimeout(() => {
+      setIsSliding(false);
+      setAnimationKey(prev => prev + 1);
+    }, 150);
+  };
+
+  const handlePresetClick = (preset: number) => {
+    setPartialPercent(preset);
+    setAnimationKey(prev => prev + 1);
+  };
 
   const scenarios = useMemo((): Scenario[] => {
     if (!isCalculated || ratioOld === 0) return [];
@@ -177,14 +210,16 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
       </div>
 
       {/* Partial Exercise Slider */}
-      <div className="mb-4 p-3 bg-muted/30 rounded-lg">
+      <div className={`mb-4 p-3 bg-muted/30 rounded-lg transition-all duration-300 ${isSliding ? 'ring-2 ring-primary/30 bg-muted/50' : ''}`}>
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-muted-foreground">{t('scenario.partialPercent')}</span>
-          <span className="text-sm font-bold text-primary">{partialPercent}%</span>
+          <span className={`text-sm font-bold transition-all duration-200 ${isSliding ? 'text-primary scale-110' : 'text-primary'}`}>
+            {partialPercent}%
+          </span>
         </div>
         <Slider
           value={[partialPercent]}
-          onValueChange={(value) => setPartialPercent(value[0])}
+          onValueChange={handleSliderChange}
           min={0}
           max={100}
           step={5}
@@ -196,11 +231,11 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             {[25, 50, 75].map((preset) => (
               <button
                 key={preset}
-                onClick={() => setPartialPercent(preset)}
-                className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
+                onClick={() => handlePresetClick(preset)}
+                className={`text-[10px] px-2 py-0.5 rounded transition-all duration-200 ${
                   partialPercent === preset 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                    ? 'bg-primary text-primary-foreground scale-105 shadow-sm' 
+                    : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:scale-105'
                 }`}
               >
                 {preset}%
@@ -219,9 +254,9 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
         <TabsContent value="chart" className="mt-0">
           {/* Profit/Loss Chart */}
-          <div className="h-[180px] w-full mb-4">
+          <div className={`h-[180px] w-full mb-4 transition-opacity duration-200 ${isSliding ? 'opacity-80' : 'opacity-100'}`}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <BarChart key={animationKey} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <XAxis 
                   dataKey="name" 
                   tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
@@ -281,7 +316,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                   radius={[6, 6, 0, 0]}
                   isAnimationActive={true}
                   animationBegin={0}
-                  animationDuration={800}
+                  animationDuration={isSliding ? 100 : 600}
+                  animationEasing="ease-out"
                 >
                   {chartData.map((entry, index) => (
                     <Cell 
