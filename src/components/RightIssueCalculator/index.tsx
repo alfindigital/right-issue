@@ -15,6 +15,8 @@ import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
 import ScenarioComparison from './ScenarioComparison';
+import BudgetLotPlanner from './BudgetLotPlanner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
 import { useAutoSave } from '@/hooks/useAutoSave';
@@ -493,97 +495,114 @@ const RightIssueCalculator: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main ref={resultRef} className="flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 space-y-3">
-        <StockCodeInput value={stockCode} onChange={setStockCode} />
+      <main ref={resultRef} className="flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4">
+        <Tabs defaultValue="calculator" className="w-full">
+          <TabsList className="w-full mb-4">
+            <TabsTrigger value="calculator" className="flex-1 text-xs">
+              {t('tab.calculator')}
+            </TabsTrigger>
+            <TabsTrigger value="budget" className="flex-1 text-xs">
+              {t('tab.budgetPlanner')}
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="calculator" className="space-y-3 mt-0">
+            <StockCodeInput value={stockCode} onChange={setStockCode} />
 
-        <RightIssueInfoSection
-          ratioOld={ratioOld}
-          ratioNew={ratioNew}
-          rightPrice={rightPrice}
-          cumDatePrice={cumDatePrice}
-          onRatioOldChange={setRatioOld}
-          onRatioNewChange={setRatioNew}
-          onRightPriceChange={setRightPrice}
-          onCumDatePriceChange={setCumDatePrice}
-          ratioError={ratioError}
-          hasWarrant={hasWarrant}
-          onHasWarrantChange={setHasWarrant}
-          warrantRatioOld={warrantRatioOld}
-          warrantRatioNew={warrantRatioNew}
-          onWarrantRatioOldChange={setWarrantRatioOld}
-          onWarrantRatioNewChange={setWarrantRatioNew}
-          warrantRatioError={warrantRatioError}
-        />
+            <RightIssueInfoSection
+              ratioOld={ratioOld}
+              ratioNew={ratioNew}
+              rightPrice={rightPrice}
+              cumDatePrice={cumDatePrice}
+              onRatioOldChange={setRatioOld}
+              onRatioNewChange={setRatioNew}
+              onRightPriceChange={setRightPrice}
+              onCumDatePriceChange={setCumDatePrice}
+              ratioError={ratioError}
+              hasWarrant={hasWarrant}
+              onHasWarrantChange={setHasWarrant}
+              warrantRatioOld={warrantRatioOld}
+              warrantRatioNew={warrantRatioNew}
+              onWarrantRatioOldChange={setWarrantRatioOld}
+              onWarrantRatioNewChange={setWarrantRatioNew}
+              warrantRatioError={warrantRatioError}
+            />
 
-        <OwnershipSection
-          currentLots={currentLots}
-          currentAvgPrice={currentAvgPrice}
-          currentTotalValue={currentTotalValue}
-          newLotsCount={newLotsCount}
-          newAvgPrice={newAvgPrice}
-          newTotalValue={newTotalValue}
-          finalLots={finalLots}
-          finalAvgPrice={finalAvgPrice}
-          finalTotalValue={finalTotalValue}
-          onCurrentLotsChange={setCurrentLots}
-          onCurrentAvgPriceChange={setCurrentAvgPrice}
-          onCalculate={calculate}
-          isCalculateEnabled={isCalculateEnabled}
-          isCalculated={isCalculated}
-        />
+            <OwnershipSection
+              currentLots={currentLots}
+              currentAvgPrice={currentAvgPrice}
+              currentTotalValue={currentTotalValue}
+              newLotsCount={newLotsCount}
+              newAvgPrice={newAvgPrice}
+              newTotalValue={newTotalValue}
+              finalLots={finalLots}
+              finalAvgPrice={finalAvgPrice}
+              finalTotalValue={finalTotalValue}
+              onCurrentLotsChange={setCurrentLots}
+              onCurrentAvgPriceChange={setCurrentAvgPrice}
+              onCalculate={calculate}
+              isCalculateEnabled={isCalculateEnabled}
+              isCalculated={isCalculated}
+            />
 
-        {hasWarrant && (
-          <WarrantResultSection
-            warrantCount={warrantCount}
-            isCalculated={isCalculated}
-          />
-        )}
+            {hasWarrant && (
+              <WarrantResultSection
+                warrantCount={warrantCount}
+                isCalculated={isCalculated}
+              />
+            )}
 
-        <LotOptimizationSection
-          ratioOld={ratioOld}
-          ratioNew={ratioNew}
-          currentLots={currentLots}
-          onCurrentLotsChange={setCurrentLots}
-          isCalculated={isCalculated}
-          hasWarrant={hasWarrant}
-          warrantRatioOld={warrantRatioOld}
-          warrantRatioNew={warrantRatioNew}
-        />
+            <LotOptimizationSection
+              ratioOld={ratioOld}
+              ratioNew={ratioNew}
+              currentLots={currentLots}
+              onCurrentLotsChange={setCurrentLots}
+              isCalculated={isCalculated}
+              hasWarrant={hasWarrant}
+              warrantRatioOld={warrantRatioOld}
+              warrantRatioNew={warrantRatioNew}
+            />
 
-        <ConclusionSection
-          newLots={newLotsCount}
-          exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
-          totalCost={newTotalValue}
-          newAvgPrice={isCalculated ? finalAvgPrice : '-'}
-          theoreticalPrice={theoreticalPrice}
-          recommendation={recommendation}
-          recommendationText={recommendationText}
-          isCalculated={isCalculated}
-        />
+            <ConclusionSection
+              newLots={newLotsCount}
+              exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
+              totalCost={newTotalValue}
+              newAvgPrice={isCalculated ? finalAvgPrice : '-'}
+              theoreticalPrice={theoreticalPrice}
+              recommendation={recommendation}
+              recommendationText={recommendationText}
+              isCalculated={isCalculated}
+            />
 
-        <ScenarioComparison
-          isCalculated={isCalculated}
-          cumPrice={parseInt(cumDatePrice) || 0}
-          riPrice={parseInt(rightPrice) || 0}
-          terp={numericValues.terp}
-          ratioOld={parseDecimalId(ratioOld)}
-          ratioNew={parseDecimalId(ratioNew)}
-          currentShares={(parseInt(currentLots) || 0) * 100}
-          newSharesCount={numericValues.newSharesCount}
-          currentAvgPrice={parseInt(currentAvgPrice) || 0}
-        />
+            <ScenarioComparison
+              isCalculated={isCalculated}
+              cumPrice={parseInt(cumDatePrice) || 0}
+              riPrice={parseInt(rightPrice) || 0}
+              terp={numericValues.terp}
+              ratioOld={parseDecimalId(ratioOld)}
+              ratioNew={parseDecimalId(ratioNew)}
+              currentShares={(parseInt(currentLots) || 0) * 100}
+              newSharesCount={numericValues.newSharesCount}
+              currentAvgPrice={parseInt(currentAvgPrice) || 0}
+            />
 
-        <AdvancedAnalysisSection
-          isCalculated={isCalculated}
-          cumPrice={parseInt(cumDatePrice) || 0}
-          riPrice={parseInt(rightPrice) || 0}
-          ratioOld={parseDecimalId(ratioOld)}
-          ratioNew={parseDecimalId(ratioNew)}
-          newSharesCount={numericValues.newSharesCount}
-          totalShares={numericValues.totalShares}
-          avgBaru={numericValues.avgBaru}
-          terp={numericValues.terp}
-        />
+            <AdvancedAnalysisSection
+              isCalculated={isCalculated}
+              cumPrice={parseInt(cumDatePrice) || 0}
+              riPrice={parseInt(rightPrice) || 0}
+              ratioOld={parseDecimalId(ratioOld)}
+              ratioNew={parseDecimalId(ratioNew)}
+              newSharesCount={numericValues.newSharesCount}
+              totalShares={numericValues.totalShares}
+              avgBaru={numericValues.avgBaru}
+              terp={numericValues.terp}
+            />
+          </TabsContent>
+          
+          <TabsContent value="budget" className="mt-0">
+            <BudgetLotPlanner onApplyToCalculator={(lots) => setCurrentLots(String(lots))} />
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Footer */}
