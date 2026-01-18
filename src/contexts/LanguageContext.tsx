@@ -181,6 +181,33 @@ const translations: Record<Language, Record<string, string>> = {
     'scenario.finalShares': 'Saham Akhir',
     'scenario.finalValue': 'Nilai Akhir',
     'scenario.profitLoss': 'Profit/Loss',
+    
+    // Budget Planner
+    'budgetPlanner.title': 'Budget Planner',
+    'budgetPlanner.budget': 'Budget Anda',
+    'budgetPlanner.totalBudget': 'Total Budget',
+    'budgetPlanner.includeExercise': 'Termasuk Dana Tebus RI',
+    'budgetPlanner.includeExerciseDesc': 'Budget akan mencakup biaya beli saham dan dana tebus RI',
+    'budgetPlanner.excludeExerciseDesc': 'Budget hanya untuk beli saham, siapkan dana tebus RI terpisah',
+    'budgetPlanner.recommendation': 'Rekomendasi Lot',
+    'budgetPlanner.optimalLot': 'LOT OPTIMAL',
+    'budgetPlanner.buyingCost': 'Biaya Beli',
+    'budgetPlanner.exerciseCost': 'Dana Tebus',
+    'budgetPlanner.totalCost': 'Total Biaya',
+    'budgetPlanner.remaining': 'Sisa Budget',
+    'budgetPlanner.riResult': 'Hasil RI',
+    'budgetPlanner.shares': 'lembar',
+    'budgetPlanner.applyToCalculator': 'Terapkan ke Kalkulator',
+    'budgetPlanner.showAllOptions': 'Lihat semua opsi',
+    'budgetPlanner.hideOptions': 'Sembunyikan',
+    'budgetPlanner.insufficientBudget': 'Budget tidak mencukupi',
+    'budgetPlanner.insufficientBudgetDesc': 'Budget minimal tidak tercapai untuk membeli 1 lot optimal. Coba tingkatkan budget atau sesuaikan parameter RI.',
+    'budgetPlanner.allocation': 'Alokasi Budget',
+    'budgetPlanner.used': 'Terpakai',
+    
+    // Tab Navigation
+    'tab.calculator': 'Kalkulator RI',
+    'tab.budgetPlanner': 'Budget Planner',
   },
   en: {
     // Header
@@ -351,6 +378,33 @@ const translations: Record<Language, Record<string, string>> = {
     'scenario.finalShares': 'Final Shares',
     'scenario.finalValue': 'Final Value',
     'scenario.profitLoss': 'Profit/Loss',
+    
+    // Budget Planner
+    'budgetPlanner.title': 'Budget Planner',
+    'budgetPlanner.budget': 'Your Budget',
+    'budgetPlanner.totalBudget': 'Total Budget',
+    'budgetPlanner.includeExercise': 'Include Exercise Fund',
+    'budgetPlanner.includeExerciseDesc': 'Budget includes share purchase and RI exercise cost',
+    'budgetPlanner.excludeExerciseDesc': 'Budget only for share purchase, prepare RI exercise fund separately',
+    'budgetPlanner.recommendation': 'Lot Recommendation',
+    'budgetPlanner.optimalLot': 'OPTIMAL LOT',
+    'budgetPlanner.buyingCost': 'Buying Cost',
+    'budgetPlanner.exerciseCost': 'Exercise Cost',
+    'budgetPlanner.totalCost': 'Total Cost',
+    'budgetPlanner.remaining': 'Remaining',
+    'budgetPlanner.riResult': 'RI Result',
+    'budgetPlanner.shares': 'shares',
+    'budgetPlanner.applyToCalculator': 'Apply to Calculator',
+    'budgetPlanner.showAllOptions': 'Show all options',
+    'budgetPlanner.hideOptions': 'Hide',
+    'budgetPlanner.insufficientBudget': 'Insufficient budget',
+    'budgetPlanner.insufficientBudgetDesc': 'Minimum budget not reached for 1 optimal lot. Try increasing budget or adjusting RI parameters.',
+    'budgetPlanner.allocation': 'Budget Allocation',
+    'budgetPlanner.used': 'Used',
+    
+    // Tab Navigation
+    'tab.calculator': 'RI Calculator',
+    'tab.budgetPlanner': 'Budget Planner',
   },
 };
 
