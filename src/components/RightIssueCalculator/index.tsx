@@ -15,7 +15,7 @@ import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
 import ScenarioComparison from './ScenarioComparison';
-import BudgetLotPlanner from './BudgetLotPlanner';
+import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -38,6 +38,9 @@ const RightIssueCalculator: React.FC = () => {
   const { saveToStorage, loadFromStorage, clearStorage } = useAutoSave();
   const { t } = useLanguage();
   const hasRestoredRef = useRef(false);
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState('calculator');
   
   // Stock Code
   const [stockCode, setStockCode] = useState('');
@@ -371,6 +374,29 @@ const RightIssueCalculator: React.FC = () => {
     isCalculateEnabled,
   });
 
+  // Apply data from budget planner
+  const handleApplyFromBudgetPlanner = useCallback((data: BudgetPlannerData) => {
+    // Set all the values from budget planner
+    setRatioOld(data.ratioOld);
+    setRatioNew(data.ratioNew);
+    setRightPrice(data.rightPrice);
+    setCumDatePrice(data.cumDatePrice);
+    setCurrentLots(String(data.lots));
+    setHasWarrant(data.hasWarrant);
+    setWarrantRatioOld(data.warrantRatioOld);
+    setWarrantRatioNew(data.warrantRatioNew);
+    
+    // Switch to calculator tab
+    setActiveTab('calculator');
+    
+    // Show toast notification
+    toast({
+      title: t('budgetPlanner.applied'),
+      description: `${data.lots} lot ${t('budgetPlanner.appliedDesc')}`,
+      duration: 3000,
+    });
+  }, [t]);
+
   // Load calculation from history
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
     setStockCode(item.stockCode || '');
@@ -496,7 +522,7 @@ const RightIssueCalculator: React.FC = () => {
 
       {/* Main Content */}
       <main ref={resultRef} className="flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4">
-        <Tabs defaultValue="calculator" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full mb-4">
             <TabsTrigger value="calculator" className="flex-1 text-xs">
               {t('tab.calculator')}
@@ -600,7 +626,7 @@ const RightIssueCalculator: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="budget" className="mt-0">
-            <BudgetLotPlanner onApplyToCalculator={(lots) => setCurrentLots(String(lots))} />
+            <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
           </TabsContent>
         </Tabs>
       </main>

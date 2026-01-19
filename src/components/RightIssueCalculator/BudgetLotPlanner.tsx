@@ -19,8 +19,19 @@ interface LotOption {
   warrants?: number;
 }
 
+export interface BudgetPlannerData {
+  lots: number;
+  ratioOld: string;
+  ratioNew: string;
+  rightPrice: string;
+  cumDatePrice: string;
+  hasWarrant: boolean;
+  warrantRatioOld: string;
+  warrantRatioNew: string;
+}
+
 interface BudgetLotPlannerProps {
-  onApplyToCalculator?: (lots: number) => void;
+  onApplyToCalculator?: (data: BudgetPlannerData) => void;
 }
 
 const formatCurrency = (value: number): string => {
@@ -346,7 +357,16 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
               
               {onApplyToCalculator && (
                 <button
-                  onClick={() => onApplyToCalculator(recommendedOption.lots)}
+                  onClick={() => onApplyToCalculator({
+                    lots: recommendedOption.lots,
+                    ratioOld,
+                    ratioNew,
+                    rightPrice,
+                    cumDatePrice,
+                    hasWarrant,
+                    warrantRatioOld,
+                    warrantRatioNew,
+                  })}
                   className="mt-3 w-full py-2 rounded-lg bg-[hsl(var(--success))] text-white font-semibold text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
                 >
                   {t('budgetPlanner.applyToCalculator')}
