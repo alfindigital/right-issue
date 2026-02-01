@@ -382,6 +382,7 @@ const RightIssueCalculator: React.FC = () => {
     setRightPrice(data.rightPrice);
     setCumDatePrice(data.cumDatePrice);
     setCurrentLots(String(data.lots));
+    setCurrentAvgPrice(data.currentAvgPrice);
     setHasWarrant(data.hasWarrant);
     setWarrantRatioOld(data.warrantRatioOld);
     setWarrantRatioNew(data.warrantRatioNew);

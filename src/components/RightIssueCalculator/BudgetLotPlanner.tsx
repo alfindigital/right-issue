@@ -25,6 +25,7 @@ export interface BudgetPlannerData {
   ratioNew: string;
   rightPrice: string;
   cumDatePrice: string;
+  currentAvgPrice: string;
   hasWarrant: boolean;
   warrantRatioOld: string;
   warrantRatioNew: string;
@@ -56,6 +57,7 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
   const [ratioNew, setRatioNew] = useState('');
   const [rightPrice, setRightPrice] = useState('');
   const [cumDatePrice, setCumDatePrice] = useState('');
+  const [currentAvgPrice, setCurrentAvgPrice] = useState('');
   
   // Warrant
   const [hasWarrant, setHasWarrant] = useState(false);
@@ -208,6 +210,24 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
                 inputMode="numeric"
               />
             </div>
+          </div>
+          
+          {/* Current Average Price - Optional */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">
+              {t('budgetPlanner.currentAvgPrice')}
+            </label>
+            <input
+              type="text"
+              value={formatInputNumber(currentAvgPrice)}
+              onChange={handlePriceChange(setCurrentAvgPrice)}
+              placeholder="1.800"
+              className="input-calculator"
+              inputMode="numeric"
+            />
+            <p className="text-[10px] text-muted-foreground/70 mt-0.5">
+              {t('budgetPlanner.currentAvgPriceHelp')}
+            </p>
           </div>
           
           {/* Warrant Toggle */}
@@ -363,6 +383,7 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
                     ratioNew,
                     rightPrice,
                     cumDatePrice,
+                    currentAvgPrice,
                     hasWarrant,
                     warrantRatioOld,
                     warrantRatioNew,
