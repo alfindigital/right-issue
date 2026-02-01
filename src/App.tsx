@@ -16,12 +16,12 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
       <TooltipProvider>
-        <OfflineIndicator />
-        <PWAUpdatePrompt />
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <Routes>
+          <OfflineIndicator />
+          <PWAUpdatePrompt />
+          <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/embed" element={<Embed />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
