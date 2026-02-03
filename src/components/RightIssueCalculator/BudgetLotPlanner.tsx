@@ -212,17 +212,18 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
             </div>
           </div>
           
-          {/* Current Average Price - Optional */}
+          {/* Current Average Price - Required */}
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">
+            <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
               {t('budgetPlanner.currentAvgPrice')}
+              <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
               value={formatInputNumber(currentAvgPrice)}
               onChange={handlePriceChange(setCurrentAvgPrice)}
               placeholder="1.800"
-              className="input-calculator"
+              className={`input-calculator ${!currentAvgPrice && budget ? 'border-amber-400 dark:border-amber-500' : ''}`}
               inputMode="numeric"
             />
             <p className="text-[10px] text-muted-foreground/70 mt-0.5">
@@ -376,23 +377,31 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
               </div>
               
               {onApplyToCalculator && (
-                <button
-                  onClick={() => onApplyToCalculator({
-                    lots: recommendedOption.lots,
-                    ratioOld,
-                    ratioNew,
-                    rightPrice,
-                    cumDatePrice,
-                    currentAvgPrice,
-                    hasWarrant,
-                    warrantRatioOld,
-                    warrantRatioNew,
-                  })}
-                  className="mt-3 w-full py-2 rounded-lg bg-[hsl(var(--success))] text-white font-semibold text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
-                >
-                  {t('budgetPlanner.applyToCalculator')}
-                  <ArrowRight className="w-3 h-3" />
-                </button>
+                <div className="mt-3 space-y-1">
+                  <button
+                    onClick={() => onApplyToCalculator({
+                      lots: recommendedOption.lots,
+                      ratioOld,
+                      ratioNew,
+                      rightPrice,
+                      cumDatePrice,
+                      currentAvgPrice,
+                      hasWarrant,
+                      warrantRatioOld,
+                      warrantRatioNew,
+                    })}
+                    disabled={!currentAvgPrice}
+                    className="w-full py-2 rounded-lg bg-[hsl(var(--success))] text-white font-semibold text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {t('budgetPlanner.applyToCalculator')}
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                  {!currentAvgPrice && (
+                    <p className="text-[10px] text-amber-600 dark:text-amber-400 text-center">
+                      {t('budgetPlanner.avgPriceRequired')}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           )}

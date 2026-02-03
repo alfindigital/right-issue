@@ -205,7 +205,8 @@ const translations: Record<Language, Record<string, string>> = {
     'budgetPlanner.allocation': 'Alokasi Budget',
     'budgetPlanner.used': 'Terpakai',
     'budgetPlanner.currentAvgPrice': 'Harga Avg Saat Ini',
-    'budgetPlanner.currentAvgPriceHelp': 'Opsional, untuk kalkulasi harga rata-rata baru',
+    'budgetPlanner.currentAvgPriceHelp': 'Wajib diisi untuk menghitung harga rata-rata baru',
+    'budgetPlanner.avgPriceRequired': 'Isi harga avg saat ini untuk melanjutkan',
     'budgetPlanner.applied': 'Berhasil Diterapkan',
     'budgetPlanner.appliedDesc': 'telah diterapkan ke kalkulator',
     
@@ -406,7 +407,8 @@ const translations: Record<Language, Record<string, string>> = {
     'budgetPlanner.allocation': 'Budget Allocation',
     'budgetPlanner.used': 'Used',
     'budgetPlanner.currentAvgPrice': 'Current Avg Price',
-    'budgetPlanner.currentAvgPriceHelp': 'Optional, for new average price calculation',
+    'budgetPlanner.currentAvgPriceHelp': 'Required for new average price calculation',
+    'budgetPlanner.avgPriceRequired': 'Fill current avg price to continue',
     'budgetPlanner.applied': 'Successfully Applied',
     'budgetPlanner.appliedDesc': 'has been applied to calculator',
     
