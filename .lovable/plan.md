@@ -1,80 +1,75 @@
 
-# Plan: Validasi Rasio Waran Wajib
+# Plan: Share to WhatsApp dengan Format Rapi
 
 ## Ringkasan
-Menambahkan validasi agar jika toggle waran aktif, rasio waran (RI : Waran) HARUS diisi sebelum bisa Apply/Hitung. Validasi ini diterapkan di 2 tempat: Budget Planner dan Kalkulator Utama.
-
-## Alasan Penting
-- **Mencegah data tidak lengkap**: Jika waran aktif tapi rasio kosong, hasil kalkulasi waran = 0 yang menyesatkan
-- **User experience**: Warning yang jelas membantu user memahami apa yang perlu diisi
-- **Konsistensi**: Mengikuti pola validasi yang sudah ada (harga avg wajib)
+Menambahkan opsi "Share ke WhatsApp" di dropdown Share yang sudah ada. Ketika diklik, langsung buka WhatsApp dengan teks terformat yang berisi ringkasan hasil kalkulasi Right Issue.
 
 ---
 
 ## Perubahan UI/UX
 
-### 1. Budget Planner - Rasio Waran Section
+### Dropdown Share Menu (Setelah)
 
-**Kondisi Saat Ini:**
 ```
-[Toggle Dengan Bonus Waran: ON]
-  Rasio Waran
-  [input RI] : [input Waran]
-```
-
-**Perubahan:**
-```
-[Toggle Dengan Bonus Waran: ON]
-  Rasio Waran *
-  [input RI] : [input Waran]  <- border amber jika kosong
-  
-[Tombol Terapkan: DISABLED jika rasio kosong]
-"Isi rasio waran untuk melanjutkan"  <- pesan warning
++---------------------------+
+|  [Share ▼]               |
++---------------------------+
+| 📥 Download Gambar       |
+| 🔗 Bagikan Link          |
+| 💬 Share ke WhatsApp     |  <-- NEW
++---------------------------+
 ```
 
-### 2. Kalkulator Utama - Right Issue Info Section
+### Format Pesan WhatsApp
 
-**Kondisi Saat Ini:**
 ```
-[Checkbox] Dengan Waran
-  Rasio Waran
-  [input RI] : [input Waran]
-  
-[Tombol Hitung: aktif tanpa cek rasio waran]
+📊 *Hasil Kalkulasi RI BBRI*
+
+📌 *Info RI:*
+• Rasio: 5 : 2
+• Harga RI: Rp 500
+• Harga Cum: Rp 2.500
+
+📈 *Hasil:*
+• Lot saat ini: 100 lot
+• Jatah RI: 40 lot
+• Biaya tebus: Rp 2.000.000
+• Avg baru: Rp 1.531
+
+✅ TERP Rp 1.785 (potensi +16%)
+
+🎁 Bonus Waran: 2.000 lembar
+
+🔗 Hitung sendiri: [link]
 ```
 
-**Perubahan:**
-```
-[Checkbox] Dengan Waran
-  Rasio Waran *  <- tanda wajib muncul
-  [input RI] : [input Waran]  <- border amber jika kosong tapi waran aktif
-  "Wajib diisi jika dengan waran"  <- helper text
-  
-[Tombol Hitung: DISABLED jika waran aktif tapi rasio kosong]
-```
+### Catatan Format:
+- Gunakan `*text*` untuk bold di WhatsApp
+- Emoji untuk visual yang menarik
+- Stock code di judul jika tersedia
+- Section waran hanya muncul jika hasWarrant = true
+- Persentase potensi dihitung dari selisih TERP vs Avg baru
 
 ---
 
-## Visualisasi Layout Mobile
+## Flow Mobile
 
 ```
 +----------------------------------+
-|   Informasi Right Issue          |
+|  User klik Share → dropdown     |
 +----------------------------------+
-|  Rasio: [5] : [2]                |
-|  Harga Pelaksanaan: [500]        |
-|  Harga Cum-Date: [2.500]         |
+         ↓
 +----------------------------------+
-|  [v] Dengan Waran                |
-|  -------------------------------- |
-|  Rasio Waran *                   |
-|  [RI] : [Waran]   <-- highlight  |
-|  ^ Wajib diisi jika waran aktif  |
+|  Pilih "Share ke WhatsApp"      |
 +----------------------------------+
-
+         ↓
 +----------------------------------+
-|  [ HITUNG ]  <-- disabled state  |
-|  ^ Lengkapi rasio waran dulu     |
+|  Generate formatted text        |
+|  + URL dengan params            |
++----------------------------------+
+         ↓
++----------------------------------+
+|  Buka wa.me/... atau app WA     |
 +----------------------------------+
 ```
 
@@ -84,83 +79,159 @@ Menambahkan validasi agar jika toggle waran aktif, rasio waran (RI : Waran) HARU
 
 ### File yang Diubah
 
-#### 1. `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
+#### 1. `src/components/RightIssueCalculator/ShareButtons.tsx`
 
-**Tambah validasi state:**
+**Tambah import:**
 ```typescript
-// Tambah computed validation
-const isWarrantRatioComplete = !hasWarrant || (warrantRatioOld && warrantRatioNew);
-const isApplyEnabled = currentAvgPrice && isWarrantRatioComplete;
+import { MessageCircle } from 'lucide-react'; // WhatsApp icon alternative
 ```
 
-**Update UI input rasio waran:**
-- Tambah tanda `*` pada label jika waran aktif
-- Tambah border amber pada input jika kosong
-- Tambah helper text "Wajib diisi jika dengan waran"
-
-**Update tombol Terapkan:**
-- Ubah `disabled={!currentAvgPrice}` menjadi `disabled={!isApplyEnabled}`
-- Tambah conditional warning untuk rasio waran kosong
-
-#### 2. `src/components/RightIssueCalculator/RightIssueInfoSection.tsx`
-
-**Update UI input rasio waran:**
-- Tambah tanda `*` pada label
-- Tambah styling border amber jika waran aktif tapi rasio kosong
-- Tambah helper text kecil di bawah input
-
-#### 3. `src/components/RightIssueCalculator/index.tsx`
-
-**Update validasi tombol Hitung:**
+**Tambah fungsi `shareToWhatsApp`:**
 ```typescript
-// Dari:
-const isCalculateEnabled = !!(
-  ratioOld && ratioNew && rightPrice && cumDatePrice && 
-  currentLots && currentAvgPrice && !ratioError
-);
+const shareToWhatsApp = () => {
+  // Build URL dengan params
+  const params = new URLSearchParams({
+    ...(shareData.stockCode && { sc: shareData.stockCode }),
+    ro: shareData.ratioOld,
+    rn: shareData.ratioNew,
+    rp: shareData.rightPrice,
+    cp: shareData.cumDatePrice,
+    cs: shareData.currentLots,
+    ca: shareData.currentAvgPrice,
+  });
+  const calculatorUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  
+  // Parse numeric values untuk kalkulasi persentase
+  const avgBaru = parseInt(exportData.finalAvgPrice.replace(/[^\d]/g, '')) || 0;
+  const terp = parseInt(exportData.theoreticalPrice.replace(/[^\d]/g, '')) || 0;
+  const diffPercent = avgBaru > 0 
+    ? (((terp - avgBaru) / avgBaru) * 100).toFixed(1) 
+    : '0';
+  const isPositive = terp > avgBaru;
+  
+  // Build message
+  const stockLabel = shareData.stockCode 
+    ? `RI ${shareData.stockCode}` 
+    : 'Right Issue';
+  
+  let message = language === 'id' 
+    ? `📊 *Hasil Kalkulasi ${stockLabel}*
 
-// Menjadi:
-const isWarrantRatioValid = !hasWarrant || 
-  (warrantRatioOld && warrantRatioNew && !warrantRatioError);
+📌 *Info RI:*
+• Rasio: ${shareData.ratioOld} : ${shareData.ratioNew}
+• Harga RI: Rp ${parseInt(shareData.rightPrice).toLocaleString('id-ID')}
+• Harga Cum: Rp ${parseInt(shareData.cumDatePrice).toLocaleString('id-ID')}
 
-const isCalculateEnabled = !!(
-  ratioOld && ratioNew && rightPrice && cumDatePrice && 
-  currentLots && currentAvgPrice && !ratioError && 
-  isWarrantRatioValid
-);
+📈 *Hasil:*
+• Lot saat ini: ${parseInt(shareData.currentLots).toLocaleString('id-ID')} lot
+• Jatah RI: ${exportData.newSharesCount} lot
+• Biaya tebus: ${exportData.newTotalValue}
+• Avg baru: ${exportData.finalAvgPrice}
+
+${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositive ? '+' : ''}${diffPercent}%)`
+    : `📊 *${stockLabel} Calculation Result*
+
+📌 *RI Info:*
+• Ratio: ${shareData.ratioOld} : ${shareData.ratioNew}
+• RI Price: Rp ${parseInt(shareData.rightPrice).toLocaleString('id-ID')}
+• Cum Price: Rp ${parseInt(shareData.cumDatePrice).toLocaleString('id-ID')}
+
+📈 *Result:*
+• Current lots: ${parseInt(shareData.currentLots).toLocaleString('id-ID')} lots
+• RI allocation: ${exportData.newSharesCount} lots
+• Exercise cost: ${exportData.newTotalValue}
+• New avg: ${exportData.finalAvgPrice}
+
+${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositive ? '+' : ''}${diffPercent}%)`;
+
+  // Add warrant section if applicable
+  if (exportData.hasWarrant && exportData.warrantCount !== '0') {
+    message += language === 'id'
+      ? `\n\n🎁 Bonus Waran: ${exportData.warrantCount} lembar`
+      : `\n\n🎁 Bonus Warrants: ${exportData.warrantCount} units`;
+  }
+  
+  // Add calculator link
+  message += language === 'id'
+    ? `\n\n🔗 Hitung sendiri: ${calculatorUrl}`
+    : `\n\n🔗 Calculate yourself: ${calculatorUrl}`;
+  
+  // Encode and open WhatsApp
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(waUrl, '_blank');
+  
+  toast.success(language === 'id' ? 'Membuka WhatsApp...' : 'Opening WhatsApp...');
+};
 ```
 
-#### 4. `src/contexts/LanguageContext.tsx`
+**Update DropdownMenuContent:**
+```tsx
+<DropdownMenuContent align="end" className="w-44">
+  <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
+    <Download className="w-4 h-4 mr-2" />
+    {language === 'id' ? 'Download Gambar' : 'Download Image'}
+  </DropdownMenuItem>
+  <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
+    <Link2 className="w-4 h-4 mr-2" />
+    {language === 'id' ? 'Bagikan Link' : 'Share Link'}
+  </DropdownMenuItem>
+  <DropdownMenuItem onClick={shareToWhatsApp} className="cursor-pointer">
+    <MessageCircle className="w-4 h-4 mr-2" />
+    {language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
+  </DropdownMenuItem>
+</DropdownMenuContent>
+```
 
-**Tambah translation keys:**
+#### 2. `src/contexts/LanguageContext.tsx`
+
+**Tambah translation keys (opsional, untuk konsistensi):**
 ```typescript
 // Indonesian
-'rightIssue.warrantRatioRequired': 'Wajib diisi jika dengan waran',
-'validation.warrantRatioMissing': 'Lengkapi rasio waran dulu',
+'share.whatsapp': 'Share ke WhatsApp',
+'share.openingWhatsapp': 'Membuka WhatsApp...',
 
-// English  
-'rightIssue.warrantRatioRequired': 'Required if with warrant',
-'validation.warrantRatioMissing': 'Complete warrant ratio first',
+// English
+'share.whatsapp': 'Share to WhatsApp',
+'share.openingWhatsapp': 'Opening WhatsApp...',
 ```
+
+---
+
+## Implementasi WhatsApp Deep Link
+
+### Desktop Behavior
+- `https://wa.me/?text=...` → Buka WhatsApp Web atau prompt install
+- User bisa pilih kontak untuk mengirim pesan
+
+### Mobile Behavior
+- `https://wa.me/?text=...` → Langsung buka app WhatsApp
+- Pre-filled message siap dikirim ke kontak mana saja
+
+### Fallback
+- Jika WhatsApp tidak terinstall, browser akan menampilkan halaman wa.me
+- Tidak perlu error handling khusus karena wa.me handle sendiri
 
 ---
 
 ## Catatan UX
 
-1. **Prioritas Mobile**: 
-   - Warning message singkat dan jelas
-   - Helper text sangat kecil (text-[10px]) agar tidak memakan space
-   - Border highlight amber cukup untuk menarik perhatian
+1. **Icon Choice**: 
+   - Menggunakan `MessageCircle` dari Lucide sebagai alternatif karena tidak ada icon WhatsApp official
+   - Bisa juga pakai custom SVG WhatsApp icon jika diperlukan
 
-2. **Progressive Disclosure**:
-   - Validation warning hanya muncul SETELAH user mengaktifkan waran
-   - Tidak mengganggu flow user yang tidak pakai waran
+2. **Dropdown Width**:
+   - Lebarkan sedikit dari `w-40` ke `w-44` agar teks tidak terpotong
 
-3. **Konsistensi Visual**:
-   - Menggunakan pattern yang sama dengan validasi harga avg
-   - Amber color untuk warning (bukan merah/destructive)
-   - Tanda `*` untuk field wajib
+3. **Toast Feedback**:
+   - Tampilkan toast "Membuka WhatsApp..." sebagai feedback
+   - Singkat dan informatif
 
-4. **Tombol Disabled State**:
-   - Opacity 50% + cursor not-allowed
-   - Pesan di bawah tombol menjelaskan kenapa disabled
+4. **Message Format**:
+   - Bold text dengan `*...*` (WhatsApp markdown)
+   - Emoji untuk visual appeal
+   - Struktur yang sama dengan template export gambar untuk konsistensi
+   - Link di akhir agar mudah di-tap
+
+5. **Bilingual Support**:
+   - Pesan otomatis mengikuti bahasa yang dipilih user
+   - Format angka tetap pakai format Indonesia (titik sebagai separator ribuan)
