@@ -114,6 +114,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground flex items-center">
                   {t('rightIssue.warrantRatio')}
+                  <span className="text-amber-500 ml-0.5">*</span>
                   <InfoTooltip text={language === 'id' ? "Contoh: 1:1 berarti setiap 1 lembar RI mendapat 1 waran." : "Example: 1:1 means every 1 RI share receives 1 warrant."} />
                 </label>
                 <div className="flex items-center gap-2">
@@ -121,16 +122,22 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     value={warrantRatioOld}
                     onChange={onWarrantRatioOldChange}
                     placeholder="RI"
+                    className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
                   />
                   <span className="text-lg font-bold text-muted-foreground">:</span>
                   <RatioInput
                     value={warrantRatioNew}
                     onChange={onWarrantRatioNewChange}
                     placeholder={language === 'id' ? "Waran" : "Warrant"}
+                    className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
                   />
                 </div>
-                {warrantRatioError && (
+                {warrantRatioError ? (
                   <p className="text-xs text-destructive mt-1 animate-fade-in">{warrantRatioError}</p>
+                ) : (!warrantRatioOld || !warrantRatioNew) && (
+                  <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">
+                    {t('rightIssue.warrantRatioRequired')}
+                  </p>
                 )}
               </div>
             </div>
