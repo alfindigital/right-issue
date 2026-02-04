@@ -1,112 +1,166 @@
 
-# Tambah Input Harga Avg di Budget Planner
+# Plan: Validasi Rasio Waran Wajib
 
-## Overview
-Menambahkan input "Harga Rata-rata Saat Ini" di Budget Planner agar data lengkap saat diterapkan ke kalkulator utama. Saat ini, field `currentAvgPrice` tidak disertakan dari Budget Planner, sehingga kalkulator utama tidak memiliki data harga avg.
+## Ringkasan
+Menambahkan validasi agar jika toggle waran aktif, rasio waran (RI : Waran) HARUS diisi sebelum bisa Apply/Hitung. Validasi ini diterapkan di 2 tempat: Budget Planner dan Kalkulator Utama.
 
-## Perubahan
+## Alasan Penting
+- **Mencegah data tidak lengkap**: Jika waran aktif tapi rasio kosong, hasil kalkulasi waran = 0 yang menyesatkan
+- **User experience**: Warning yang jelas membantu user memahami apa yang perlu diisi
+- **Konsistensi**: Mengikuti pola validasi yang sudah ada (harga avg wajib)
 
-### 1. Update Interface `BudgetPlannerData`
-Tambahkan field `currentAvgPrice` pada interface:
+---
 
-```typescript
-export interface BudgetPlannerData {
-  lots: number;
-  ratioOld: string;
-  ratioNew: string;
-  rightPrice: string;
-  cumDatePrice: string;
-  currentAvgPrice: string;  // BARU
-  hasWarrant: boolean;
-  warrantRatioOld: string;
-  warrantRatioNew: string;
-}
+## Perubahan UI/UX
+
+### 1. Budget Planner - Rasio Waran Section
+
+**Kondisi Saat Ini:**
+```
+[Toggle Dengan Bonus Waran: ON]
+  Rasio Waran
+  [input RI] : [input Waran]
 ```
 
-### 2. Tambah State Input di `BudgetLotPlanner.tsx`
-Tambahkan state dan input field untuk harga avg:
-
-```typescript
-const [currentAvgPrice, setCurrentAvgPrice] = useState('');
+**Perubahan:**
 ```
-
-### 3. Update UI di Budget Planner
-Tambahkan input field di section "Info Right Issue" atau buat section baru "Kepemilikan":
-
-**Lokasi**: Di bawah input Harga Cum-Date (grid cols-2)
-
-```
-┌─────────────────────────────────┐
-│ Harga Pelaksanaan │ Harga Cum   │
-│ [500]             │ [2.500]     │
-├─────────────────────────────────┤
-│ Harga Avg Saat Ini (opsional)   │
-│ [1.800                      ]   │
-│ Untuk kalkulasi avg baru        │
-└─────────────────────────────────┘
-```
-
-### 4. Update Data yang Dikirim ke Kalkulator
-Sertakan `currentAvgPrice` saat apply:
-
-```typescript
-onApplyToCalculator({
-  lots: recommendedOption.lots,
-  ratioOld,
-  ratioNew,
-  rightPrice,
-  cumDatePrice,
-  currentAvgPrice,  // BARU
-  hasWarrant,
-  warrantRatioOld,
-  warrantRatioNew,
-})
-```
-
-### 5. Update Handler di `index.tsx`
-Modifikasi `handleApplyFromBudgetPlanner` untuk set `currentAvgPrice`:
-
-```typescript
-const handleApplyFromBudgetPlanner = useCallback((data: BudgetPlannerData) => {
-  setRatioOld(data.ratioOld);
-  setRatioNew(data.ratioNew);
-  setRightPrice(data.rightPrice);
-  setCumDatePrice(data.cumDatePrice);
-  setCurrentLots(String(data.lots));
-  setCurrentAvgPrice(data.currentAvgPrice);  // BARU
-  setHasWarrant(data.hasWarrant);
-  setWarrantRatioOld(data.warrantRatioOld);
-  setWarrantRatioNew(data.warrantRatioNew);
+[Toggle Dengan Bonus Waran: ON]
+  Rasio Waran *
+  [input RI] : [input Waran]  <- border amber jika kosong
   
-  setActiveTab('calculator');
-  // ...toast
-}, [t]);
+[Tombol Terapkan: DISABLED jika rasio kosong]
+"Isi rasio waran untuk melanjutkan"  <- pesan warning
 ```
 
-### 6. Tambah Translation Keys
-Tambahkan key untuk label input baru:
+### 2. Kalkulator Utama - Right Issue Info Section
 
+**Kondisi Saat Ini:**
+```
+[Checkbox] Dengan Waran
+  Rasio Waran
+  [input RI] : [input Waran]
+  
+[Tombol Hitung: aktif tanpa cek rasio waran]
+```
+
+**Perubahan:**
+```
+[Checkbox] Dengan Waran
+  Rasio Waran *  <- tanda wajib muncul
+  [input RI] : [input Waran]  <- border amber jika kosong tapi waran aktif
+  "Wajib diisi jika dengan waran"  <- helper text
+  
+[Tombol Hitung: DISABLED jika waran aktif tapi rasio kosong]
+```
+
+---
+
+## Visualisasi Layout Mobile
+
+```
++----------------------------------+
+|   Informasi Right Issue          |
++----------------------------------+
+|  Rasio: [5] : [2]                |
+|  Harga Pelaksanaan: [500]        |
+|  Harga Cum-Date: [2.500]         |
++----------------------------------+
+|  [v] Dengan Waran                |
+|  -------------------------------- |
+|  Rasio Waran *                   |
+|  [RI] : [Waran]   <-- highlight  |
+|  ^ Wajib diisi jika waran aktif  |
++----------------------------------+
+
++----------------------------------+
+|  [ HITUNG ]  <-- disabled state  |
+|  ^ Lengkapi rasio waran dulu     |
++----------------------------------+
+```
+
+---
+
+## Detail Teknis
+
+### File yang Diubah
+
+#### 1. `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
+
+**Tambah validasi state:**
+```typescript
+// Tambah computed validation
+const isWarrantRatioComplete = !hasWarrant || (warrantRatioOld && warrantRatioNew);
+const isApplyEnabled = currentAvgPrice && isWarrantRatioComplete;
+```
+
+**Update UI input rasio waran:**
+- Tambah tanda `*` pada label jika waran aktif
+- Tambah border amber pada input jika kosong
+- Tambah helper text "Wajib diisi jika dengan waran"
+
+**Update tombol Terapkan:**
+- Ubah `disabled={!currentAvgPrice}` menjadi `disabled={!isApplyEnabled}`
+- Tambah conditional warning untuk rasio waran kosong
+
+#### 2. `src/components/RightIssueCalculator/RightIssueInfoSection.tsx`
+
+**Update UI input rasio waran:**
+- Tambah tanda `*` pada label
+- Tambah styling border amber jika waran aktif tapi rasio kosong
+- Tambah helper text kecil di bawah input
+
+#### 3. `src/components/RightIssueCalculator/index.tsx`
+
+**Update validasi tombol Hitung:**
+```typescript
+// Dari:
+const isCalculateEnabled = !!(
+  ratioOld && ratioNew && rightPrice && cumDatePrice && 
+  currentLots && currentAvgPrice && !ratioError
+);
+
+// Menjadi:
+const isWarrantRatioValid = !hasWarrant || 
+  (warrantRatioOld && warrantRatioNew && !warrantRatioError);
+
+const isCalculateEnabled = !!(
+  ratioOld && ratioNew && rightPrice && cumDatePrice && 
+  currentLots && currentAvgPrice && !ratioError && 
+  isWarrantRatioValid
+);
+```
+
+#### 4. `src/contexts/LanguageContext.tsx`
+
+**Tambah translation keys:**
 ```typescript
 // Indonesian
-'budgetPlanner.currentAvgPrice': 'Harga Avg Saat Ini',
-'budgetPlanner.currentAvgPriceHelp': 'Opsional, untuk kalkulasi harga rata-rata baru',
+'rightIssue.warrantRatioRequired': 'Wajib diisi jika dengan waran',
+'validation.warrantRatioMissing': 'Lengkapi rasio waran dulu',
 
-// English
-'budgetPlanner.currentAvgPrice': 'Current Avg Price',
-'budgetPlanner.currentAvgPriceHelp': 'Optional, for new average price calculation',
+// English  
+'rightIssue.warrantRatioRequired': 'Required if with warrant',
+'validation.warrantRatioMissing': 'Complete warrant ratio first',
 ```
 
-## File yang Dimodifikasi
+---
 
-| File | Perubahan |
-|------|-----------|
-| `src/components/RightIssueCalculator/BudgetLotPlanner.tsx` | Tambah state `currentAvgPrice`, input field, dan sertakan di data yang dikirim |
-| `src/components/RightIssueCalculator/index.tsx` | Update handler untuk set `currentAvgPrice` |
-| `src/contexts/LanguageContext.tsx` | Tambah translation keys untuk label baru |
+## Catatan UX
 
-## Hasil Akhir
-Setelah implementasi:
-1. User mengisi semua parameter RI + harga avg saat ini di Budget Planner
-2. Klik "Terapkan ke Kalkulator"
-3. Semua data termasuk harga avg otomatis terisi di tab Kalkulator RI
-4. User tinggal klik "Hitung" untuk mendapatkan hasil lengkap
+1. **Prioritas Mobile**: 
+   - Warning message singkat dan jelas
+   - Helper text sangat kecil (text-[10px]) agar tidak memakan space
+   - Border highlight amber cukup untuk menarik perhatian
+
+2. **Progressive Disclosure**:
+   - Validation warning hanya muncul SETELAH user mengaktifkan waran
+   - Tidak mengganggu flow user yang tidak pakai waran
+
+3. **Konsistensi Visual**:
+   - Menggunakan pattern yang sama dengan validasi harga avg
+   - Amber color untuk warning (bukan merah/destructive)
+   - Tanda `*` untuk field wajib
+
+4. **Tombol Disabled State**:
+   - Opacity 50% + cursor not-allowed
+   - Pesan di bawah tombol menjelaskan kenapa disabled
