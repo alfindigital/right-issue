@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Download, Link2, Share2, ChevronDown } from 'lucide-react';
+import { Download, Link2, Share2, ChevronDown, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
 import {
@@ -143,6 +143,75 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
     }
   };
 
+  const shareToWhatsApp = () => {
+    const params = new URLSearchParams({
+      ...(shareData.stockCode && { sc: shareData.stockCode }),
+      ro: shareData.ratioOld,
+      rn: shareData.ratioNew,
+      rp: shareData.rightPrice,
+      cp: shareData.cumDatePrice,
+      cs: shareData.currentLots,
+      ca: shareData.currentAvgPrice,
+    });
+    const calculatorUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    
+    const avgBaru = parseInt(exportData.finalAvgPrice.replace(/[^\d]/g, '')) || 0;
+    const terp = parseInt(exportData.theoreticalPrice.replace(/[^\d]/g, '')) || 0;
+    const diffPercent = avgBaru > 0 
+      ? (((terp - avgBaru) / avgBaru) * 100).toFixed(1) 
+      : '0';
+    const isPositive = terp > avgBaru;
+    
+    const stockLabel = shareData.stockCode 
+      ? `RI ${shareData.stockCode}` 
+      : 'Right Issue';
+    
+    let message = language === 'id' 
+      ? `📊 *Hasil Kalkulasi ${stockLabel}*
+
+📌 *Info RI:*
+• Rasio: ${shareData.ratioOld} : ${shareData.ratioNew}
+• Harga RI: Rp ${parseInt(shareData.rightPrice).toLocaleString('id-ID')}
+• Harga Cum: Rp ${parseInt(shareData.cumDatePrice).toLocaleString('id-ID')}
+
+📈 *Hasil:*
+• Lot saat ini: ${parseInt(shareData.currentLots).toLocaleString('id-ID')} lot
+• Jatah RI: ${exportData.newSharesCount} lot
+• Biaya tebus: ${exportData.newTotalValue}
+• Avg baru: ${exportData.finalAvgPrice}
+
+${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositive ? '+' : ''}${diffPercent}%)`
+      : `📊 *${stockLabel} Calculation Result*
+
+📌 *RI Info:*
+• Ratio: ${shareData.ratioOld} : ${shareData.ratioNew}
+• RI Price: Rp ${parseInt(shareData.rightPrice).toLocaleString('id-ID')}
+• Cum Price: Rp ${parseInt(shareData.cumDatePrice).toLocaleString('id-ID')}
+
+📈 *Result:*
+• Current lots: ${parseInt(shareData.currentLots).toLocaleString('id-ID')} lots
+• RI allocation: ${exportData.newSharesCount} lots
+• Exercise cost: ${exportData.newTotalValue}
+• New avg: ${exportData.finalAvgPrice}
+
+${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositive ? '+' : ''}${diffPercent}%)`;
+
+    if (exportData.hasWarrant && exportData.warrantCount !== '0') {
+      message += language === 'id'
+        ? `\n\n🎁 Bonus Waran: ${exportData.warrantCount} lembar`
+        : `\n\n🎁 Bonus Warrants: ${exportData.warrantCount} units`;
+    }
+    
+    message += language === 'id'
+      ? `\n\n🔗 Hitung sendiri: ${calculatorUrl}`
+      : `\n\n🔗 Calculate yourself: ${calculatorUrl}`;
+    
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    
+    toast.success(language === 'id' ? 'Membuka WhatsApp...' : 'Opening WhatsApp...');
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -155,7 +224,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
           <ChevronDown className="w-3 h-3" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
           <Download className="w-4 h-4 mr-2" />
           {language === 'id' ? 'Download Gambar' : 'Download Image'}
@@ -163,6 +232,10 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
         <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
           <Link2 className="w-4 h-4 mr-2" />
           {language === 'id' ? 'Bagikan Link' : 'Share Link'}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={shareToWhatsApp} className="cursor-pointer">
+          <MessageCircle className="w-4 h-4 mr-2" />
+          {language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
