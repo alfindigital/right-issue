@@ -246,22 +246,30 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
           {/* Warrant Ratio */}
           {hasWarrant && (
             <div className="animate-fade-in">
-              <label className="text-xs text-muted-foreground mb-1 block">
+              <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
                 {t('rightIssue.warrantRatio')}
+                <span className="text-amber-500">*</span>
               </label>
               <div className="flex items-center gap-2">
                 <RatioInput
                   value={warrantRatioOld}
                   onChange={setWarrantRatioOld}
                   placeholder="RI"
+                  className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
                 />
                 <span className="text-sm font-medium text-muted-foreground">:</span>
                 <RatioInput
                   value={warrantRatioNew}
                   onChange={setWarrantRatioNew}
                   placeholder="Waran"
+                  className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
                 />
               </div>
+              {(!warrantRatioOld || !warrantRatioNew) && (
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">
+                  {t('rightIssue.warrantRatioRequired')}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -390,17 +398,21 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
                       warrantRatioOld,
                       warrantRatioNew,
                     })}
-                    disabled={!currentAvgPrice}
+                    disabled={!currentAvgPrice || (hasWarrant && (!warrantRatioOld || !warrantRatioNew))}
                     className="w-full py-2 rounded-lg bg-[hsl(var(--success))] text-white font-semibold text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {t('budgetPlanner.applyToCalculator')}
                     <ArrowRight className="w-3 h-3" />
                   </button>
-                  {!currentAvgPrice && (
+                  {!currentAvgPrice ? (
                     <p className="text-[10px] text-amber-600 dark:text-amber-400 text-center">
                       {t('budgetPlanner.avgPriceRequired')}
                     </p>
-                  )}
+                  ) : hasWarrant && (!warrantRatioOld || !warrantRatioNew) ? (
+                    <p className="text-[10px] text-amber-600 dark:text-amber-400 text-center">
+                      {t('validation.warrantRatioMissing')}
+                    </p>
+                  ) : null}
                 </div>
               )}
             </div>

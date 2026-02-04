@@ -186,8 +186,13 @@ const RightIssueCalculator: React.FC = () => {
     }
   }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
 
+  // Warrant ratio is required if warrant is enabled
+  const isWarrantRatioValid = !hasWarrant || 
+    (warrantRatioOld && warrantRatioNew && !warrantRatioError);
+
   const isCalculateEnabled = !!(
-    ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice && !ratioError
+    ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice && 
+    !ratioError && isWarrantRatioValid
   );
 
   // Calculate current total value on input change

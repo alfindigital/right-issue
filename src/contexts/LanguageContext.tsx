@@ -34,6 +34,8 @@ const translations: Record<Language, Record<string, string>> = {
     'rightIssue.hasWarrant': 'Dengan Waran',
     'rightIssue.warrantRatio': 'Rasio Waran',
     'rightIssue.warrantRatioHelp': 'Setiap {old} saham baru mendapat {new} waran',
+    'rightIssue.warrantRatioRequired': 'Wajib diisi jika dengan waran',
+    'validation.warrantRatioMissing': 'Lengkapi rasio waran dulu',
     
     // Ownership
     'ownership.title': 'Kepemilikan Saat Ini',
@@ -236,6 +238,8 @@ const translations: Record<Language, Record<string, string>> = {
     'rightIssue.hasWarrant': 'With Warrant',
     'rightIssue.warrantRatio': 'Warrant Ratio',
     'rightIssue.warrantRatioHelp': 'Every {old} new shares receive {new} warrants',
+    'rightIssue.warrantRatioRequired': 'Required if with warrant',
+    'validation.warrantRatioMissing': 'Complete warrant ratio first',
     
     // Ownership
     'ownership.title': 'Current Ownership',
