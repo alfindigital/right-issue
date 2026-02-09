@@ -211,6 +211,15 @@ const translations: Record<Language, Record<string, string>> = {
     'budgetPlanner.avgPriceRequired': 'Isi harga avg saat ini untuk melanjutkan',
     'budgetPlanner.applied': 'Berhasil Diterapkan',
     'budgetPlanner.appliedDesc': 'telah diterapkan ke kalkulator',
+    'budgetPlanner.saveConfig': 'Simpan Konfigurasi',
+    'budgetPlanner.loadConfig': 'Muat Konfigurasi',
+    'budgetPlanner.configSaved': 'Konfigurasi disimpan',
+    'budgetPlanner.configLoaded': 'Konfigurasi dimuat',
+    'budgetPlanner.savedConfigs': 'Konfigurasi Tersimpan',
+    'budgetPlanner.noSavedConfigs': 'Belum ada konfigurasi tersimpan',
+    
+    // Stock Code
+    'stockCode.optional': 'opsional',
     
     // Tab Navigation
     'tab.calculator': 'Kalkulator RI',
@@ -415,6 +424,15 @@ const translations: Record<Language, Record<string, string>> = {
     'budgetPlanner.avgPriceRequired': 'Fill current avg price to continue',
     'budgetPlanner.applied': 'Successfully Applied',
     'budgetPlanner.appliedDesc': 'has been applied to calculator',
+    'budgetPlanner.saveConfig': 'Save Configuration',
+    'budgetPlanner.loadConfig': 'Load Configuration',
+    'budgetPlanner.configSaved': 'Configuration saved',
+    'budgetPlanner.configLoaded': 'Configuration loaded',
+    'budgetPlanner.savedConfigs': 'Saved Configurations',
+    'budgetPlanner.noSavedConfigs': 'No saved configurations yet',
+    
+    // Stock Code
+    'stockCode.optional': 'optional',
     
     // Tab Navigation
     'tab.calculator': 'RI Calculator',
