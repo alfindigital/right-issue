@@ -1,237 +1,329 @@
 
-# Plan: Share to WhatsApp dengan Format Rapi
+# Plan: Simpan Konfigurasi Budget Planner ke History
 
 ## Ringkasan
-Menambahkan opsi "Share ke WhatsApp" di dropdown Share yang sudah ada. Ketika diklik, langsung buka WhatsApp dengan teks terformat yang berisi ringkasan hasil kalkulasi Right Issue.
+Menambahkan fitur untuk menyimpan dan memuat konfigurasi Budget Planner ke localStorage. User dapat menyimpan planning untuk berbagai saham RI dan load kembali kapan saja.
 
 ---
 
 ## Perubahan UI/UX
 
-### Dropdown Share Menu (Setelah)
+### Layout Header Budget Planner
 
+**Saat Ini:**
 ```
-+---------------------------+
-|  [Share ▼]               |
-+---------------------------+
-| 📥 Download Gambar       |
-| 🔗 Bagikan Link          |
-| 💬 Share ke WhatsApp     |  <-- NEW
-+---------------------------+
++----------------------------------------+
+|  📊 Informasi Right Issue              |
++----------------------------------------+
 ```
 
-### Format Pesan WhatsApp
-
+**Setelah:**
 ```
-📊 *Hasil Kalkulasi RI BBRI*
-
-📌 *Info RI:*
-• Rasio: 5 : 2
-• Harga RI: Rp 500
-• Harga Cum: Rp 2.500
-
-📈 *Hasil:*
-• Lot saat ini: 100 lot
-• Jatah RI: 40 lot
-• Biaya tebus: Rp 2.000.000
-• Avg baru: Rp 1.531
-
-✅ TERP Rp 1.785 (potensi +16%)
-
-🎁 Bonus Waran: 2.000 lembar
-
-🔗 Hitung sendiri: [link]
++----------------------------------------+
+|  📊 Informasi Right Issue   [📂▼] [💾] |
++----------------------------------------+
 ```
 
-### Catatan Format:
-- Gunakan `*text*` untuk bold di WhatsApp
-- Emoji untuk visual yang menarik
-- Stock code di judul jika tersedia
-- Section waran hanya muncul jika hasWarrant = true
-- Persentase potensi dihitung dari selisih TERP vs Avg baru
+- **[📂▼]** = Dropdown load konfigurasi tersimpan
+- **[💾]** = Tombol simpan konfigurasi saat ini
 
----
-
-## Flow Mobile
+### Dropdown Load History (Mobile-First)
 
 ```
-+----------------------------------+
-|  User klik Share → dropdown     |
-+----------------------------------+
-         ↓
-+----------------------------------+
-|  Pilih "Share ke WhatsApp"      |
-+----------------------------------+
-         ↓
-+----------------------------------+
-|  Generate formatted text        |
-|  + URL dengan params            |
-+----------------------------------+
-         ↓
-+----------------------------------+
-|  Buka wa.me/... atau app WA     |
-+----------------------------------+
++----------------------------------------+
+| Konfigurasi Tersimpan (3)    [Hapus]   |
++----------------------------------------+
+| BRIS  5:2  Rp500  10jt         1h  [×] |
+| BRPT  3:1  Rp350  25jt        2h  [×]  |
+| MDKA  2:1  Rp200  50jt        1d  [×]  |
++----------------------------------------+
 ```
+
+### Toast Feedback
+- "Konfigurasi disimpan" saat berhasil simpan
+- "Konfigurasi dimuat" saat load dari history
 
 ---
 
 ## Detail Teknis
 
-### File yang Diubah
+### File Baru
 
-#### 1. `src/components/RightIssueCalculator/ShareButtons.tsx`
+#### 1. `src/hooks/useBudgetPlannerHistory.ts`
 
-**Tambah import:**
 ```typescript
-import { MessageCircle } from 'lucide-react'; // WhatsApp icon alternative
-```
+export interface BudgetPlannerHistoryItem {
+  id: string;
+  timestamp: number;
+  stockCode?: string;  // Optional identifier
+  config: {
+    ratioOld: string;
+    ratioNew: string;
+    rightPrice: string;
+    cumDatePrice: string;
+    currentAvgPrice: string;
+    budget: string;
+    includeExerciseFund: boolean;
+    hasWarrant: boolean;
+    warrantRatioOld: string;
+    warrantRatioNew: string;
+  };
+}
 
-**Tambah fungsi `shareToWhatsApp`:**
-```typescript
-const shareToWhatsApp = () => {
-  // Build URL dengan params
-  const params = new URLSearchParams({
-    ...(shareData.stockCode && { sc: shareData.stockCode }),
-    ro: shareData.ratioOld,
-    rn: shareData.ratioNew,
-    rp: shareData.rightPrice,
-    cp: shareData.cumDatePrice,
-    cs: shareData.currentLots,
-    ca: shareData.currentAvgPrice,
-  });
-  const calculatorUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-  
-  // Parse numeric values untuk kalkulasi persentase
-  const avgBaru = parseInt(exportData.finalAvgPrice.replace(/[^\d]/g, '')) || 0;
-  const terp = parseInt(exportData.theoreticalPrice.replace(/[^\d]/g, '')) || 0;
-  const diffPercent = avgBaru > 0 
-    ? (((terp - avgBaru) / avgBaru) * 100).toFixed(1) 
-    : '0';
-  const isPositive = terp > avgBaru;
-  
-  // Build message
-  const stockLabel = shareData.stockCode 
-    ? `RI ${shareData.stockCode}` 
-    : 'Right Issue';
-  
-  let message = language === 'id' 
-    ? `📊 *Hasil Kalkulasi ${stockLabel}*
+const STORAGE_KEY = 'ri-budget-planner-history';
+const MAX_HISTORY_ITEMS = 10;
 
-📌 *Info RI:*
-• Rasio: ${shareData.ratioOld} : ${shareData.ratioNew}
-• Harga RI: Rp ${parseInt(shareData.rightPrice).toLocaleString('id-ID')}
-• Harga Cum: Rp ${parseInt(shareData.cumDatePrice).toLocaleString('id-ID')}
+export const useBudgetPlannerHistory = () => {
+  const [history, setHistory] = useState<BudgetPlannerHistoryItem[]>([]);
 
-📈 *Hasil:*
-• Lot saat ini: ${parseInt(shareData.currentLots).toLocaleString('id-ID')} lot
-• Jatah RI: ${exportData.newSharesCount} lot
-• Biaya tebus: ${exportData.newTotalValue}
-• Avg baru: ${exportData.finalAvgPrice}
+  // Load from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) setHistory(JSON.parse(stored));
+  }, []);
 
-${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositive ? '+' : ''}${diffPercent}%)`
-    : `📊 *${stockLabel} Calculation Result*
+  // Save to localStorage
+  const saveToStorage = (items: BudgetPlannerHistoryItem[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  };
 
-📌 *RI Info:*
-• Ratio: ${shareData.ratioOld} : ${shareData.ratioNew}
-• RI Price: Rp ${parseInt(shareData.rightPrice).toLocaleString('id-ID')}
-• Cum Price: Rp ${parseInt(shareData.cumDatePrice).toLocaleString('id-ID')}
+  // Add config to history
+  const addToHistory = (config: BudgetPlannerHistoryItem['config'], stockCode?: string) => {
+    const newItem = {
+      id: Date.now().toString(),
+      timestamp: Date.now(),
+      stockCode,
+      config,
+    };
+    const updated = [newItem, ...history].slice(0, MAX_HISTORY_ITEMS);
+    setHistory(updated);
+    saveToStorage(updated);
+  };
 
-📈 *Result:*
-• Current lots: ${parseInt(shareData.currentLots).toLocaleString('id-ID')} lots
-• RI allocation: ${exportData.newSharesCount} lots
-• Exercise cost: ${exportData.newTotalValue}
-• New avg: ${exportData.finalAvgPrice}
+  // Remove item
+  const removeFromHistory = (id: string) => {
+    const updated = history.filter(item => item.id !== id);
+    setHistory(updated);
+    saveToStorage(updated);
+  };
 
-${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositive ? '+' : ''}${diffPercent}%)`;
+  // Clear all
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem(STORAGE_KEY);
+  };
 
-  // Add warrant section if applicable
-  if (exportData.hasWarrant && exportData.warrantCount !== '0') {
-    message += language === 'id'
-      ? `\n\n🎁 Bonus Waran: ${exportData.warrantCount} lembar`
-      : `\n\n🎁 Bonus Warrants: ${exportData.warrantCount} units`;
-  }
-  
-  // Add calculator link
-  message += language === 'id'
-    ? `\n\n🔗 Hitung sendiri: ${calculatorUrl}`
-    : `\n\n🔗 Calculate yourself: ${calculatorUrl}`;
-  
-  // Encode and open WhatsApp
-  const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-  window.open(waUrl, '_blank');
-  
-  toast.success(language === 'id' ? 'Membuka WhatsApp...' : 'Opening WhatsApp...');
+  return { history, addToHistory, removeFromHistory, clearHistory };
 };
 ```
 
-**Update DropdownMenuContent:**
-```tsx
-<DropdownMenuContent align="end" className="w-44">
-  <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
-    <Download className="w-4 h-4 mr-2" />
-    {language === 'id' ? 'Download Gambar' : 'Download Image'}
-  </DropdownMenuItem>
-  <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
-    <Link2 className="w-4 h-4 mr-2" />
-    {language === 'id' ? 'Bagikan Link' : 'Share Link'}
-  </DropdownMenuItem>
-  <DropdownMenuItem onClick={shareToWhatsApp} className="cursor-pointer">
-    <MessageCircle className="w-4 h-4 mr-2" />
-    {language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
-  </DropdownMenuItem>
-</DropdownMenuContent>
+#### 2. `src/components/RightIssueCalculator/BudgetPlannerHistoryDropdown.tsx`
+
+Komponen dropdown mirip `HistoryDropdown.tsx` tapi disesuaikan untuk Budget Planner:
+
+```typescript
+interface Props {
+  history: BudgetPlannerHistoryItem[];
+  onSelectHistory: (item: BudgetPlannerHistoryItem) => void;
+  onRemoveHistory: (id: string) => void;
+  onClearHistory: () => void;
+}
+
+// Display format per item:
+// [BRIS] 5:2 Rp500 10jt  |  2h ago  [×]
 ```
 
-#### 2. `src/contexts/LanguageContext.tsx`
+**Fitur:**
+- Icon folder/file untuk tombol trigger
+- Badge count jika ada history
+- Disabled state jika kosong
+- Relative time formatting (baru saja, 1j, 2h, dst)
+- Tombol delete per item
+- Tombol clear all di header
 
-**Tambah translation keys (opsional, untuk konsistensi):**
+### File yang Diubah
+
+#### 3. `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
+
+**Tambah import:**
+```typescript
+import { Save, FolderOpen } from 'lucide-react';
+import { useBudgetPlannerHistory } from '@/hooks/useBudgetPlannerHistory';
+import BudgetPlannerHistoryDropdown from './BudgetPlannerHistoryDropdown';
+import { toast } from 'sonner';
+```
+
+**Tambah state untuk stock code (opsional):**
+```typescript
+const [stockCode, setStockCode] = useState('');
+```
+
+**Tambah hook:**
+```typescript
+const { history, addToHistory, removeFromHistory, clearHistory } = useBudgetPlannerHistory();
+```
+
+**Tambah handler:**
+```typescript
+const handleSaveConfig = () => {
+  addToHistory({
+    ratioOld,
+    ratioNew,
+    rightPrice,
+    cumDatePrice,
+    currentAvgPrice,
+    budget,
+    includeExerciseFund,
+    hasWarrant,
+    warrantRatioOld,
+    warrantRatioNew,
+  }, stockCode || undefined);
+  
+  toast.success(t('budgetPlanner.configSaved'));
+};
+
+const handleLoadConfig = (item: BudgetPlannerHistoryItem) => {
+  const { config, stockCode: savedCode } = item;
+  setRatioOld(config.ratioOld);
+  setRatioNew(config.ratioNew);
+  setRightPrice(config.rightPrice);
+  setCumDatePrice(config.cumDatePrice);
+  setCurrentAvgPrice(config.currentAvgPrice);
+  setBudget(config.budget);
+  setIncludeExerciseFund(config.includeExerciseFund);
+  setHasWarrant(config.hasWarrant);
+  setWarrantRatioOld(config.warrantRatioOld);
+  setWarrantRatioNew(config.warrantRatioNew);
+  if (savedCode) setStockCode(savedCode);
+  
+  toast.success(t('budgetPlanner.configLoaded'));
+};
+```
+
+**Update UI Header Section:**
+```tsx
+<div className="card-calculator">
+  <div className="flex items-center justify-between mb-3">
+    <h2 className="section-title flex items-center gap-2 mb-0">
+      <TrendingUp className="w-4 h-4 text-primary" />
+      {t('rightIssue.title')}
+    </h2>
+    
+    <div className="flex items-center gap-1">
+      {/* Load Dropdown */}
+      <BudgetPlannerHistoryDropdown
+        history={history}
+        onSelectHistory={handleLoadConfig}
+        onRemoveHistory={removeFromHistory}
+        onClearHistory={clearHistory}
+      />
+      
+      {/* Save Button */}
+      <button
+        onClick={handleSaveConfig}
+        disabled={!isInputComplete}
+        className="p-1.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        title={t('budgetPlanner.saveConfig')}
+      >
+        <Save className="w-4 h-4" />
+      </button>
+    </div>
+  </div>
+  
+  {/* Stock Code Input - Optional identifier */}
+  <div className="mb-3">
+    <label className="text-xs text-muted-foreground mb-1 block">
+      {t('stockCode.label')} ({t('stockCode.optional')})
+    </label>
+    <input
+      type="text"
+      value={stockCode}
+      onChange={(e) => setStockCode(e.target.value.toUpperCase().slice(0, 4))}
+      placeholder="BBRI"
+      className="input-calculator w-24"
+      maxLength={4}
+    />
+  </div>
+  
+  {/* ... rest of form ... */}
+</div>
+```
+
+#### 4. `src/contexts/LanguageContext.tsx`
+
+**Tambah translation keys:**
 ```typescript
 // Indonesian
-'share.whatsapp': 'Share ke WhatsApp',
-'share.openingWhatsapp': 'Membuka WhatsApp...',
+'budgetPlanner.saveConfig': 'Simpan Konfigurasi',
+'budgetPlanner.loadConfig': 'Muat Konfigurasi',
+'budgetPlanner.configSaved': 'Konfigurasi disimpan',
+'budgetPlanner.configLoaded': 'Konfigurasi dimuat',
+'budgetPlanner.savedConfigs': 'Konfigurasi Tersimpan',
+'budgetPlanner.noSavedConfigs': 'Belum ada konfigurasi tersimpan',
 
 // English
-'share.whatsapp': 'Share to WhatsApp',
-'share.openingWhatsapp': 'Opening WhatsApp...',
+'budgetPlanner.saveConfig': 'Save Configuration',
+'budgetPlanner.loadConfig': 'Load Configuration',
+'budgetPlanner.configSaved': 'Configuration saved',
+'budgetPlanner.configLoaded': 'Configuration loaded',
+'budgetPlanner.savedConfigs': 'Saved Configurations',
+'budgetPlanner.noSavedConfigs': 'No saved configurations yet',
 ```
-
----
-
-## Implementasi WhatsApp Deep Link
-
-### Desktop Behavior
-- `https://wa.me/?text=...` → Buka WhatsApp Web atau prompt install
-- User bisa pilih kontak untuk mengirim pesan
-
-### Mobile Behavior
-- `https://wa.me/?text=...` → Langsung buka app WhatsApp
-- Pre-filled message siap dikirim ke kontak mana saja
-
-### Fallback
-- Jika WhatsApp tidak terinstall, browser akan menampilkan halaman wa.me
-- Tidak perlu error handling khusus karena wa.me handle sendiri
 
 ---
 
 ## Catatan UX
 
-1. **Icon Choice**: 
-   - Menggunakan `MessageCircle` dari Lucide sebagai alternatif karena tidak ada icon WhatsApp official
-   - Bisa juga pakai custom SVG WhatsApp icon jika diperlukan
+1. **Lokasi Tombol**:
+   - Tombol Save & Load di header section "Info RI" agar mudah dijangkau
+   - Compact (hanya icon) agar tidak memakan space di mobile
 
-2. **Dropdown Width**:
-   - Lebarkan sedikit dari `w-40` ke `w-44` agar teks tidak terpotong
+2. **Stock Code Input**:
+   - Optional tapi berguna untuk identifikasi
+   - Posisi di atas form, sebelum ratio
+   - Max 4 karakter, auto uppercase
 
-3. **Toast Feedback**:
-   - Tampilkan toast "Membuka WhatsApp..." sebagai feedback
-   - Singkat dan informatif
+3. **Save Validation**:
+   - Tombol Save disabled jika form belum lengkap (minimal ratio, harga, budget)
+   - Mencegah save konfigurasi kosong
 
-4. **Message Format**:
-   - Bold text dengan `*...*` (WhatsApp markdown)
-   - Emoji untuk visual appeal
-   - Struktur yang sama dengan template export gambar untuk konsistensi
-   - Link di akhir agar mudah di-tap
+4. **Load Behavior**:
+   - Replace semua field saat load
+   - Toast confirmation
+   - Auto-close dropdown setelah select
 
-5. **Bilingual Support**:
-   - Pesan otomatis mengikuti bahasa yang dipilih user
-   - Format angka tetap pakai format Indonesia (titik sebagai separator ribuan)
+5. **History Limit**:
+   - Max 10 konfigurasi (sama seperti calculator history)
+   - FIFO: yang paling lama otomatis terhapus
+
+6. **Dropdown Display**:
+   - Menampilkan stock code, ratio, harga RI, budget
+   - Relative time (baru saja, 1j, 2h)
+   - Delete button per item
+
+---
+
+## Visualisasi Mobile
+
+```
++----------------------------------+
+| Informasi Right Issue  [📂][💾]  |
++----------------------------------+
+| Kode Saham (opsional)            |
+| [BBRI    ]                       |
++----------------------------------+
+| Rasio                            |
+| [5] : [2]                        |
++----------------------------------+
+```
+
+Saat klik [📂]:
+```
++----------------------------------+
+| Konfigurasi Tersimpan (3) [Hapus]|
++----------------------------------+
+| BRIS  5:2  Rp500  10jt      1j ×|
+| BRPT  3:1  Rp350  25jt      2j ×|
+| MDKA  2:1  Rp200  50jt      1h ×|
++----------------------------------+
+```
