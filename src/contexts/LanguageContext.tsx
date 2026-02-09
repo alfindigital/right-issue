@@ -19,7 +19,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Stock Code
     'stockCode.label': 'Kode Saham',
-    'stockCode.placeholder': 'Contoh: BBRI',
+    'stockCode.placeholder': 'Contoh: BRIS',
     
     // Right Issue Info
     'rightIssue.title': 'Informasi Right Issue',
@@ -232,7 +232,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Stock Code
     'stockCode.label': 'Stock Code',
-    'stockCode.placeholder': 'e.g., BBRI',
+    'stockCode.placeholder': 'e.g., BRIS',
     
     // Right Issue Info
     'rightIssue.title': 'Right Issue Information',
