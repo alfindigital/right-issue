@@ -1,11 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { Wallet, Target, TrendingUp, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import { Wallet, Target, TrendingUp, CheckCircle2, AlertCircle, ArrowRight, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import RatioInput from './RatioInput';
 import { parseDecimalId } from '@/lib/parseDecimal';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import BudgetAllocationChart from './BudgetAllocationChart';
+import { useBudgetPlannerHistory, BudgetPlannerHistoryItem } from '@/hooks/useBudgetPlannerHistory';
+import BudgetPlannerHistoryDropdown from './BudgetPlannerHistoryDropdown';
+import { toast } from 'sonner';
 
 interface LotOption {
   lots: number;
@@ -59,6 +62,9 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
   const [cumDatePrice, setCumDatePrice] = useState('');
   const [currentAvgPrice, setCurrentAvgPrice] = useState('');
   
+  // Stock code (optional identifier)
+  const [stockCode, setStockCode] = useState('');
+  
   // Warrant
   const [hasWarrant, setHasWarrant] = useState(false);
   const [warrantRatioOld, setWarrantRatioOld] = useState('');
@@ -70,6 +76,45 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
   
   // Show all options
   const [showAllOptions, setShowAllOptions] = useState(false);
+  
+  // Budget Planner History
+  const { history, addToHistory, removeFromHistory, clearHistory } = useBudgetPlannerHistory();
+  
+  // Save config handler
+  const handleSaveConfig = () => {
+    addToHistory({
+      ratioOld,
+      ratioNew,
+      rightPrice,
+      cumDatePrice,
+      currentAvgPrice,
+      budget,
+      includeExerciseFund,
+      hasWarrant,
+      warrantRatioOld,
+      warrantRatioNew,
+    }, stockCode || undefined);
+    
+    toast.success(t('budgetPlanner.configSaved'));
+  };
+  
+  // Load config handler
+  const handleLoadConfig = (item: BudgetPlannerHistoryItem) => {
+    const { config, stockCode: savedCode } = item;
+    setRatioOld(config.ratioOld);
+    setRatioNew(config.ratioNew);
+    setRightPrice(config.rightPrice);
+    setCumDatePrice(config.cumDatePrice);
+    setCurrentAvgPrice(config.currentAvgPrice);
+    setBudget(config.budget);
+    setIncludeExerciseFund(config.includeExerciseFund);
+    setHasWarrant(config.hasWarrant);
+    setWarrantRatioOld(config.warrantRatioOld);
+    setWarrantRatioNew(config.warrantRatioNew);
+    if (savedCode) setStockCode(savedCode);
+    
+    toast.success(t('budgetPlanner.configLoaded'));
+  };
 
   // GCD helper
   const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
@@ -156,12 +201,49 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
     <div className="space-y-4">
       {/* RI Info Section */}
       <div className="card-calculator">
-        <h2 className="section-title flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-primary" />
-          {t('rightIssue.title')}
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="section-title flex items-center gap-2 mb-0">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            {t('rightIssue.title')}
+          </h2>
+          
+          <div className="flex items-center gap-1">
+            {/* Load Dropdown */}
+            <BudgetPlannerHistoryDropdown
+              history={history}
+              onSelectHistory={handleLoadConfig}
+              onRemoveHistory={removeFromHistory}
+              onClearHistory={clearHistory}
+            />
+            
+            {/* Save Button */}
+            <button
+              onClick={handleSaveConfig}
+              disabled={!isInputComplete}
+              className="p-1.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title={t('budgetPlanner.saveConfig')}
+            >
+              <Save className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
         
         <div className="space-y-3">
+          {/* Stock Code Input - Optional */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">
+              {t('stockCode.label')} <span className="text-muted-foreground/60">({t('stockCode.optional')})</span>
+            </label>
+            <input
+              type="text"
+              value={stockCode}
+              onChange={(e) => setStockCode(e.target.value.toUpperCase().slice(0, 4))}
+              placeholder="BBRI"
+              className="input-calculator w-24"
+              maxLength={4}
+            />
+          </div>
+          
           {/* Ratio */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">
