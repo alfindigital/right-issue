@@ -9,6 +9,7 @@ import BudgetAllocationChart from './BudgetAllocationChart';
 import { useBudgetPlannerHistory, BudgetPlannerHistoryItem } from '@/hooks/useBudgetPlannerHistory';
 import BudgetPlannerHistoryDropdown from './BudgetPlannerHistoryDropdown';
 import { toast } from 'sonner';
+import InfoTooltip from './InfoTooltip';
 
 interface LotOption {
   lots: number;
@@ -246,8 +247,9 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
           
           {/* Ratio */}
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">
+            <label className="text-xs text-muted-foreground mb-1 block flex items-center">
               {t('rightIssue.ratio')}
+              <InfoTooltip text={t('rightIssue.ratio') === 'Rasio RI' ? 'Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru.' : 'Example: 2:1 means every 2 old shares entitled to 1 new share.'} />
             </label>
             <div className="flex items-center gap-2">
               <RatioInput
@@ -267,8 +269,9 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
           {/* Prices */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">
+              <label className="text-xs text-muted-foreground mb-1 block flex items-center">
                 {t('rightIssue.price')}
+                <InfoTooltip text={t('rightIssue.price') === 'Harga Pelaksanaan' ? 'Harga per lembar untuk menebus right issue.' : 'Price per share to exercise the right issue.'} />
               </label>
               <input
                 type="text"
@@ -280,8 +283,9 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">
+              <label className="text-xs text-muted-foreground mb-1 block flex items-center">
                 {t('rightIssue.cumPrice')}
+                <InfoTooltip text={t('rightIssue.cumPrice') === 'Harga Cum Date' ? 'Harga saham terakhir sebelum ex-date.' : 'Last stock price before ex-date.'} />
               </label>
               <input
                 type="text"
@@ -299,6 +303,7 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
             <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
               {t('budgetPlanner.currentAvgPrice')}
               <span className="text-destructive">*</span>
+              <InfoTooltip text={t('budgetPlanner.currentAvgPrice') === 'Harga Avg Saat Ini' ? 'Harga rata-rata pembelian saham Anda saat ini.' : 'Your current average purchase price.'} />
             </label>
             <input
               type="text"
@@ -315,8 +320,9 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
           
           {/* Warrant Toggle */}
           <div className="flex items-center justify-between pt-2 border-t border-border/50">
-            <Label htmlFor="warrant-toggle-bp" className="text-xs text-muted-foreground">
+            <Label htmlFor="warrant-toggle-bp" className="text-xs text-muted-foreground flex items-center">
               {t('rightIssue.hasWarrant')}
+              <InfoTooltip text={t('rightIssue.hasWarrant') === 'Bonus Waran' ? 'Centang jika right issue memberikan bonus waran.' : 'Check if RI provides bonus warrants.'} />
             </Label>
             <Switch
               id="warrant-toggle-bp"
@@ -366,8 +372,9 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
         
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">
+            <label className="text-xs text-muted-foreground mb-1 block flex items-center">
               {t('budgetPlanner.totalBudget')}
+              <InfoTooltip text={t('budgetPlanner.totalBudget') === 'Total Budget' ? 'Total dana yang tersedia untuk investasi.' : 'Total funds available for investment.'} />
             </label>
             <input
               type="text"
@@ -394,8 +401,9 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
           
           {/* Include Exercise Fund Toggle */}
           <div className="flex items-center justify-between pt-2 border-t border-border/50">
-            <Label htmlFor="exercise-fund-toggle" className="text-xs text-muted-foreground">
+            <Label htmlFor="exercise-fund-toggle" className="text-xs text-muted-foreground flex items-center">
               {t('budgetPlanner.includeExercise')}
+              <InfoTooltip text={t('budgetPlanner.includeExercise') === 'Sertakan Dana Tebus' ? 'Apakah budget sudah termasuk dana untuk menebus RI.' : 'Whether the budget includes funds to exercise RI.'} />
             </Label>
             <Switch
               id="exercise-fund-toggle"
