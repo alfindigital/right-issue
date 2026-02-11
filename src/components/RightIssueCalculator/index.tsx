@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Heart } from 'lucide-react';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
@@ -639,8 +639,9 @@ const RightIssueCalculator: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-3 px-4 border-t border-border mt-auto">
-        <p className="text-center text-[10px] text-muted-foreground/70">
-          © <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
+        <p className="text-center text-[11px] text-muted-foreground/70 flex items-center justify-center gap-1">
+          Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by{' '}
+          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
         </p>
       </footer>
 

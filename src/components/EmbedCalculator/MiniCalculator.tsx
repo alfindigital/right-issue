@@ -256,12 +256,12 @@ const MiniCalculator: React.FC<MiniCalculatorProps> = ({ onCalculate }) => {
       <p className="mt-2 text-center text-[10px] text-muted-foreground/60">
         Powered by{' '}
         <a
-          href={window.location.origin}
+          href="https://alfindigital.com"
           target="_blank"
           rel="noopener noreferrer"
           className="underline hover:text-primary"
         >
-          Right Issue Calculator
+          alfindigital.com
         </a>
       </p>
     </div>
