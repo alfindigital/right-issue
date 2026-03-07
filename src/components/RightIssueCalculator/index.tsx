@@ -401,7 +401,12 @@ const RightIssueCalculator: React.FC = () => {
       description: `${data.lots} lot ${t('budgetPlanner.appliedDesc')}`,
       duration: 3000,
     });
-  }, [t]);
+
+    // Auto-calculate after state updates are committed
+    setTimeout(() => {
+      calculate();
+    }, 0);
+  }, [t, calculate]);
 
   // Load calculation from history
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
