@@ -404,18 +404,16 @@ const RightIssueCalculator: React.FC = () => {
     // Switch to calculator tab
     setActiveTab('calculator');
     
+    // Flag auto-calculate to trigger after state updates
+    pendingAutoCalculateRef.current = true;
+    
     // Show toast notification
     toast({
       title: t('budgetPlanner.applied'),
       description: `${data.lots} lot ${t('budgetPlanner.appliedDesc')}`,
       duration: 3000,
     });
-
-    // Auto-calculate after state updates are committed
-    setTimeout(() => {
-      calculate();
-    }, 0);
-  }, [t, calculate]);
+  }, [t]);
 
   // Load calculation from history
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
