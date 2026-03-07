@@ -38,6 +38,7 @@ const RightIssueCalculator: React.FC = () => {
   const { saveToStorage, loadFromStorage, clearStorage } = useAutoSave();
   const { t } = useLanguage();
   const hasRestoredRef = useRef(false);
+  const pendingAutoCalculateRef = useRef(false);
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
@@ -313,6 +314,14 @@ const RightIssueCalculator: React.FC = () => {
     });
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory]);
 
+  // Auto-calculate when triggered by Budget Planner apply
+  useEffect(() => {
+    if (pendingAutoCalculateRef.current) {
+      pendingAutoCalculateRef.current = false;
+      calculate();
+    }
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, calculate]);
+
   const reset = useCallback(() => {
     // Reset inputs
     setStockCode('');
@@ -394,6 +403,9 @@ const RightIssueCalculator: React.FC = () => {
     
     // Switch to calculator tab
     setActiveTab('calculator');
+    
+    // Flag auto-calculate to trigger after state updates
+    pendingAutoCalculateRef.current = true;
     
     // Show toast notification
     toast({
