@@ -314,6 +314,14 @@ const RightIssueCalculator: React.FC = () => {
     });
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory]);
 
+  // Auto-calculate when triggered by Budget Planner apply
+  useEffect(() => {
+    if (pendingAutoCalculateRef.current) {
+      pendingAutoCalculateRef.current = false;
+      calculate();
+    }
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, calculate]);
+
   const reset = useCallback(() => {
     // Reset inputs
     setStockCode('');
