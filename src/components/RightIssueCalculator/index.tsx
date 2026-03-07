@@ -38,6 +38,7 @@ const RightIssueCalculator: React.FC = () => {
   const { saveToStorage, loadFromStorage, clearStorage } = useAutoSave();
   const { t } = useLanguage();
   const hasRestoredRef = useRef(false);
+  const pendingAutoCalculateRef = useRef(false);
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
