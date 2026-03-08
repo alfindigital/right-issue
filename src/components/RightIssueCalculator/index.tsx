@@ -4,6 +4,7 @@ import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
+import DilutionSimulator from './DilutionSimulator';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import ThemeToggle from './ThemeToggle';
@@ -616,6 +617,14 @@ const RightIssueCalculator: React.FC = () => {
               recommendation={recommendation}
               recommendationText={recommendationText}
               isCalculated={isCalculated}
+            />
+
+            <DilutionSimulator
+              isCalculated={isCalculated}
+              currentShares={(parseInt(currentLots) || 0) * 100}
+              newSharesEntitled={numericValues.newSharesCount}
+              ratioOld={parseDecimalId(ratioOld)}
+              ratioNew={parseDecimalId(ratioNew)}
             />
 
             <ScenarioComparison
