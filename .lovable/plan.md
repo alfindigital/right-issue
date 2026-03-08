@@ -1,123 +1,93 @@
 
 
-# Plan: Perbaikan UI, Embed Watermark, Footer, Tooltip, dan Mobile
+## UI/UX Redesign Plan — Modern, Interactive, Simple, Mobile-First
 
-## Ringkasan
-6 perubahan: (1) icon bahasa jadi teks ID/EN saja, (2) watermark alfindigital.com di embed, (3) footer dengan "made with love by alfindigital", (4) samakan InfoTooltip di Budget Planner, (5) cek mobile responsiveness dan PWA, (6) verifikasi kalkulasi.
-
----
-
-## 1. Language Toggle - Hapus Icon, Teks Saja
-
-**File:** `src/components/RightIssueCalculator/LanguageToggle.tsx`
-
-Hapus import `Languages` dari lucide-react. Hapus elemen icon `<Languages>`. Tombol hanya menampilkan teks "ID" atau "EN" (uppercase, bold).
-
-Layout tombol:
-```
-Sebelum: [🌐 ID]
-Sesudah: [ID] atau [EN]
-```
+### Current State
+The app uses stacked card sections with a flat blue header, standard form inputs, and basic tab navigation. While functional, it looks like a traditional form rather than a modern interactive tool.
 
 ---
 
-## 2. Watermark alfindigital.com di Embed Widget
+### Priority 1: Header & Branding Overhaul
+**Problem:** Plain blue bar with small icons, no visual identity.
+**Solution:**
+- Gradient header with subtle animated mesh/grain texture
+- Larger logo area with app icon + tagline ("Simulasi Right Issue Cepat & Akurat")
+- Floating pill-style toolbar for theme/language/history/embed (grouped with glassmorphism background)
+- On mobile: compact header with collapsible action menu (hamburger → bottom sheet)
 
-**File:** `src/components/EmbedCalculator/MiniCalculator.tsx`
+### Priority 2: Stepper/Wizard Flow (Replace Flat Form)
+**Problem:** All inputs shown at once — overwhelming, especially on mobile.
+**Solution:**
+- Replace the single-page calculator form with a **multi-step wizard**:
+  - Step 1: Kode Saham + Info RI (rasio, harga)
+  - Step 2: Kepemilikan (lot, avg price)
+  - Step 3: Opsi Waran (conditional)
+  - Step 4: Hasil & Analisis
+- Progress indicator bar at top (numbered dots or segmented progress bar)
+- Smooth slide/fade transitions between steps
+- "Lanjut" / "Kembali" buttons with keyboard support
+- On mobile: full-width steps, swipe gesture support
+- **Keep "Advanced mode"** toggle to show all fields at once for power users
 
-Ubah bagian "Powered by" di footer widget dari "Right Issue Calculator" menjadi watermark promosi alfindigital.com:
+### Priority 3: Results Dashboard Redesign
+**Problem:** Results are plain text rows — no visual hierarchy or delight.
+**Solution:**
+- **Hero metric card** at top: Final Avg Price with large animated number + comparison badge (vs TERP)
+- **Stat grid** (2x2 on mobile, 4-col on desktop): Total Lot, Total Value, TERP, Discount/Premium — each in a mini card with icon + colored accent
+- Recommendation as a prominent **banner card** with icon (checkmark/warning), not just text
+- Animate numbers counting up on first render
+- Subtle confetti or success pulse animation when results are positive
 
-```
-Sebelum: Powered by Right Issue Calculator
-Sesudah: Powered by alfindigital.com
-```
+### Priority 4: Bottom Navigation (Mobile)
+**Problem:** Top tabs are hard to reach on tall phones.
+**Solution:**
+- On mobile (< 768px), replace top `TabsList` with a **fixed bottom navigation bar**
+- 3 items: Kalkulator (calculator icon), Budget (wallet icon), Edukasi (book icon)
+- Active tab highlighted with filled icon + label
+- Top tabs remain on desktop
 
-Link mengarah ke `https://alfindigital.com` (bukan window.location.origin).
+### Priority 5: Card Visual Refresh
+**Problem:** Cards look uniform with no depth variation.
+**Solution:**
+- Add subtle **left border accent** (colored by section type: blue for input, green for results, purple for analysis)
+- Section headers with icon + badge count (e.g., "Analisis Lanjutan" with "3 insights" badge)
+- Collapsible sections with smooth accordion animation (for advanced analysis, dilution sim, what-if)
+- Hover micro-interactions: gentle lift + shadow increase
 
----
+### Priority 6: Input Fields Polish
+**Problem:** Inputs are functional but plain.
+**Solution:**
+- Floating labels (label animates up when focused/filled)
+- Input prefix for currency fields (Rp inside the field, left-aligned)
+- Ratio input as a visual "X : Y" component with colon separator styled prominently
+- Success checkmark appears when field is valid
+- Inline validation with colored border (red error, green valid)
 
-## 3. Footer dengan "Made with Love"
-
-**File:** `src/components/RightIssueCalculator/index.tsx`
-
-Ubah footer dari:
-```
-© alfindigital
-```
-Menjadi:
-```
-Made with [heart icon] by alfindigital
-```
-
-- Heart icon menggunakan `Heart` dari lucide-react (filled, warna merah/pink)
-- "alfindigital" tetap hyperlink ke https://alfindigital.com
-- Ukuran teks tetap kecil (text-[11px]) agar minimalis
-
----
-
-## 4. Samakan InfoTooltip di Budget Planner
-
-**File:** `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
-
-Tambahkan `InfoTooltip` pada label-label di Budget Planner, konsisten dengan format yang digunakan di `RightIssueInfoSection` dan `OwnershipSection`:
-
-| Label | Tooltip ID | Tooltip EN |
-|-------|-----------|-----------|
-| Rasio RI | "Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru." | "Example: 2:1 means every 2 old shares entitled to 1 new share." |
-| Harga Pelaksanaan | "Harga per lembar untuk menebus right issue." | "Price per share to exercise the right issue." |
-| Harga Cum Date | "Harga saham terakhir sebelum ex-date." | "Last stock price before ex-date." |
-| Harga Avg Saat Ini | "Harga rata-rata pembelian saham Anda saat ini." | "Your current average purchase price." |
-| Bonus Waran | "Centang jika right issue memberikan bonus waran." | "Check if RI provides bonus warrants." |
-| Total Budget | "Total dana yang tersedia untuk investasi." | "Total funds available for investment." |
-| Sertakan Dana Tebus | "Apakah budget sudah termasuk dana untuk menebus RI." | "Whether the budget includes funds to exercise RI." |
-
-Import `InfoTooltip` dari `./InfoTooltip` dan tambahkan di setiap label yang relevan.
-
----
-
-## 5. Mobile Responsiveness dan PWA
-
-**Verifikasi (tidak perlu perubahan kode jika sudah OK):**
-
-- PWA config sudah lengkap di `vite.config.ts` (manifest, workbox, icons)
-- Meta tags PWA sudah ada di `index.html` (apple-mobile-web-app-capable, theme-color, viewport)
-- `OfflineIndicator` dan `PWAUpdatePrompt` sudah ada
-- Viewport sudah set `maximum-scale=1.0, user-scalable=no` untuk mobile
-- `navigateFallbackDenylist` perlu ditambah `/~oauth` sesuai best practice
-
-**Perubahan kecil:**
-- `vite.config.ts`: tambahkan `/^\/~oauth/` ke `navigateFallbackDenylist`
+### Priority 7: Interactive Charts Upgrade
+**Problem:** Charts are basic recharts with default styling.
+**Solution:**
+- Custom color palette matching the app theme
+- Donut charts with center label showing key metric
+- Hover tooltips with formatted values
+- Chart section tabs (slide between different visualizations)
+- On mobile: horizontal scroll for comparison charts
 
 ---
 
-## 6. Verifikasi Kalkulasi
+### Technical Approach
+- All changes use existing stack: Tailwind CSS, shadcn/ui, Recharts, Framer-less CSS animations
+- No new dependencies needed (CSS transitions + Tailwind keyframes for animations)
+- Mobile responsiveness via existing Tailwind breakpoints + `useIsMobile` hook
+- Wizard state managed with a simple `currentStep` state variable
+- Bottom nav conditionally rendered based on `useIsMobile()`
 
-Setelah perubahan, akan dilakukan tes otomatis pada:
-- Kalkulator RI utama (TERP, lot baru, avg baru, waran)
-- Budget Planner (rekomendasi lot optimal)
-- Embed widget (kalkulasi mini)
-
----
-
-## Detail Teknis - File yang Diubah
-
-### `src/components/RightIssueCalculator/LanguageToggle.tsx`
-- Hapus import `Languages` dari lucide-react
-- Hapus elemen `<Languages>` icon
-- Pertahankan animasi dan styling, hanya tampilkan teks ID/EN
-
-### `src/components/EmbedCalculator/MiniCalculator.tsx`
-- Ubah href di "Powered by" ke `https://alfindigital.com`
-- Ubah teks dari "Right Issue Calculator" ke "alfindigital.com"
-
-### `src/components/RightIssueCalculator/index.tsx`
-- Import `Heart` dari lucide-react
-- Ubah footer menjadi "Made with [heart] by alfindigital"
-
-### `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
-- Import `InfoTooltip` dari `./InfoTooltip`
-- Tambahkan InfoTooltip pada 7 label form
-
-### `vite.config.ts`
-- Tambahkan `/^\/~oauth/` ke navigateFallbackDenylist
+### Files to Modify
+- `src/components/RightIssueCalculator/index.tsx` — Wizard flow, bottom nav, layout restructure
+- `src/index.css` — New component classes, animation keyframes, floating label styles
+- `tailwind.config.ts` — Additional keyframes if needed
+- New: `src/components/RightIssueCalculator/StepWizard.tsx` — Step container component
+- New: `src/components/RightIssueCalculator/BottomNav.tsx` — Mobile bottom navigation
+- New: `src/components/RightIssueCalculator/ResultsDashboard.tsx` — Redesigned results display
+- New: `src/components/RightIssueCalculator/StatCard.tsx` — Mini metric card component
+- Modify existing section components for accordion/collapsible behavior
 
