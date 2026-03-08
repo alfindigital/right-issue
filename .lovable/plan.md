@@ -1,123 +1,95 @@
 
 
-# Plan: Perbaikan UI, Embed Watermark, Footer, Tooltip, dan Mobile
+## Ide Improvement untuk Right Issue Calculator — Prioritas untuk Investor IDX
 
-## Ringkasan
-6 perubahan: (1) icon bahasa jadi teks ID/EN saja, (2) watermark alfindigital.com di embed, (3) footer dengan "made with love by alfindigital", (4) samakan InfoTooltip di Budget Planner, (5) cek mobile responsiveness dan PWA, (6) verifikasi kalkulasi.
-
----
-
-## 1. Language Toggle - Hapus Icon, Teks Saja
-
-**File:** `src/components/RightIssueCalculator/LanguageToggle.tsx`
-
-Hapus import `Languages` dari lucide-react. Hapus elemen icon `<Languages>`. Tombol hanya menampilkan teks "ID" atau "EN" (uppercase, bold).
-
-Layout tombol:
-```
-Sebelum: [🌐 ID]
-Sesudah: [ID] atau [EN]
-```
+Berikut rekomendasi fitur berurutan dari yang paling berdampak:
 
 ---
 
-## 2. Watermark alfindigital.com di Embed Widget
+### 1. Dilusi Kepemilikan Simulator (High Priority)
+**Masalah:** Investor sering tidak sadar seberapa besar persentase kepemilikan mereka terdilusi jika tidak ikut RI.
+**Solusi:** Tambahkan visualisasi sebelum vs sesudah RI yang menunjukkan:
+- % kepemilikan sebelum RI
+- % kepemilikan jika ikut penuh, ikut sebagian, atau tidak ikut
+- Donut chart perbandingan dilusi
 
-**File:** `src/components/EmbedCalculator/MiniCalculator.tsx`
-
-Ubah bagian "Powered by" di footer widget dari "Right Issue Calculator" menjadi watermark promosi alfindigital.com:
-
-```
-Sebelum: Powered by Right Issue Calculator
-Sesudah: Powered by alfindigital.com
-```
-
-Link mengarah ke `https://alfindigital.com` (bukan window.location.origin).
+Ini bisa ditambahkan sebagai section baru di hasil kalkulasi atau tab terpisah.
 
 ---
 
-## 3. Footer dengan "Made with Love"
-
-**File:** `src/components/RightIssueCalculator/index.tsx`
-
-Ubah footer dari:
-```
-© alfindigital
-```
-Menjadi:
-```
-Made with [heart icon] by alfindigital
-```
-
-- Heart icon menggunakan `Heart` dari lucide-react (filled, warna merah/pink)
-- "alfindigital" tetap hyperlink ke https://alfindigital.com
-- Ukuran teks tetap kecil (text-[11px]) agar minimalis
+### 2. Notifikasi & Kalender Jadwal RI (High Priority)
+**Masalah:** Investor sering terlewat tanggal penting (cum-date, ex-date, recording date, trading HMETD, exercise date).
+**Solusi:** Input tanggal-tanggal penting RI, lalu tampilkan:
+- Timeline visual horizontal
+- Countdown ke tanggal terdekat
+- Opsi export ke Google Calendar (.ics)
+- Reminder badge jika mendekati deadline
 
 ---
 
-## 4. Samakan InfoTooltip di Budget Planner
+### 3. Fetch Data Emiten Otomatis via Kode Saham (Medium-High)
+**Masalah:** User harus input manual rasio, harga RI, dan harga cum-date.
+**Solusi:** Ketika user mengetik kode saham (misal BBRI), auto-populate data RI yang sedang berlangsung dari database/API. Bisa menggunakan:
+- Supabase table berisi data RI aktif yang di-maintain manual/berkala
+- Atau scraping dari sumber publik
 
-**File:** `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
-
-Tambahkan `InfoTooltip` pada label-label di Budget Planner, konsisten dengan format yang digunakan di `RightIssueInfoSection` dan `OwnershipSection`:
-
-| Label | Tooltip ID | Tooltip EN |
-|-------|-----------|-----------|
-| Rasio RI | "Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru." | "Example: 2:1 means every 2 old shares entitled to 1 new share." |
-| Harga Pelaksanaan | "Harga per lembar untuk menebus right issue." | "Price per share to exercise the right issue." |
-| Harga Cum Date | "Harga saham terakhir sebelum ex-date." | "Last stock price before ex-date." |
-| Harga Avg Saat Ini | "Harga rata-rata pembelian saham Anda saat ini." | "Your current average purchase price." |
-| Bonus Waran | "Centang jika right issue memberikan bonus waran." | "Check if RI provides bonus warrants." |
-| Total Budget | "Total dana yang tersedia untuk investasi." | "Total funds available for investment." |
-| Sertakan Dana Tebus | "Apakah budget sudah termasuk dana untuk menebus RI." | "Whether the budget includes funds to exercise RI." |
-
-Import `InfoTooltip` dari `./InfoTooltip` dan tambahkan di setiap label yang relevan.
+Ini akan sangat mengurangi friction dan potensi input error.
 
 ---
 
-## 5. Mobile Responsiveness dan PWA
-
-**Verifikasi (tidak perlu perubahan kode jika sudah OK):**
-
-- PWA config sudah lengkap di `vite.config.ts` (manifest, workbox, icons)
-- Meta tags PWA sudah ada di `index.html` (apple-mobile-web-app-capable, theme-color, viewport)
-- `OfflineIndicator` dan `PWAUpdatePrompt` sudah ada
-- Viewport sudah set `maximum-scale=1.0, user-scalable=no` untuk mobile
-- `navigateFallbackDenylist` perlu ditambah `/~oauth` sesuai best practice
-
-**Perubahan kecil:**
-- `vite.config.ts`: tambahkan `/^\/~oauth/` ke `navigateFallbackDenylist`
+### 4. Multi-Skenario "What If" dengan Target Harga (Medium)
+**Masalah:** Fitur ScenarioComparison sudah ada, tapi belum bisa custom target harga.
+**Solusi:** Tambahkan input "Target Harga Jual" dimana investor bisa:
+- Masukkan beberapa target harga (misal Rp 1.500, 2.000, 2.500)
+- Lihat profit/loss di setiap target untuk skenario ikut RI vs tidak
+- Tabel perbandingan ROI per target harga
 
 ---
 
-## 6. Verifikasi Kalkulasi
-
-Setelah perubahan, akan dilakukan tes otomatis pada:
-- Kalkulator RI utama (TERP, lot baru, avg baru, waran)
-- Budget Planner (rekomendasi lot optimal)
-- Embed widget (kalkulasi mini)
+### 5. Panduan Edukasi Interaktif (Medium)
+**Masalah:** Banyak investor retail tidak paham mekanisme RI, HMETD, TERP, dilusi.
+**Solusi:** Tambahkan section "Pelajari" atau guided tour:
+- Glosarium istilah RI (HMETD, TERP, cum-date, ex-date, dll)
+- Step-by-step visual: "Apa yang terjadi saat emiten RI?"
+- FAQ interaktif dengan contoh angka nyata
+- Bisa sebagai tab ketiga atau drawer/modal
 
 ---
 
-## Detail Teknis - File yang Diubah
+### 6. Export Laporan PDF Lengkap (Medium-Low)
+**Masalah:** ExportTemplate sudah ada tapi terbatas. Investor butuh dokumen lengkap untuk diskusi/arsip.
+**Solusi:** Generate PDF satu halaman berisi:
+- Semua input parameter
+- Hasil kalkulasi lengkap
+- Chart analisis
+- Rekomendasi HMETD
+- Timestamp dan disclaimer
 
-### `src/components/RightIssueCalculator/LanguageToggle.tsx`
-- Hapus import `Languages` dari lucide-react
-- Hapus elemen `<Languages>` icon
-- Pertahankan animasi dan styling, hanya tampilkan teks ID/EN
+Bisa menggunakan html2canvas (sudah terinstall) + jsPDF.
 
-### `src/components/EmbedCalculator/MiniCalculator.tsx`
-- Ubah href di "Powered by" ke `https://alfindigital.com`
-- Ubah teks dari "Right Issue Calculator" ke "alfindigital.com"
+---
 
-### `src/components/RightIssueCalculator/index.tsx`
-- Import `Heart` dari lucide-react
-- Ubah footer menjadi "Made with [heart] by alfindigital"
+### 7. Perbandingan RI Antar Emiten (Low)
+**Masalah:** Kadang ada beberapa emiten RI bersamaan, investor bingung prioritas.
+**Solusi:** Fitur side-by-side comparison 2-3 emiten RI:
+- Bandingkan diskon RI price vs market price
+- Bandingkan potensi dilusi
+- Bandingkan nilai HMETD
+- Ranking otomatis mana yang paling menguntungkan
 
-### `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
-- Import `InfoTooltip` dari `./InfoTooltip`
-- Tambahkan InfoTooltip pada 7 label form
+---
 
-### `vite.config.ts`
-- Tambahkan `/^\/~oauth/` ke navigateFallbackDenylist
+### Ringkasan Prioritas
+
+| # | Fitur | Impact | Effort |
+|---|-------|--------|--------|
+| 1 | Dilusi Kepemilikan Simulator | Tinggi | Rendah |
+| 2 | Kalender & Timeline Jadwal RI | Tinggi | Sedang |
+| 3 | Auto-fetch Data Emiten | Tinggi | Tinggi |
+| 4 | What-If Target Harga | Sedang | Sedang |
+| 5 | Panduan Edukasi Interaktif | Sedang | Sedang |
+| 6 | Export PDF Lengkap | Sedang | Rendah |
+| 7 | Perbandingan Antar Emiten | Rendah | Tinggi |
+
+Rekomendasi: Mulai dari **#1 (Dilusi Simulator)** karena impact tinggi dengan effort rendah — cukup tambahkan visualisasi dari data yang sudah tersedia di kalkulator.
 
