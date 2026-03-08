@@ -659,6 +659,10 @@ const RightIssueCalculator: React.FC = () => {
           <TabsContent value="budget" className="mt-0">
             <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
           </TabsContent>
+          
+          <TabsContent value="education" className="mt-0">
+            <EducationSection />
+          </TabsContent>
         </Tabs>
       </main>
 
