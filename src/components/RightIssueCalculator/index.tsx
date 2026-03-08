@@ -92,6 +92,7 @@ const RightIssueCalculator: React.FC = () => {
   const [recommendation, setRecommendation] = useState<'positive' | 'negative' | null>(null);
   const [recommendationText, setRecommendationText] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const [numericValues, setNumericValues] = useState({
     newSharesCount: 0,
@@ -265,11 +266,16 @@ const RightIssueCalculator: React.FC = () => {
       );
     }
 
-    setIsCalculated(true);
-
-    // Auto-advance to results step in wizard mode
+    // Show skeleton loading briefly before revealing results
     if (useWizardMode) {
+      setIsCalculating(true);
       setWizardStep(4);
+      setTimeout(() => {
+        setIsCalculated(true);
+        setIsCalculating(false);
+      }, 600);
+    } else {
+      setIsCalculated(true);
     }
 
     addToHistory({
@@ -299,7 +305,7 @@ const RightIssueCalculator: React.FC = () => {
     setCurrentLots(''); setCurrentAvgPrice(''); setHasWarrant(false); setWarrantRatioOld(''); setWarrantRatioNew('');
     setCurrentTotalValue('Rp 0'); setNewLotsCount('0'); setNewAvgPrice('Rp 0'); setNewTotalValue('Rp 0');
     setFinalLots('0'); setFinalAvgPrice('Rp 0'); setFinalTotalValue('Rp 0'); setTheoreticalPrice('-');
-    setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false);
+    setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false); setIsCalculating(false);
     setNumericValues({ newSharesCount: 0, totalShares: 0, totalModal: 0, avgBaru: 0, terp: 0 });
     setWizardStep(1);
     clearStorage();
@@ -493,10 +499,10 @@ const RightIssueCalculator: React.FC = () => {
               </div>
             )}
 
-            {wizardStep === 4 && isCalculated && (
+            {wizardStep === 4 && (isCalculated || isCalculating) && (
               <div className="space-y-3">
                 <ResultsDashboard
-                  isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                  isCalculated={isCalculated} isLoading={isCalculating} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
                   finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
                   recommendation={recommendation} recommendationText={recommendationText}
                 />
