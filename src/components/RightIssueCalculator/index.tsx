@@ -374,7 +374,10 @@ const RightIssueCalculator: React.FC = () => {
     return false;
   };
 
+  const [swipeDir, setSwipeDir] = useState<'left' | 'right'>('left');
+
   const handleNext = () => {
+    setSwipeDir('left');
     if (wizardStep === 3) {
       calculate();
     } else {
@@ -382,7 +385,20 @@ const RightIssueCalculator: React.FC = () => {
     }
   };
 
-  const handlePrev = () => setWizardStep(prev => Math.max(prev - 1, 1));
+  const handlePrev = () => {
+    setSwipeDir('right');
+    setWizardStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const swipeHandlers = useSwipeGesture({
+    onSwipeLeft: () => {
+      if (wizardStep < 4 && canGoNext()) handleNext();
+    },
+    onSwipeRight: () => {
+      if (wizardStep > 1) handlePrev();
+    },
+    threshold: 50,
+  });
 
   // Toolbar items
   const toolbarItems = (
