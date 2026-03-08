@@ -499,7 +499,7 @@ const RightIssueCalculator: React.FC = () => {
               </div>
             )}
 
-            {wizardStep === 4 && isCalculated && (
+            {wizardStep === 4 && (isCalculated || isCalculating) && (
               <div className="space-y-3">
                 <ResultsDashboard
                   isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
