@@ -17,6 +17,7 @@ import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
 import ScenarioComparison from './ScenarioComparison';
 import EducationSection from './EducationSection';
+import WhatIfTargetPrice from './WhatIfTargetPrice';
 import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
@@ -641,6 +642,16 @@ const RightIssueCalculator: React.FC = () => {
               currentShares={(parseInt(currentLots) || 0) * 100}
               newSharesCount={numericValues.newSharesCount}
               currentAvgPrice={parseInt(currentAvgPrice) || 0}
+            />
+
+            <WhatIfTargetPrice
+              isCalculated={isCalculated}
+              currentShares={(parseInt(currentLots) || 0) * 100}
+              newSharesCount={numericValues.newSharesCount}
+              currentAvgPrice={parseInt(currentAvgPrice) || 0}
+              riPrice={parseInt(rightPrice) || 0}
+              cumPrice={parseInt(cumDatePrice) || 0}
+              terp={numericValues.terp}
             />
 
             <AdvancedAnalysisSection
