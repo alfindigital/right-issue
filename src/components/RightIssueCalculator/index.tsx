@@ -92,6 +92,7 @@ const RightIssueCalculator: React.FC = () => {
   const [recommendation, setRecommendation] = useState<'positive' | 'negative' | null>(null);
   const [recommendationText, setRecommendationText] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const [numericValues, setNumericValues] = useState({
     newSharesCount: 0,
