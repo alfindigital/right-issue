@@ -305,7 +305,7 @@ const RightIssueCalculator: React.FC = () => {
     setCurrentLots(''); setCurrentAvgPrice(''); setHasWarrant(false); setWarrantRatioOld(''); setWarrantRatioNew('');
     setCurrentTotalValue('Rp 0'); setNewLotsCount('0'); setNewAvgPrice('Rp 0'); setNewTotalValue('Rp 0');
     setFinalLots('0'); setFinalAvgPrice('Rp 0'); setFinalTotalValue('Rp 0'); setTheoreticalPrice('-');
-    setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false);
+    setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false); setIsCalculating(false);
     setNumericValues({ newSharesCount: 0, totalShares: 0, totalModal: 0, avgBaru: 0, terp: 0 });
     setWizardStep(1);
     clearStorage();
