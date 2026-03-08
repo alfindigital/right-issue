@@ -4,6 +4,7 @@ import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
+import DilutionSimulator from './DilutionSimulator';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import ThemeToggle from './ThemeToggle';
