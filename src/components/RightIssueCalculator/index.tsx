@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { RotateCcw, Heart } from 'lucide-react';
+import { RotateCcw, Heart, ChevronRight, ChevronLeft, Menu, X, Zap } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
@@ -20,6 +20,9 @@ import ScenarioComparison from './ScenarioComparison';
 import EducationSection from './EducationSection';
 import WhatIfTargetPrice from './WhatIfTargetPrice';
 import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
+import ResultsDashboard from './ResultsDashboard';
+import StepWizard from './StepWizard';
+import BottomNav from './BottomNav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -27,6 +30,7 @@ import { useAutoSave } from '@/hooks/useAutoSave';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -40,12 +44,20 @@ const RightIssueCalculator: React.FC = () => {
   const resultRef = useRef<HTMLDivElement>(null);
   const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
   const { saveToStorage, loadFromStorage, clearStorage } = useAutoSave();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const hasRestoredRef = useRef(false);
   const pendingAutoCalculateRef = useRef(false);
+  const isMobile = useIsMobile();
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
+  
+  // Wizard step state
+  const [wizardStep, setWizardStep] = useState(1);
+  const [useWizardMode, setUseWizardMode] = useState(true);
+  
+  // Mobile toolbar
+  const [toolbarOpen, setToolbarOpen] = useState(false);
   
   // Stock Code
   const [stockCode, setStockCode] = useState('');
@@ -66,7 +78,7 @@ const RightIssueCalculator: React.FC = () => {
   const [warrantRatioNew, setWarrantRatioNew] = useState('');
   const [warrantCount, setWarrantCount] = useState('0');
 
-  // Calculated Values (display formatted)
+  // Calculated Values
   const [currentTotalValue, setCurrentTotalValue] = useState('Rp 0');
   const [newLotsCount, setNewLotsCount] = useState('0');
   const [newAvgPrice, setNewAvgPrice] = useState('Rp 0');
@@ -79,7 +91,6 @@ const RightIssueCalculator: React.FC = () => {
   const [recommendationText, setRecommendationText] = useState('');
   const [isCalculated, setIsCalculated] = useState(false);
 
-  // Raw numeric values for charts (to avoid parsing formatted strings)
   const [numericValues, setNumericValues] = useState({
     newSharesCount: 0,
     totalShares: 0,
@@ -88,9 +99,13 @@ const RightIssueCalculator: React.FC = () => {
     terp: 0,
   });
 
-  // Validation errors
   const [ratioError, setRatioError] = useState('');
   const [warrantRatioError, setWarrantRatioError] = useState('');
+
+  // Wizard step labels
+  const stepLabels = language === 'id'
+    ? ['Info RI', 'Kepemilikan', 'Waran', 'Hasil']
+    : ['RI Info', 'Holdings', 'Warrants', 'Results'];
 
   // Parse URL params or restore from auto-save on mount
   useEffect(() => {
@@ -106,7 +121,6 @@ const RightIssueCalculator: React.FC = () => {
     const cs = params.get('cs');
     const ca = params.get('ca');
 
-    // Priority: URL params > auto-save
     if (sc) setStockCode(sc);
     if (ro && rn && rp && cp && cs && ca) {
       setRatioOld(ro);
@@ -115,8 +129,8 @@ const RightIssueCalculator: React.FC = () => {
       setCumDatePrice(cp);
       setCurrentLots(cs);
       setCurrentAvgPrice(ca);
+      setUseWizardMode(false);
     } else {
-      // Try to restore from auto-save
       const saved = loadFromStorage();
       if (saved) {
         setStockCode(saved.stockCode);
@@ -139,74 +153,39 @@ const RightIssueCalculator: React.FC = () => {
     }
   }, [loadFromStorage]);
 
-  // Auto-save on input change
+  // Auto-save
   useEffect(() => {
-    // Skip if nothing has been entered yet
     const hasData = stockCode || ratioOld || ratioNew || rightPrice || cumDatePrice || currentLots || currentAvgPrice;
     if (!hasData) return;
-
-    saveToStorage({
-      stockCode,
-      ratioOld,
-      ratioNew,
-      rightPrice,
-      cumDatePrice,
-      currentLots,
-      currentAvgPrice,
-      hasWarrant,
-      warrantRatioOld,
-      warrantRatioNew,
-    });
+    saveToStorage({ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew });
   }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, saveToStorage]);
 
   // Validate ratios
   useEffect(() => {
     const rOld = parseDecimalId(ratioOld);
     const rNew = parseDecimalId(ratioNew);
-    
-    if (ratioOld && rOld === 0) {
-      setRatioError('Rasio lama tidak boleh 0');
-    } else if (ratioNew && rNew === 0) {
-      setRatioError('Rasio baru tidak boleh 0');
-    } else {
-      setRatioError('');
-    }
+    if (ratioOld && rOld === 0) setRatioError('Rasio lama tidak boleh 0');
+    else if (ratioNew && rNew === 0) setRatioError('Rasio baru tidak boleh 0');
+    else setRatioError('');
   }, [ratioOld, ratioNew]);
 
   useEffect(() => {
-    if (!hasWarrant) {
-      setWarrantRatioError('');
-      return;
-    }
-    
+    if (!hasWarrant) { setWarrantRatioError(''); return; }
     const wOld = parseDecimalId(warrantRatioOld);
     const wNew = parseDecimalId(warrantRatioNew);
-    
-    if (warrantRatioOld && wOld === 0) {
-      setWarrantRatioError('Rasio RI tidak boleh 0');
-    } else if (warrantRatioNew && wNew === 0) {
-      setWarrantRatioError('Rasio waran tidak boleh 0');
-    } else {
-      setWarrantRatioError('');
-    }
+    if (warrantRatioOld && wOld === 0) setWarrantRatioError('Rasio RI tidak boleh 0');
+    else if (warrantRatioNew && wNew === 0) setWarrantRatioError('Rasio waran tidak boleh 0');
+    else setWarrantRatioError('');
   }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
 
-  // Warrant ratio is required if warrant is enabled
-  const isWarrantRatioValid = !hasWarrant || 
-    (warrantRatioOld && warrantRatioNew && !warrantRatioError);
+  const isWarrantRatioValid = !hasWarrant || (warrantRatioOld && warrantRatioNew && !warrantRatioError);
+  const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice && !ratioError && isWarrantRatioValid);
 
-  const isCalculateEnabled = !!(
-    ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice && 
-    !ratioError && isWarrantRatioValid
-  );
-
-  // Calculate current total value on input change
   useEffect(() => {
     const lots = parseInt(currentLots) || 0;
-    const shares = lots * 100; // Convert lots to shares
+    const shares = lots * 100;
     const avgPrice = parseInt(currentAvgPrice) || 0;
-    const totalValue = shares * avgPrice;
-    setCurrentTotalValue(formatCurrency(totalValue));
+    setCurrentTotalValue(formatCurrency(shares * avgPrice));
   }, [currentLots, currentAvgPrice]);
 
   const calculate = useCallback(() => {
@@ -215,16 +194,13 @@ const RightIssueCalculator: React.FC = () => {
     const riPrice = parseInt(rightPrice) || 0;
     const cumPrice = parseInt(cumDatePrice) || 0;
     const lots = parseInt(currentLots) || 0;
-    const shares = lots * 100; // Convert lots to shares
+    const shares = lots * 100;
     const avgPrice = parseInt(currentAvgPrice) || 0;
 
     if (rOld === 0 || rNew === 0) return;
 
-    // Calculate new shares from right issue
     const newShares = Math.floor((shares / rOld) * rNew);
     const newLots = newShares / 100;
-    
-    // Check if it's a fractional lot
     const isWholeLot = Number.isInteger(newLots);
     setNewLotsCount(isWholeLot ? formatNumber(newLots) : newLots.toFixed(2).replace('.', ','));
     setNewAvgPrice(formatCurrency(riPrice));
@@ -232,7 +208,6 @@ const RightIssueCalculator: React.FC = () => {
     const newValue = newShares * riPrice;
     setNewTotalValue(formatCurrency(newValue));
 
-    // Calculate final totals
     const totalShares = shares + newShares;
     const totalLotsNum = totalShares / 100;
     const isWholeFinalLot = Number.isInteger(totalLotsNum);
@@ -245,21 +220,12 @@ const RightIssueCalculator: React.FC = () => {
     const finalAvg = totalShares > 0 ? Math.round(totalValue / totalShares) : 0;
     setFinalAvgPrice(formatCurrency(finalAvg));
 
-    // Calculate TERP (Theoretical Ex-Right Price)
     const terp = ((cumPrice * rOld) + (riPrice * rNew)) / (rOld + rNew);
     const terpRounded = Math.round(terp);
     setTheoreticalPrice(formatCurrency(terpRounded));
 
-    // Store raw numeric values for charts
-    setNumericValues({
-      newSharesCount: newShares,
-      totalShares: totalShares,
-      totalModal: totalValue,
-      avgBaru: finalAvg,
-      terp: terpRounded,
-    });
+    setNumericValues({ newSharesCount: newShares, totalShares, totalModal: totalValue, avgBaru: finalAvg, terp: terpRounded });
 
-    // Calculate warrant count if enabled
     const wOld = parseDecimalId(warrantRatioOld);
     const wNew = parseDecimalId(warrantRatioNew);
     let calculatedWarrantCount = '0';
@@ -271,11 +237,9 @@ const RightIssueCalculator: React.FC = () => {
       setWarrantCount('0');
     }
 
-    // Calculate difference for recommendation
     const priceDiff = terpRounded - finalAvg;
     const priceDiffPercent = finalAvg > 0 ? ((priceDiff / finalAvg) * 100).toFixed(2) : '0';
 
-    // Determine recommendation (neutral language)
     if (finalAvg < terpRounded) {
       setRecommendation('positive');
       setRecommendationText(
@@ -292,20 +256,14 @@ const RightIssueCalculator: React.FC = () => {
 
     setIsCalculated(true);
 
-    // Save to history
+    // Auto-advance to results step in wizard mode
+    if (useWizardMode) {
+      setWizardStep(4);
+    }
+
     addToHistory({
       stockCode: stockCode || undefined,
-      inputs: {
-        ratioOld,
-        ratioNew,
-        rightPrice,
-        cumDatePrice,
-        currentLots,
-        currentAvgPrice,
-        hasWarrant,
-        warrantRatioOld,
-        warrantRatioNew,
-      },
+      inputs: { ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew },
       results: {
         newSharesCount: formatNumber(newLots),
         finalShares: formatNumber(totalLotsNum),
@@ -316,9 +274,8 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode]);
 
-  // Auto-calculate when triggered by Budget Planner apply
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
       pendingAutoCalculateRef.current = false;
@@ -327,44 +284,16 @@ const RightIssueCalculator: React.FC = () => {
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, calculate]);
 
   const reset = useCallback(() => {
-    // Reset inputs
-    setStockCode('');
-    setRatioOld('');
-    setRatioNew('');
-    setRightPrice('');
-    setCumDatePrice('');
-    setCurrentLots('');
-    setCurrentAvgPrice('');
-    setHasWarrant(false);
-    setWarrantRatioOld('');
-    setWarrantRatioNew('');
-    
-    // Reset calculated values
-    setCurrentTotalValue('Rp 0');
-    setNewLotsCount('0');
-    setNewAvgPrice('Rp 0');
-    setNewTotalValue('Rp 0');
-    setFinalLots('0');
-    setFinalAvgPrice('Rp 0');
-    setFinalTotalValue('Rp 0');
-    setTheoreticalPrice('-');
-    setWarrantCount('0');
-    setRecommendation(null);
-    setRecommendationText('');
-    setIsCalculated(false);
-    setNumericValues({
-      newSharesCount: 0,
-      totalShares: 0,
-      totalModal: 0,
-      avgBaru: 0,
-      terp: 0,
-    });
-
-    // Clear auto-save
+    setStockCode(''); setRatioOld(''); setRatioNew(''); setRightPrice(''); setCumDatePrice('');
+    setCurrentLots(''); setCurrentAvgPrice(''); setHasWarrant(false); setWarrantRatioOld(''); setWarrantRatioNew('');
+    setCurrentTotalValue('Rp 0'); setNewLotsCount('0'); setNewAvgPrice('Rp 0'); setNewTotalValue('Rp 0');
+    setFinalLots('0'); setFinalAvgPrice('Rp 0'); setFinalTotalValue('Rp 0'); setTheoreticalPrice('-');
+    setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false);
+    setNumericValues({ newSharesCount: 0, totalShares: 0, totalModal: 0, avgBaru: 0, terp: 0 });
+    setWizardStep(1);
     clearStorage();
   }, [clearStorage]);
 
-  // Share function for keyboard shortcuts
   const handleShare = useCallback(() => {
     const params = new URLSearchParams();
     if (stockCode) params.set('sc', stockCode);
@@ -374,74 +303,33 @@ const RightIssueCalculator: React.FC = () => {
     if (cumDatePrice) params.set('cp', cumDatePrice);
     if (currentLots) params.set('cs', currentLots);
     if (currentAvgPrice) params.set('ca', currentAvgPrice);
-    
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     navigator.clipboard.writeText(url);
-    toast({
-      title: t('toast.copied'),
-      description: t('toast.copiedDesc'),
-      duration: 3000,
-    });
+    toast({ title: t('toast.copied'), description: t('toast.copiedDesc'), duration: 3000 });
   }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, t]);
 
-  // Keyboard shortcuts
-  useKeyboardShortcuts({
-    onCalculate: calculate,
-    onReset: reset,
-    onShare: handleShare,
-    isCalculateEnabled,
-  });
+  useKeyboardShortcuts({ onCalculate: calculate, onReset: reset, onShare: handleShare, isCalculateEnabled });
 
-  // Apply data from budget planner
   const handleApplyFromBudgetPlanner = useCallback((data: BudgetPlannerData) => {
-    // Set all the values from budget planner
-    setRatioOld(data.ratioOld);
-    setRatioNew(data.ratioNew);
-    setRightPrice(data.rightPrice);
-    setCumDatePrice(data.cumDatePrice);
-    setCurrentLots(String(data.lots));
-    setCurrentAvgPrice(data.currentAvgPrice);
-    setHasWarrant(data.hasWarrant);
-    setWarrantRatioOld(data.warrantRatioOld);
-    setWarrantRatioNew(data.warrantRatioNew);
-    
-    // Switch to calculator tab
+    setRatioOld(data.ratioOld); setRatioNew(data.ratioNew); setRightPrice(data.rightPrice);
+    setCumDatePrice(data.cumDatePrice); setCurrentLots(String(data.lots)); setCurrentAvgPrice(data.currentAvgPrice);
+    setHasWarrant(data.hasWarrant); setWarrantRatioOld(data.warrantRatioOld); setWarrantRatioNew(data.warrantRatioNew);
     setActiveTab('calculator');
-    
-    // Flag auto-calculate to trigger after state updates
+    setUseWizardMode(false);
     pendingAutoCalculateRef.current = true;
-    
-    // Show toast notification
-    toast({
-      title: t('budgetPlanner.applied'),
-      description: `${data.lots} lot ${t('budgetPlanner.appliedDesc')}`,
-      duration: 3000,
-    });
+    toast({ title: t('budgetPlanner.applied'), description: `${data.lots} lot ${t('budgetPlanner.appliedDesc')}`, duration: 3000 });
   }, [t]);
 
-  // Load calculation from history
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
     setStockCode(item.stockCode || '');
-    setRatioOld(item.inputs.ratioOld);
-    setRatioNew(item.inputs.ratioNew);
-    setRightPrice(item.inputs.rightPrice);
-    setCumDatePrice(item.inputs.cumDatePrice);
-    setCurrentLots(item.inputs.currentLots);
-    setCurrentAvgPrice(item.inputs.currentAvgPrice);
-    setHasWarrant(item.inputs.hasWarrant);
-    setWarrantRatioOld(item.inputs.warrantRatioOld);
-    setWarrantRatioNew(item.inputs.warrantRatioNew);
-    
-    // Set calculated results
-    setNewLotsCount(item.results.newSharesCount);
-    setFinalLots(item.results.finalShares);
-    setFinalAvgPrice(item.results.finalAvgPrice);
-    setFinalTotalValue(item.results.finalTotalValue);
-    setTheoreticalPrice(item.results.theoreticalPrice);
-    setWarrantCount(item.results.warrantCount);
+    setRatioOld(item.inputs.ratioOld); setRatioNew(item.inputs.ratioNew); setRightPrice(item.inputs.rightPrice);
+    setCumDatePrice(item.inputs.cumDatePrice); setCurrentLots(item.inputs.currentLots); setCurrentAvgPrice(item.inputs.currentAvgPrice);
+    setHasWarrant(item.inputs.hasWarrant); setWarrantRatioOld(item.inputs.warrantRatioOld); setWarrantRatioNew(item.inputs.warrantRatioNew);
+    setNewLotsCount(item.results.newSharesCount); setFinalLots(item.results.finalShares);
+    setFinalAvgPrice(item.results.finalAvgPrice); setFinalTotalValue(item.results.finalTotalValue);
+    setTheoreticalPrice(item.results.theoreticalPrice); setWarrantCount(item.results.warrantCount);
     setRecommendation(item.results.recommendation);
     
-    // Calculate total values
     const lots = parseInt(item.inputs.currentLots) || 0;
     const shares = lots * 100;
     const avgPrice = parseInt(item.inputs.currentAvgPrice) || 0;
@@ -453,21 +341,13 @@ const RightIssueCalculator: React.FC = () => {
     setNewAvgPrice(formatCurrency(riPrice));
     setNewTotalValue(formatCurrency(newShares * riPrice));
     
-    // Parse values for numeric state
     const finalAvg = parseInt(item.results.finalAvgPrice.replace(/[^\d]/g, '')) || 0;
     const terp = parseInt(item.results.theoreticalPrice.replace(/[^\d]/g, '')) || 0;
     const totalShares = shares + newShares;
     const totalValue = parseInt(item.results.finalTotalValue.replace(/[^\d]/g, '')) || 0;
     
-    setNumericValues({
-      newSharesCount: newShares,
-      totalShares: totalShares,
-      totalModal: totalValue,
-      avgBaru: finalAvg,
-      terp: terp,
-    });
+    setNumericValues({ newSharesCount: newShares, totalShares, totalModal: totalValue, avgBaru: finalAvg, terp });
     
-    // Set recommendation text (neutral)
     const priceDiff = terp - finalAvg;
     const priceDiffPercent = finalAvg > 0 ? ((Math.abs(priceDiff) / finalAvg) * 100).toFixed(2) : '0';
     
@@ -482,95 +362,263 @@ const RightIssueCalculator: React.FC = () => {
     }
     
     setIsCalculated(true);
+    setUseWizardMode(false);
   }, []);
+
+  // Wizard navigation
+  const canGoNext = () => {
+    if (wizardStep === 1) return !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError);
+    if (wizardStep === 2) return !!(currentLots && currentAvgPrice);
+    if (wizardStep === 3) return isWarrantRatioValid;
+    return false;
+  };
+
+  const handleNext = () => {
+    if (wizardStep === 3) {
+      calculate();
+    } else {
+      setWizardStep(prev => Math.min(prev + 1, 4));
+    }
+  };
+
+  const handlePrev = () => setWizardStep(prev => Math.max(prev - 1, 1));
+
+  // Toolbar items
+  const toolbarItems = (
+    <>
+      <ShareButtons
+        resultRef={resultRef}
+        isCalculated={isCalculated}
+        shareData={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice }}
+        exportData={{ currentTotalValue, newSharesCount: newLotsCount, newTotalValue, finalShares: finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, hasWarrant, warrantCount }}
+      />
+      <ExportPDFButton
+        isCalculated={isCalculated}
+        data={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, newLotsCount, finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, warrantCount, currentTotalValue, newTotalValue }}
+      />
+      <HistoryDropdown history={history} onSelectHistory={loadFromHistory} onRemoveHistory={removeFromHistory} onClearHistory={clearHistory} />
+      {isCalculated && (
+        <button onClick={reset} className="p-1.5 rounded-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-colors" aria-label="Reset">
+          <RotateCcw className="w-4 h-4" />
+        </button>
+      )}
+      <KeyboardShortcutsHelp />
+      <EmbedCodeModal />
+      <LanguageToggle />
+      <ThemeToggle />
+    </>
+  );
+
+  // Render calculator content based on wizard/full mode
+  const renderCalculatorContent = () => {
+    if (useWizardMode && activeTab === 'calculator') {
+      return (
+        <div className="space-y-3">
+          <StepWizard
+            currentStep={wizardStep}
+            totalSteps={4}
+            onStepClick={(s) => {
+              if (s < wizardStep || (s === wizardStep + 1 && canGoNext())) setWizardStep(s);
+            }}
+            stepLabels={stepLabels}
+          />
+
+          {/* Step Content */}
+          <div className="min-h-[280px]">
+            {wizardStep === 1 && (
+              <div className="animate-fade-in space-y-3">
+                <StockCodeInput value={stockCode} onChange={setStockCode} />
+                <RightIssueInfoSection
+                  ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
+                  onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
+                  ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+                  warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
+                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+                />
+              </div>
+            )}
+
+            {wizardStep === 2 && (
+              <div className="animate-fade-in">
+                <OwnershipSection
+                  currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
+                  newLotsCount={newLotsCount} newAvgPrice={newAvgPrice} newTotalValue={newTotalValue}
+                  finalLots={finalLots} finalAvgPrice={finalAvgPrice} finalTotalValue={finalTotalValue}
+                  onCurrentLotsChange={setCurrentLots} onCurrentAvgPriceChange={setCurrentAvgPrice}
+                  onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
+                />
+              </div>
+            )}
+
+            {wizardStep === 3 && (
+              <div className="animate-fade-in space-y-3">
+                {hasWarrant && (
+                  <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />
+                )}
+                <LotOptimizationSection
+                  ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots}
+                  isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
+                />
+              </div>
+            )}
+
+            {wizardStep === 4 && isCalculated && (
+              <div className="animate-fade-in space-y-3">
+                <ResultsDashboard
+                  isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                  finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+                  recommendation={recommendation} recommendationText={recommendationText}
+                />
+                <ConclusionSection
+                  newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
+                  totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice}
+                  recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated}
+                />
+                <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+                <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
+                <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
+                <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+              </div>
+            )}
+          </div>
+
+          {/* Wizard Navigation Buttons */}
+          {wizardStep < 4 && (
+            <div className="flex items-center justify-between pt-2">
+              <button
+                onClick={handlePrev}
+                disabled={wizardStep === 1}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                {language === 'id' ? 'Kembali' : 'Back'}
+              </button>
+              
+              <span className="text-[10px] text-muted-foreground">
+                {wizardStep} / 4
+              </span>
+              
+              <button
+                onClick={handleNext}
+                disabled={!canGoNext()}
+                className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-primary/20"
+              >
+                {wizardStep === 3 ? (language === 'id' ? 'Hitung' : 'Calculate') : (language === 'id' ? 'Lanjut' : 'Next')}
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* View mode toggle */}
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={() => setUseWizardMode(false)}
+              className="text-[10px] text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
+            >
+              {language === 'id' ? 'Tampilkan semua field sekaligus' : 'Show all fields at once'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Full mode (non-wizard)
+    return (
+      <div className="space-y-3">
+        {activeTab === 'calculator' && useWizardMode === false && (
+          <div className="flex justify-end mb-2">
+            <button
+              onClick={() => { setUseWizardMode(true); setWizardStep(1); }}
+              className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <Zap className="w-3 h-3" />
+              {language === 'id' ? 'Mode Wizard' : 'Wizard Mode'}
+            </button>
+          </div>
+        )}
+        <StockCodeInput value={stockCode} onChange={setStockCode} />
+        <RightIssueInfoSection
+          ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
+          onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
+          ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+          warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
+          onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+        />
+        <OwnershipSection
+          currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
+          newLotsCount={newLotsCount} newAvgPrice={newAvgPrice} newTotalValue={newTotalValue}
+          finalLots={finalLots} finalAvgPrice={finalAvgPrice} finalTotalValue={finalTotalValue}
+          onCurrentLotsChange={setCurrentLots} onCurrentAvgPriceChange={setCurrentAvgPrice}
+          onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
+        />
+
+        {isCalculated && (
+          <ResultsDashboard
+            isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+            finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+            recommendation={recommendation} recommendationText={recommendationText}
+          />
+        )}
+
+        {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
+        <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
+        <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
+        <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+        <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
+        <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
+        <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="header-bar py-3 px-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <h1 className="text-base md:text-lg font-bold">
-            {t('app.title')}
-          </h1>
-          <div className="flex items-center gap-1.5">
-            <ShareButtons
-              resultRef={resultRef}
-              isCalculated={isCalculated}
-              shareData={{
-                stockCode,
-                ratioOld,
-                ratioNew,
-                rightPrice,
-                cumDatePrice,
-                currentLots,
-                currentAvgPrice,
-              }}
-              exportData={{
-                currentTotalValue,
-                newSharesCount: newLotsCount,
-                newTotalValue,
-                finalShares: finalLots,
-                finalAvgPrice,
-                finalTotalValue,
-                theoreticalPrice,
-                recommendation,
-                recommendationText,
-                hasWarrant,
-                warrantCount,
-              }}
-            />
-            <ExportPDFButton
-              isCalculated={isCalculated}
-              data={{
-                stockCode,
-                ratioOld,
-                ratioNew,
-                rightPrice,
-                cumDatePrice,
-                currentLots,
-                currentAvgPrice,
-                hasWarrant,
-                warrantRatioOld,
-                warrantRatioNew,
-                newLotsCount,
-                finalLots,
-                finalAvgPrice,
-                finalTotalValue,
-                theoreticalPrice,
-                recommendation,
-                recommendationText,
-                warrantCount,
-                currentTotalValue,
-                newTotalValue,
-              }}
-            />
-            <HistoryDropdown
-              history={history}
-              onSelectHistory={loadFromHistory}
-              onRemoveHistory={removeFromHistory}
-              onClearHistory={clearHistory}
-            />
-            {isCalculated && (
-              <button
-                onClick={reset}
-                className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
-                aria-label="Reset"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-            )}
-            <KeyboardShortcutsHelp />
-            <EmbedCodeModal />
-            <LanguageToggle />
-            <ThemeToggle />
+      {/* Header - Gradient with branding */}
+      <header className="header-gradient relative overflow-hidden">
+        {/* Mesh texture overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)',
+        }} />
+        
+        <div className="relative max-w-2xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
+                {t('app.title')}
+              </h1>
+              <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
+                {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
+              </p>
+            </div>
+            
+            {/* Desktop toolbar */}
+            <div className="hidden md:flex items-center gap-1.5">
+              {toolbarItems}
+            </div>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setToolbarOpen(!toolbarOpen)}
+              className="md:hidden p-2 rounded-xl bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-all"
+            >
+              {toolbarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
+
+          {/* Mobile toolbar dropdown */}
+          {toolbarOpen && (
+            <div className="md:hidden mt-3 flex flex-wrap items-center gap-1.5 animate-fade-in pb-1">
+              {toolbarItems}
+            </div>
+          )}
         </div>
       </header>
 
       {/* Main Content */}
-      <main ref={resultRef} className="flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4">
+      <main ref={resultRef} className={`flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 ${isMobile ? 'pb-20' : ''}`}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full mb-4">
+          {/* Desktop tabs */}
+          <TabsList className="w-full mb-4 hidden md:flex">
             <TabsTrigger value="calculator" className="flex-1 text-xs">
               {t('tab.calculator')}
             </TabsTrigger>
@@ -582,115 +630,8 @@ const RightIssueCalculator: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="calculator" className="space-y-3 mt-0">
-            <StockCodeInput value={stockCode} onChange={setStockCode} />
-
-            <RightIssueInfoSection
-              ratioOld={ratioOld}
-              ratioNew={ratioNew}
-              rightPrice={rightPrice}
-              cumDatePrice={cumDatePrice}
-              onRatioOldChange={setRatioOld}
-              onRatioNewChange={setRatioNew}
-              onRightPriceChange={setRightPrice}
-              onCumDatePriceChange={setCumDatePrice}
-              ratioError={ratioError}
-              hasWarrant={hasWarrant}
-              onHasWarrantChange={setHasWarrant}
-              warrantRatioOld={warrantRatioOld}
-              warrantRatioNew={warrantRatioNew}
-              onWarrantRatioOldChange={setWarrantRatioOld}
-              onWarrantRatioNewChange={setWarrantRatioNew}
-              warrantRatioError={warrantRatioError}
-            />
-
-            <OwnershipSection
-              currentLots={currentLots}
-              currentAvgPrice={currentAvgPrice}
-              currentTotalValue={currentTotalValue}
-              newLotsCount={newLotsCount}
-              newAvgPrice={newAvgPrice}
-              newTotalValue={newTotalValue}
-              finalLots={finalLots}
-              finalAvgPrice={finalAvgPrice}
-              finalTotalValue={finalTotalValue}
-              onCurrentLotsChange={setCurrentLots}
-              onCurrentAvgPriceChange={setCurrentAvgPrice}
-              onCalculate={calculate}
-              isCalculateEnabled={isCalculateEnabled}
-              isCalculated={isCalculated}
-            />
-
-            {hasWarrant && (
-              <WarrantResultSection
-                warrantCount={warrantCount}
-                isCalculated={isCalculated}
-              />
-            )}
-
-            <LotOptimizationSection
-              ratioOld={ratioOld}
-              ratioNew={ratioNew}
-              currentLots={currentLots}
-              onCurrentLotsChange={setCurrentLots}
-              isCalculated={isCalculated}
-              hasWarrant={hasWarrant}
-              warrantRatioOld={warrantRatioOld}
-              warrantRatioNew={warrantRatioNew}
-            />
-
-            <ConclusionSection
-              newLots={newLotsCount}
-              exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
-              totalCost={newTotalValue}
-              newAvgPrice={isCalculated ? finalAvgPrice : '-'}
-              theoreticalPrice={theoreticalPrice}
-              recommendation={recommendation}
-              recommendationText={recommendationText}
-              isCalculated={isCalculated}
-            />
-
-            <DilutionSimulator
-              isCalculated={isCalculated}
-              currentShares={(parseInt(currentLots) || 0) * 100}
-              newSharesEntitled={numericValues.newSharesCount}
-              ratioOld={parseDecimalId(ratioOld)}
-              ratioNew={parseDecimalId(ratioNew)}
-            />
-
-            <ScenarioComparison
-              isCalculated={isCalculated}
-              cumPrice={parseInt(cumDatePrice) || 0}
-              riPrice={parseInt(rightPrice) || 0}
-              terp={numericValues.terp}
-              ratioOld={parseDecimalId(ratioOld)}
-              ratioNew={parseDecimalId(ratioNew)}
-              currentShares={(parseInt(currentLots) || 0) * 100}
-              newSharesCount={numericValues.newSharesCount}
-              currentAvgPrice={parseInt(currentAvgPrice) || 0}
-            />
-
-            <WhatIfTargetPrice
-              isCalculated={isCalculated}
-              currentShares={(parseInt(currentLots) || 0) * 100}
-              newSharesCount={numericValues.newSharesCount}
-              currentAvgPrice={parseInt(currentAvgPrice) || 0}
-              riPrice={parseInt(rightPrice) || 0}
-              cumPrice={parseInt(cumDatePrice) || 0}
-              terp={numericValues.terp}
-            />
-
-            <AdvancedAnalysisSection
-              isCalculated={isCalculated}
-              cumPrice={parseInt(cumDatePrice) || 0}
-              riPrice={parseInt(rightPrice) || 0}
-              ratioOld={parseDecimalId(ratioOld)}
-              ratioNew={parseDecimalId(ratioNew)}
-              newSharesCount={numericValues.newSharesCount}
-              totalShares={numericValues.totalShares}
-              avgBaru={numericValues.avgBaru}
-              terp={numericValues.terp}
-            />
+          <TabsContent value="calculator" className="mt-0">
+            {renderCalculatorContent()}
           </TabsContent>
           
           <TabsContent value="budget" className="mt-0">
@@ -704,12 +645,15 @@ const RightIssueCalculator: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-3 px-4 border-t border-border mt-auto">
+      <footer className={`py-3 px-4 border-t border-border mt-auto ${isMobile ? 'mb-14' : ''}`}>
         <p className="text-center text-[11px] text-muted-foreground/70 flex items-center justify-center gap-1">
           Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by{' '}
           <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
         </p>
       </footer>
+
+      {/* Mobile Bottom Nav */}
+      {isMobile && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <BackToTopButton />
     </div>

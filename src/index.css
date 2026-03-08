@@ -31,7 +31,7 @@
     --input: 214 32% 91%;
     --ring: 217 91% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     /* Custom tokens */
     --success: 142 76% 36%;
@@ -57,22 +57,22 @@
   }
 
   .dark {
-    --background: 222 47% 8%;
+    --background: 222 47% 6%;
     --foreground: 210 40% 98%;
 
-    --card: 223 47% 12%;
+    --card: 223 47% 10%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 223 47% 12%;
+    --popover: 223 47% 10%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 33% 17%;
+    --secondary: 217 33% 15%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217 33% 17%;
+    --muted: 217 33% 15%;
     --muted-foreground: 215 20% 65%;
 
     --accent: 217 91% 60%;
@@ -81,12 +81,12 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
     --ring: 217 91% 60%;
 
     --info-light: 217 91% 15%;
-    --header-bg: 217 91% 25%;
+    --header-bg: 217 91% 20%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -108,46 +108,53 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
     background-image: 
-      radial-gradient(circle at 10% 20%, hsl(217 91% 60% / 0.04) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, hsl(217 91% 60% / 0.03) 0%, transparent 35%),
-      radial-gradient(circle at 50% 50%, hsl(217 91% 60% / 0.02) 0%, transparent 60%);
+      radial-gradient(circle at 10% 20%, hsl(217 91% 60% / 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, hsl(217 91% 60% / 0.02) 0%, transparent 35%);
     background-attachment: fixed;
   }
 
   .dark body {
     background-image: 
-      radial-gradient(circle at 10% 20%, hsl(217 91% 60% / 0.06) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, hsl(217 91% 60% / 0.04) 0%, transparent 35%),
-      radial-gradient(circle at 50% 50%, hsl(217 91% 60% / 0.03) 0%, transparent 60%);
+      radial-gradient(circle at 10% 20%, hsl(217 91% 60% / 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, hsl(217 91% 60% / 0.03) 0%, transparent 35%);
   }
 }
 
 @layer components {
+  /* Header gradient */
+  .header-gradient {
+    background: linear-gradient(135deg, hsl(var(--header-bg)) 0%, hsl(217 91% 40%) 50%, hsl(217 91% 35%) 100%);
+  }
+
+  .dark .header-gradient {
+    background: linear-gradient(135deg, hsl(var(--header-bg)) 0%, hsl(217 50% 15%) 50%, hsl(217 50% 12%) 100%);
+  }
+
   .card-calculator {
-    @apply bg-card/90 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-border/50 transition-all duration-300;
+    @apply bg-card/95 backdrop-blur-sm rounded-2xl p-3.5 md:p-4 border border-border/40 transition-all duration-300;
     box-shadow: 
-      0 4px 6px -1px hsl(var(--primary) / 0.04),
-      0 2px 4px -2px hsl(var(--primary) / 0.04);
+      0 4px 6px -1px hsl(var(--primary) / 0.03),
+      0 2px 4px -2px hsl(var(--primary) / 0.03);
   }
 
   .card-calculator:hover {
     box-shadow: 
-      0 10px 15px -3px hsl(var(--primary) / 0.08),
-      0 4px 6px -4px hsl(var(--primary) / 0.08);
-    transform: translateY(-2px);
+      0 10px 15px -3px hsl(var(--primary) / 0.06),
+      0 4px 6px -4px hsl(var(--primary) / 0.06);
+    transform: translateY(-1px);
   }
 
   .input-calculator {
-    @apply w-full px-3 py-2 text-sm rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-all duration-200;
-    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+    @apply w-full px-3.5 py-2.5 text-sm rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary transition-all duration-200;
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.03);
   }
 
   .input-calculator:focus {
-    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.12);
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
   }
 
   .read-only-value {
-    @apply px-3 py-2 text-sm rounded-lg bg-muted text-foreground font-semibold;
+    @apply px-3.5 py-2.5 text-sm rounded-xl bg-muted text-foreground font-semibold;
   }
 
   .summary-label {
@@ -163,7 +170,7 @@
   }
 
   .btn-calculate {
-    @apply w-full py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20;
     transform-origin: center;
   }
 
@@ -180,28 +187,32 @@
   }
 
   .info-box {
-    @apply p-2.5 rounded-lg transition-all duration-200;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.03));
-    border: 1px solid hsl(var(--primary) / 0.15);
+    @apply p-3 rounded-xl transition-all duration-200;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--primary) / 0.02));
+    border: 1px solid hsl(var(--primary) / 0.12);
   }
 
   .info-box:hover {
-    border-color: hsl(var(--primary) / 0.3);
+    border-color: hsl(var(--primary) / 0.25);
   }
 
   .recommendation-positive {
-    @apply p-2.5 rounded-lg bg-[hsl(142_76%_96%)] border border-[hsl(var(--success))]/30 text-[hsl(var(--success))];
+    @apply p-3 rounded-xl bg-[hsl(142_76%_96%)] border border-[hsl(var(--success))]/30 text-[hsl(var(--success))];
   }
 
   .recommendation-negative {
-    @apply p-2.5 rounded-lg bg-[hsl(0_84%_96%)] border border-destructive/30 text-destructive;
+    @apply p-3 rounded-xl bg-[hsl(0_84%_96%)] border border-destructive/30 text-destructive;
   }
 
   .header-bar {
     @apply bg-[hsl(var(--header-bg))] text-[hsl(var(--header-foreground))];
   }
 
-  /* Staggered animation helper */
+  /* Safe area for mobile bottom nav */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   .stagger-item {
     opacity: 0;
     animation: stagger-fade 0.4s ease-out forwards;
@@ -210,13 +221,13 @@
 
 @layer utilities {
   .animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.4s ease-out;
   }
 
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(8px);
     }
     to {
       opacity: 1;
@@ -244,17 +255,9 @@
   }
 
   @keyframes scalePop {
-    0% {
-      transform: scale(0.95);
-      opacity: 0.5;
-    }
-    50% {
-      transform: scale(1.02);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
+    0% { transform: scale(0.95); opacity: 0.5; }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); opacity: 1; }
   }
 
   .animate-slide-in {
@@ -262,14 +265,8 @@
   }
 
   @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
   .animate-number-pop {
@@ -277,17 +274,9 @@
   }
 
   @keyframes numberPop {
-    0% {
-      transform: scale(0.8);
-      opacity: 0;
-    }
-    60% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
   }
 
   .animate-highlight-pulse {
@@ -295,14 +284,17 @@
   }
 
   @keyframes highlightPulse {
-    0% {
-      box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
-    }
-    50% {
-      box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
-    }
+    0% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
+    50% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0); }
+    100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0); }
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  @keyframes scaleIn {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
   }
 }
