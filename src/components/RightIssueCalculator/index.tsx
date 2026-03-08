@@ -266,11 +266,16 @@ const RightIssueCalculator: React.FC = () => {
       );
     }
 
-    setIsCalculated(true);
-
-    // Auto-advance to results step in wizard mode
+    // Show skeleton loading briefly before revealing results
     if (useWizardMode) {
+      setIsCalculating(true);
       setWizardStep(4);
+      setTimeout(() => {
+        setIsCalculated(true);
+        setIsCalculating(false);
+      }, 600);
+    } else {
+      setIsCalculated(true);
     }
 
     addToHistory({
