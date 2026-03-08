@@ -619,6 +619,14 @@ const RightIssueCalculator: React.FC = () => {
               isCalculated={isCalculated}
             />
 
+            <DilutionSimulator
+              isCalculated={isCalculated}
+              currentShares={(parseInt(currentLots) || 0) * 100}
+              newSharesEntitled={numericValues.newSharesCount}
+              ratioOld={parseDecimalId(ratioOld)}
+              ratioNew={parseDecimalId(ratioNew)}
+            />
+
             <ScenarioComparison
               isCalculated={isCalculated}
               cumPrice={parseInt(cumDatePrice) || 0}
