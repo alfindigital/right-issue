@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { RotateCcw, Heart, ChevronRight, ChevronLeft, Menu, X, Zap } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
@@ -31,6 +31,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -373,7 +374,10 @@ const RightIssueCalculator: React.FC = () => {
     return false;
   };
 
+  const [swipeDir, setSwipeDir] = useState<'left' | 'right'>('left');
+
   const handleNext = () => {
+    setSwipeDir('left');
     if (wizardStep === 3) {
       calculate();
     } else {
@@ -381,7 +385,20 @@ const RightIssueCalculator: React.FC = () => {
     }
   };
 
-  const handlePrev = () => setWizardStep(prev => Math.max(prev - 1, 1));
+  const handlePrev = () => {
+    setSwipeDir('right');
+    setWizardStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const swipeHandlers = useSwipeGesture({
+    onSwipeLeft: () => {
+      if (wizardStep < 4 && canGoNext()) handleNext();
+    },
+    onSwipeRight: () => {
+      if (wizardStep > 1) handlePrev();
+    },
+    threshold: 50,
+  });
 
   // Toolbar items
   const toolbarItems = (
@@ -423,10 +440,14 @@ const RightIssueCalculator: React.FC = () => {
             stepLabels={stepLabels}
           />
 
-          {/* Step Content */}
-          <div className="min-h-[280px]">
+          {/* Step Content with Swipe */}
+          <div
+            className="min-h-[280px] overflow-hidden"
+            {...swipeHandlers}
+          >
+            <div key={wizardStep} className={swipeDir === 'left' ? 'animate-slide-in-left' : 'animate-slide-in-right'}>
             {wizardStep === 1 && (
-              <div className="animate-fade-in space-y-3">
+              <div className="space-y-3">
                 <StockCodeInput value={stockCode} onChange={setStockCode} />
                 <RightIssueInfoSection
                   ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
@@ -439,7 +460,7 @@ const RightIssueCalculator: React.FC = () => {
             )}
 
             {wizardStep === 2 && (
-              <div className="animate-fade-in">
+              <div>
                 <OwnershipSection
                   currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
                   newLotsCount={newLotsCount} newAvgPrice={newAvgPrice} newTotalValue={newTotalValue}
@@ -451,7 +472,7 @@ const RightIssueCalculator: React.FC = () => {
             )}
 
             {wizardStep === 3 && (
-              <div className="animate-fade-in space-y-3">
+              <div className="space-y-3">
                 {hasWarrant && (
                   <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />
                 )}
@@ -463,7 +484,7 @@ const RightIssueCalculator: React.FC = () => {
             )}
 
             {wizardStep === 4 && isCalculated && (
-              <div className="animate-fade-in space-y-3">
+              <div className="space-y-3">
                 <ResultsDashboard
                   isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
                   finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
@@ -480,6 +501,7 @@ const RightIssueCalculator: React.FC = () => {
                 <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
               </div>
             )}
+            </div>
           </div>
 
           {/* Wizard Navigation Buttons */}
