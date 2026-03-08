@@ -247,6 +247,15 @@ const RightIssueCalculator: React.FC = () => {
       setRecommendationText(
         `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
       );
+      // 🎉 Confetti celebration
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#4f46e5', '#22c55e', '#f59e0b', '#3b82f6', '#a855f7'],
+        });
+      }, 400);
     } else {
       setRecommendation('negative');
       const negativeDiff = Math.abs(priceDiff);
