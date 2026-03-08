@@ -315,4 +315,18 @@
     from { transform: scaleX(0); }
     to { transform: scaleX(1); }
   }
+
+  .glow-blue:hover {
+    box-shadow: 0 4px 20px -4px hsl(var(--primary) / 0.25);
+  }
+  .glow-green:hover {
+    box-shadow: 0 4px 20px -4px hsl(var(--success) / 0.25);
+  }
+  .glow-amber:hover {
+    box-shadow: 0 4px 20px -4px hsl(38 92% 50% / 0.25);
+  }
+  .glow-purple:hover {
+    box-shadow: 0 4px 20px -4px hsl(270 70% 50% / 0.25);
+  }
+}
 }
