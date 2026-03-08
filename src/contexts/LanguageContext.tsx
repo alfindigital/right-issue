@@ -224,6 +224,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Tab Navigation
     'tab.calculator': 'Kalkulator RI',
     'tab.budgetPlanner': 'Budget Planner',
+    'tab.education': 'Edukasi',
   },
   en: {
     // Header
