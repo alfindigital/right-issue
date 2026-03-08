@@ -440,10 +440,14 @@ const RightIssueCalculator: React.FC = () => {
             stepLabels={stepLabels}
           />
 
-          {/* Step Content */}
-          <div className="min-h-[280px]">
+          {/* Step Content with Swipe */}
+          <div
+            className="min-h-[280px] overflow-hidden"
+            {...swipeHandlers}
+          >
+            <div key={wizardStep} className={swipeDir === 'left' ? 'animate-slide-in-left' : 'animate-slide-in-right'}>
             {wizardStep === 1 && (
-              <div className="animate-fade-in space-y-3">
+              <div className="space-y-3">
                 <StockCodeInput value={stockCode} onChange={setStockCode} />
                 <RightIssueInfoSection
                   ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
@@ -456,7 +460,7 @@ const RightIssueCalculator: React.FC = () => {
             )}
 
             {wizardStep === 2 && (
-              <div className="animate-fade-in">
+              <div>
                 <OwnershipSection
                   currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
                   newLotsCount={newLotsCount} newAvgPrice={newAvgPrice} newTotalValue={newTotalValue}
@@ -468,7 +472,7 @@ const RightIssueCalculator: React.FC = () => {
             )}
 
             {wizardStep === 3 && (
-              <div className="animate-fade-in space-y-3">
+              <div className="space-y-3">
                 {hasWarrant && (
                   <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />
                 )}
@@ -480,7 +484,7 @@ const RightIssueCalculator: React.FC = () => {
             )}
 
             {wizardStep === 4 && isCalculated && (
-              <div className="animate-fade-in space-y-3">
+              <div className="space-y-3">
                 <ResultsDashboard
                   isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
                   finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
@@ -497,6 +501,7 @@ const RightIssueCalculator: React.FC = () => {
                 <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
               </div>
             )}
+            </div>
           </div>
 
           {/* Wizard Navigation Buttons */}
