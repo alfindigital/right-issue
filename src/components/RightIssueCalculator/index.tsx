@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { RotateCcw, Heart, ChevronRight, ChevronLeft, Menu, X, Zap } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
