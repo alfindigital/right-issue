@@ -21,6 +21,10 @@ export const useSwipeGesture = ({ onSwipeLeft, onSwipeRight, threshold = 50 }: S
 
     // Only trigger if horizontal swipe is dominant
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
+      // Haptic feedback on successful swipe
+      if (navigator.vibrate) {
+        navigator.vibrate(15);
+      }
       if (deltaX < 0) {
         onSwipeLeft?.();
       } else {
