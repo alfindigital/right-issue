@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RotateCcw, Heart } from 'lucide-react';
+import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
@@ -516,6 +517,31 @@ const RightIssueCalculator: React.FC = () => {
                 recommendationText,
                 hasWarrant,
                 warrantCount,
+              }}
+            />
+            <ExportPDFButton
+              isCalculated={isCalculated}
+              data={{
+                stockCode,
+                ratioOld,
+                ratioNew,
+                rightPrice,
+                cumDatePrice,
+                currentLots,
+                currentAvgPrice,
+                hasWarrant,
+                warrantRatioOld,
+                warrantRatioNew,
+                newLotsCount,
+                finalLots,
+                finalAvgPrice,
+                finalTotalValue,
+                theoreticalPrice,
+                recommendation,
+                recommendationText,
+                warrantCount,
+                currentTotalValue,
+                newTotalValue,
               }}
             />
             <HistoryDropdown
