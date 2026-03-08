@@ -16,6 +16,7 @@ import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
 import ScenarioComparison from './ScenarioComparison';
+import EducationSection from './EducationSection';
 import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
@@ -549,6 +550,9 @@ const RightIssueCalculator: React.FC = () => {
             <TabsTrigger value="budget" className="flex-1 text-xs">
               {t('tab.budgetPlanner')}
             </TabsTrigger>
+            <TabsTrigger value="education" className="flex-1 text-xs">
+              {t('tab.education')}
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="calculator" className="space-y-3 mt-0">
@@ -654,6 +658,10 @@ const RightIssueCalculator: React.FC = () => {
           
           <TabsContent value="budget" className="mt-0">
             <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
+          </TabsContent>
+          
+          <TabsContent value="education" className="mt-0">
+            <EducationSection />
           </TabsContent>
         </Tabs>
       </main>
