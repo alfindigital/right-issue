@@ -550,6 +550,9 @@ const RightIssueCalculator: React.FC = () => {
             <TabsTrigger value="budget" className="flex-1 text-xs">
               {t('tab.budgetPlanner')}
             </TabsTrigger>
+            <TabsTrigger value="education" className="flex-1 text-xs">
+              {t('tab.education')}
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="calculator" className="space-y-3 mt-0">
