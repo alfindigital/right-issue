@@ -519,6 +519,31 @@ const RightIssueCalculator: React.FC = () => {
                 warrantCount,
               }}
             />
+            <ExportPDFButton
+              isCalculated={isCalculated}
+              data={{
+                stockCode,
+                ratioOld,
+                ratioNew,
+                rightPrice,
+                cumDatePrice,
+                currentLots,
+                currentAvgPrice,
+                hasWarrant,
+                warrantRatioOld,
+                warrantRatioNew,
+                newLotsCount,
+                finalLots,
+                finalAvgPrice,
+                finalTotalValue,
+                theoreticalPrice,
+                recommendation,
+                recommendationText,
+                warrantCount,
+                currentTotalValue,
+                newTotalValue,
+              }}
+            />
             <HistoryDropdown
               history={history}
               onSelectHistory={loadFromHistory}
