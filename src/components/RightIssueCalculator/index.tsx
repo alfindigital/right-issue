@@ -16,6 +16,7 @@ import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
 import ScenarioComparison from './ScenarioComparison';
+import EducationSection from './EducationSection';
 import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
