@@ -644,6 +644,16 @@ const RightIssueCalculator: React.FC = () => {
               currentAvgPrice={parseInt(currentAvgPrice) || 0}
             />
 
+            <WhatIfTargetPrice
+              isCalculated={isCalculated}
+              currentShares={(parseInt(currentLots) || 0) * 100}
+              newSharesCount={numericValues.newSharesCount}
+              currentAvgPrice={parseInt(currentAvgPrice) || 0}
+              riPrice={parseInt(rightPrice) || 0}
+              cumPrice={parseInt(cumDatePrice) || 0}
+              terp={numericValues.terp}
+            />
+
             <AdvancedAnalysisSection
               isCalculated={isCalculated}
               cumPrice={parseInt(cumDatePrice) || 0}
