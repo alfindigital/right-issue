@@ -270,10 +270,14 @@ ${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositi
           <ChevronDown className="w-3 h-3" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
+      <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
           <Download className="w-4 h-4 mr-2" />
           {language === 'id' ? 'Download Gambar' : 'Download Image'}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={copyImageToClipboard} className="cursor-pointer">
+          <Clipboard className="w-4 h-4 mr-2" />
+          {language === 'id' ? 'Salin Gambar' : 'Copy Image'}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
           <Link2 className="w-4 h-4 mr-2" />
