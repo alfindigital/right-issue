@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Download, Link2, Share2, ChevronDown, MessageCircle } from 'lucide-react';
+import { Download, Link2, Share2, ChevronDown, MessageCircle, Clipboard } from 'lucide-react';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
 import {
