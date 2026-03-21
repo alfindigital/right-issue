@@ -652,6 +652,11 @@ const RightIssueCalculator: React.FC = () => {
                 {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
               </p>
             </div>
+
+            {/* Progress Ring - wizard mode, not yet calculated */}
+            {useWizardMode && !isCalculated && activeTab === 'calculator' && (
+              <ProgressRing percent={completionPercent} />
+            )}
             
             {/* Desktop toolbar */}
             <div className="hidden md:flex items-center gap-1.5">
