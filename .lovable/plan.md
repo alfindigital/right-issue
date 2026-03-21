@@ -1,123 +1,111 @@
 
 
-# Plan: Perbaikan UI, Embed Watermark, Footer, Tooltip, dan Mobile
+# Plan: Fix Build Errors + Implement Features 2, 3, 5, 6
 
 ## Ringkasan
-6 perubahan: (1) icon bahasa jadi teks ID/EN saja, (2) watermark alfindigital.com di embed, (3) footer dengan "made with love by alfindigital", (4) samakan InfoTooltip di Budget Planner, (5) cek mobile responsiveness dan PWA, (6) verifikasi kalkulasi.
+
+Fix 2 build errors (NodeJS namespace), lalu implementasi 4 fitur:
+- **#2** Shareable Result Card (sudah ada via ExportTemplate, perlu polish)
+- **#3** Progress Ring di wizard header
+- **#5** Floating Summary Bar saat scroll
+- **#6** Glassmorphism dark mode cards
 
 ---
 
-## 1. Language Toggle - Hapus Icon, Teks Saja
+## 0. Fix Build Errors (Pre-requisite)
 
-**File:** `src/components/RightIssueCalculator/LanguageToggle.tsx`
+**Files:** `src/hooks/useAutoSave.ts`, `src/components/RightIssueCalculator/ScenarioComparison.tsx`
 
-Hapus import `Languages` dari lucide-react. Hapus elemen icon `<Languages>`. Tombol hanya menampilkan teks "ID" atau "EN" (uppercase, bold).
-
-Layout tombol:
-```
-Sebelum: [🌐 ID]
-Sesudah: [ID] atau [EN]
-```
+Ganti `NodeJS.Timeout` dengan `ReturnType<typeof setTimeout>` di kedua file. Ini menghilangkan dependency pada namespace NodeJS yang tidak tersedia.
 
 ---
 
-## 2. Watermark alfindigital.com di Embed Widget
+## 1. Shareable Result Card — Polish (#2)
 
-**File:** `src/components/EmbedCalculator/MiniCalculator.tsx`
+**Analisis:** Fitur "Save as Image" sudah ada di `ShareButtons.tsx` menggunakan `html2canvas` + `ExportTemplate.tsx`. Yang perlu ditambah:
 
-Ubah bagian "Powered by" di footer widget dari "Right Issue Calculator" menjadi watermark promosi alfindigital.com:
+**File:** `src/components/RightIssueCalculator/ExportTemplate.tsx`
+- Tambah QR code atau URL alfindigital.com sebagai watermark di bagian bawah card
+- Tambah tanggal kalkulasi (timestamp)
+- Polish layout agar lebih "Instagram-story friendly" (aspect ratio tetap 480px width)
 
-```
-Sebelum: Powered by Right Issue Calculator
-Sesudah: Powered by alfindigital.com
-```
-
-Link mengarah ke `https://alfindigital.com` (bukan window.location.origin).
+**File:** `src/components/RightIssueCalculator/ShareButtons.tsx`
+- Tambah opsi "Share to Instagram Story" (copy image to clipboard) selain download
+- Improve toast feedback setelah save
 
 ---
 
-## 3. Footer dengan "Made with Love"
+## 2. Progress Ring di Wizard Header (#3)
+
+**File baru:** `src/components/RightIssueCalculator/ProgressRing.tsx`
+
+Komponen SVG circular progress:
+- Props: `percent` (0-100), `size` (default 36px)
+- SVG circle dengan `stroke-dasharray` dan `stroke-dashoffset` animasi
+- Warna primary, background muted
+- Teks persentase di tengah (font-size kecil)
 
 **File:** `src/components/RightIssueCalculator/index.tsx`
-
-Ubah footer dari:
-```
-© alfindigital
-```
-Menjadi:
-```
-Made with [heart icon] by alfindigital
-```
-
-- Heart icon menggunakan `Heart` dari lucide-react (filled, warna merah/pink)
-- "alfindigital" tetap hyperlink ke https://alfindigital.com
-- Ukuran teks tetap kecil (text-[11px]) agar minimalis
+- Hitung completion percentage berdasarkan field yang sudah terisi (rasio, harga RI, cum date price, lots, avg price = masing-masing ~20%)
+- Render `ProgressRing` di header bar sebelah kanan, hanya tampil saat wizard mode aktif dan belum calculated
+- Animasi smooth transition saat percentage berubah
 
 ---
 
-## 4. Samakan InfoTooltip di Budget Planner
+## 3. Floating Summary Bar (#5)
 
-**File:** `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
+**File baru:** `src/components/RightIssueCalculator/FloatingSummary.tsx`
 
-Tambahkan `InfoTooltip` pada label-label di Budget Planner, konsisten dengan format yang digunakan di `RightIssueInfoSection` dan `OwnershipSection`:
+Komponen sticky bar yang muncul saat `ResultsDashboard` keluar dari viewport:
+- Gunakan `IntersectionObserver` pada `resultRef`
+- Bar berisi: Stock code (jika ada) | Avg Price baru | TERP | Rekomendasi icon
+- Posisi fixed top, z-50, backdrop-blur, slide-down animation
+- Auto-hide saat scroll kembali ke atas (results visible)
+- Hanya tampil setelah `isCalculated = true`
 
-| Label | Tooltip ID | Tooltip EN |
-|-------|-----------|-----------|
-| Rasio RI | "Contoh: 2:1 berarti setiap 2 lembar lama berhak 1 lembar baru." | "Example: 2:1 means every 2 old shares entitled to 1 new share." |
-| Harga Pelaksanaan | "Harga per lembar untuk menebus right issue." | "Price per share to exercise the right issue." |
-| Harga Cum Date | "Harga saham terakhir sebelum ex-date." | "Last stock price before ex-date." |
-| Harga Avg Saat Ini | "Harga rata-rata pembelian saham Anda saat ini." | "Your current average purchase price." |
-| Bonus Waran | "Centang jika right issue memberikan bonus waran." | "Check if RI provides bonus warrants." |
-| Total Budget | "Total dana yang tersedia untuk investasi." | "Total funds available for investment." |
-| Sertakan Dana Tebus | "Apakah budget sudah termasuk dana untuk menebus RI." | "Whether the budget includes funds to exercise RI." |
-
-Import `InfoTooltip` dari `./InfoTooltip` dan tambahkan di setiap label yang relevan.
+**File:** `src/components/RightIssueCalculator/index.tsx`
+- Tambah ref pada ResultsDashboard section
+- Render `FloatingSummary` dengan data kalkulasi
+- Props: `isVisible`, `stockCode`, `avgPrice`, `terp`, `recommendation`
 
 ---
 
-## 5. Mobile Responsiveness dan PWA
+## 4. Glassmorphism Dark Mode (#6)
 
-**Verifikasi (tidak perlu perubahan kode jika sudah OK):**
+**File:** `src/index.css`
 
-- PWA config sudah lengkap di `vite.config.ts` (manifest, workbox, icons)
-- Meta tags PWA sudah ada di `index.html` (apple-mobile-web-app-capable, theme-color, viewport)
-- `OfflineIndicator` dan `PWAUpdatePrompt` sudah ada
-- Viewport sudah set `maximum-scale=1.0, user-scalable=no` untuk mobile
-- `navigateFallbackDenylist` perlu ditambah `/~oauth` sesuai best practice
+Update `.card-calculator` dan card-related classes di dark mode:
 
-**Perubahan kecil:**
-- `vite.config.ts`: tambahkan `/^\/~oauth/` ke `navigateFallbackDenylist`
+```css
+.dark .card-calculator {
+  background: hsl(var(--card) / 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--primary) / 0.08);
+  box-shadow: 
+    0 4px 24px -4px hsl(0 0% 0% / 0.3),
+    inset 0 1px 0 hsl(var(--primary) / 0.05);
+}
+```
+
+Tambah juga untuk:
+- `.dark .info-box` — subtle glass effect
+- `.dark .input-calculator:focus` — glow ring yang lebih visible
+- Header gradient dark mode — lebih subtle dan glass-like
+- Stat cards di ResultsDashboard — border glow on hover di dark mode
+
+**File:** `src/components/RightIssueCalculator/StatCard.tsx`
+- Tambah conditional dark mode class untuk subtle border glow animation
 
 ---
 
-## 6. Verifikasi Kalkulasi
+## Detail Teknis — Urutan Implementasi
 
-Setelah perubahan, akan dilakukan tes otomatis pada:
-- Kalkulator RI utama (TERP, lot baru, avg baru, waran)
-- Budget Planner (rekomendasi lot optimal)
-- Embed widget (kalkulasi mini)
+1. Fix build errors (`ReturnType<typeof setTimeout>`)
+2. Glassmorphism CSS (index.css + StatCard)
+3. Progress Ring component + integrasi wizard
+4. Floating Summary Bar component + integrasi
+5. Polish ExportTemplate + ShareButtons
 
----
-
-## Detail Teknis - File yang Diubah
-
-### `src/components/RightIssueCalculator/LanguageToggle.tsx`
-- Hapus import `Languages` dari lucide-react
-- Hapus elemen `<Languages>` icon
-- Pertahankan animasi dan styling, hanya tampilkan teks ID/EN
-
-### `src/components/EmbedCalculator/MiniCalculator.tsx`
-- Ubah href di "Powered by" ke `https://alfindigital.com`
-- Ubah teks dari "Right Issue Calculator" ke "alfindigital.com"
-
-### `src/components/RightIssueCalculator/index.tsx`
-- Import `Heart` dari lucide-react
-- Ubah footer menjadi "Made with [heart] by alfindigital"
-
-### `src/components/RightIssueCalculator/BudgetLotPlanner.tsx`
-- Import `InfoTooltip` dari `./InfoTooltip`
-- Tambahkan InfoTooltip pada 7 label form
-
-### `vite.config.ts`
-- Tambahkan `/^\/~oauth/` ke navigateFallbackDenylist
+**Total file baru:** 2 (`ProgressRing.tsx`, `FloatingSummary.tsx`)
+**File diubah:** 6 (`useAutoSave.ts`, `ScenarioComparison.tsx`, `index.css`, `StatCard.tsx`, `index.tsx`, `ExportTemplate.tsx`)
 
