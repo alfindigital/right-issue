@@ -617,11 +617,13 @@ const RightIssueCalculator: React.FC = () => {
         />
 
         {isCalculated && (
-          <ResultsDashboard
-            isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
-            finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
-            recommendation={recommendation} recommendationText={recommendationText}
-          />
+          <div ref={resultsDashboardRef}>
+            <ResultsDashboard
+              isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+              finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+              recommendation={recommendation} recommendationText={recommendationText}
+            />
+          </div>
         )}
 
         {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
