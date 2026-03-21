@@ -86,9 +86,55 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
       root.unmount();
       document.body.removeChild(container);
       
-      toast.success(language === 'id' ? 'Hasil berhasil disimpan sebagai gambar!' : 'Result saved as image!');
+      toast.success(language === 'id' ? '✅ Gambar berhasil disimpan!' : '✅ Image saved successfully!');
     } catch (error) {
       toast.error(language === 'id' ? 'Gagal menyimpan gambar' : 'Failed to save image');
+      console.error(error);
+    }
+  };
+
+  const copyImageToClipboard = async () => {
+    try {
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+
+      const root = createRoot(container);
+      root.render(
+        <ExportTemplate data={{ ...shareData, ...exportData }} />
+      );
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const exportElement = container.querySelector('#export-template') as HTMLElement;
+      if (!exportElement) throw new Error('Export template not found');
+
+      const canvas = await html2canvas(exportElement, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      canvas.toBlob(async (blob) => {
+        if (blob) {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            toast.success(language === 'id' ? '📋 Gambar disalin ke clipboard!' : '📋 Image copied to clipboard!');
+          } catch {
+            toast.error(language === 'id' ? 'Browser tidak mendukung copy gambar' : 'Browser does not support image copy');
+          }
+        }
+      }, 'image/png');
+
+      root.unmount();
+      document.body.removeChild(container);
+    } catch (error) {
+      toast.error(language === 'id' ? 'Gagal menyalin gambar' : 'Failed to copy image');
       console.error(error);
     }
   };
