@@ -23,6 +23,8 @@ import WhatIfTargetPrice from './WhatIfTargetPrice';
 import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import ResultsDashboard from './ResultsDashboard';
 import StepWizard from './StepWizard';
+import ProgressRing from './ProgressRing';
+import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
