@@ -63,7 +63,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
   const [partialPercent, setPartialPercent] = useState(50);
   const [isSliding, setIsSliding] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
-  const slideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const slideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Trigger chart re-animation when slider stops
   useEffect(() => {
