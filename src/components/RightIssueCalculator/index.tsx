@@ -106,6 +106,28 @@ const RightIssueCalculator: React.FC = () => {
 
   const [ratioError, setRatioError] = useState('');
   const [warrantRatioError, setWarrantRatioError] = useState('');
+  const [resultsOutOfView, setResultsOutOfView] = useState(false);
+  const resultsDashboardRef = useRef<HTMLDivElement>(null);
+
+  // Completion percentage for progress ring
+  const completionPercent = useMemo(() => {
+    const fields = [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice];
+    const filled = fields.filter(f => f.trim() !== '').length;
+    return Math.round((filled / fields.length) * 100);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice]);
+
+  // IntersectionObserver for floating summary
+  useEffect(() => {
+    if (!isCalculated) { setResultsOutOfView(false); return; }
+    const el = resultsDashboardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setResultsOutOfView(!entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isCalculated]);
 
   // Wizard step labels
   const stepLabels = language === 'id'
