@@ -212,18 +212,27 @@ const ExportTemplate: React.FC<ExportTemplateProps> = ({ data }) => {
         </div>
       )}
 
-      {/* Footer */}
+      {/* Footer with watermark */}
       <div style={{ 
         textAlign: 'center',
         paddingTop: '12px',
         borderTop: '1px solid rgba(255,255,255,0.1)'
       }}>
         <p style={{ 
-          fontSize: '10px', 
-          color: 'rgba(255,255,255,0.4)',
+          fontSize: '11px', 
+          fontWeight: '600',
+          color: 'rgba(255,255,255,0.6)',
+          margin: '0 0 4px 0',
+          letterSpacing: '0.5px'
+        }}>
+          alfindigital.com
+        </p>
+        <p style={{ 
+          fontSize: '9px', 
+          color: 'rgba(255,255,255,0.3)',
           margin: 0 
         }}>
-          alfindigital.com • Bukan saran investasi
+          {new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })} • Bukan saran investasi
         </p>
       </div>
     </div>
