@@ -170,6 +170,10 @@
     box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
   }
 
+  .dark .input-calculator:focus {
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.2), 0 0 12px hsl(var(--primary) / 0.08);
+  }
+
   .read-only-value {
     @apply px-3.5 py-2.5 text-sm rounded-xl bg-muted text-foreground font-semibold;
   }
