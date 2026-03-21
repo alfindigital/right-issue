@@ -526,11 +526,12 @@ const RightIssueCalculator: React.FC = () => {
             {wizardStep === 4 && (isCalculated || isCalculating) && (
               <div className="space-y-3">
                 <div ref={resultsDashboardRef}>
-                <ResultsDashboard
-                  isCalculated={isCalculated} isLoading={isCalculating} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
-                  finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
-                  recommendation={recommendation} recommendationText={recommendationText}
-                />
+                  <ResultsDashboard
+                    isCalculated={isCalculated} isLoading={isCalculating} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                    finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+                    recommendation={recommendation} recommendationText={recommendationText}
+                  />
+                </div>
                 <ConclusionSection
                   newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
                   totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice}
