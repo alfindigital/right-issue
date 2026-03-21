@@ -639,6 +639,14 @@ const RightIssueCalculator: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* Floating Summary Bar */}
+      <FloatingSummary
+        isVisible={resultsOutOfView && isCalculated}
+        stockCode={stockCode || undefined}
+        avgPrice={finalAvgPrice}
+        terp={theoreticalPrice}
+        recommendation={recommendation}
+      />
       {/* Header - Gradient with branding */}
       <header className="header-gradient relative overflow-hidden">
         {/* Mesh texture overlay */}
