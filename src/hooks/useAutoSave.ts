@@ -18,7 +18,7 @@ export interface AutoSaveData {
 }
 
 export const useAutoSave = () => {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const saveToStorage = useCallback((data: Omit<AutoSaveData, 'savedAt'>) => {
     // Debounce saves

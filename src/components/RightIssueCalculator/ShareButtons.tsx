@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Download, Link2, Share2, ChevronDown, MessageCircle } from 'lucide-react';
+import { Download, Link2, Share2, ChevronDown, MessageCircle, Clipboard } from 'lucide-react';
 import { toast } from 'sonner';
 import html2canvas from 'html2canvas';
 import {
@@ -86,9 +86,55 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
       root.unmount();
       document.body.removeChild(container);
       
-      toast.success(language === 'id' ? 'Hasil berhasil disimpan sebagai gambar!' : 'Result saved as image!');
+      toast.success(language === 'id' ? '✅ Gambar berhasil disimpan!' : '✅ Image saved successfully!');
     } catch (error) {
       toast.error(language === 'id' ? 'Gagal menyimpan gambar' : 'Failed to save image');
+      console.error(error);
+    }
+  };
+
+  const copyImageToClipboard = async () => {
+    try {
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+
+      const root = createRoot(container);
+      root.render(
+        <ExportTemplate data={{ ...shareData, ...exportData }} />
+      );
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const exportElement = container.querySelector('#export-template') as HTMLElement;
+      if (!exportElement) throw new Error('Export template not found');
+
+      const canvas = await html2canvas(exportElement, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      canvas.toBlob(async (blob) => {
+        if (blob) {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            toast.success(language === 'id' ? '📋 Gambar disalin ke clipboard!' : '📋 Image copied to clipboard!');
+          } catch {
+            toast.error(language === 'id' ? 'Browser tidak mendukung copy gambar' : 'Browser does not support image copy');
+          }
+        }
+      }, 'image/png');
+
+      root.unmount();
+      document.body.removeChild(container);
+    } catch (error) {
+      toast.error(language === 'id' ? 'Gagal menyalin gambar' : 'Failed to copy image');
       console.error(error);
     }
   };
@@ -224,10 +270,14 @@ ${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositi
           <ChevronDown className="w-3 h-3" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
+      <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
           <Download className="w-4 h-4 mr-2" />
           {language === 'id' ? 'Download Gambar' : 'Download Image'}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={copyImageToClipboard} className="cursor-pointer">
+          <Clipboard className="w-4 h-4 mr-2" />
+          {language === 'id' ? 'Salin Gambar' : 'Copy Image'}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
           <Link2 className="w-4 h-4 mr-2" />

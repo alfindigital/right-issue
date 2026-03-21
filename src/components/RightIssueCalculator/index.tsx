@@ -23,6 +23,8 @@ import WhatIfTargetPrice from './WhatIfTargetPrice';
 import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import ResultsDashboard from './ResultsDashboard';
 import StepWizard from './StepWizard';
+import ProgressRing from './ProgressRing';
+import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
@@ -104,6 +106,28 @@ const RightIssueCalculator: React.FC = () => {
 
   const [ratioError, setRatioError] = useState('');
   const [warrantRatioError, setWarrantRatioError] = useState('');
+  const [resultsOutOfView, setResultsOutOfView] = useState(false);
+  const resultsDashboardRef = useRef<HTMLDivElement>(null);
+
+  // Completion percentage for progress ring
+  const completionPercent = useMemo(() => {
+    const fields = [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice];
+    const filled = fields.filter(f => f.trim() !== '').length;
+    return Math.round((filled / fields.length) * 100);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice]);
+
+  // IntersectionObserver for floating summary
+  useEffect(() => {
+    if (!isCalculated) { setResultsOutOfView(false); return; }
+    const el = resultsDashboardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setResultsOutOfView(!entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isCalculated]);
 
   // Wizard step labels
   const stepLabels = language === 'id'
@@ -501,11 +525,13 @@ const RightIssueCalculator: React.FC = () => {
 
             {wizardStep === 4 && (isCalculated || isCalculating) && (
               <div className="space-y-3">
-                <ResultsDashboard
-                  isCalculated={isCalculated} isLoading={isCalculating} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
-                  finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
-                  recommendation={recommendation} recommendationText={recommendationText}
-                />
+                <div ref={resultsDashboardRef}>
+                  <ResultsDashboard
+                    isCalculated={isCalculated} isLoading={isCalculating} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                    finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+                    recommendation={recommendation} recommendationText={recommendationText}
+                  />
+                </div>
                 <ConclusionSection
                   newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
                   totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice}
@@ -591,11 +617,13 @@ const RightIssueCalculator: React.FC = () => {
         />
 
         {isCalculated && (
-          <ResultsDashboard
-            isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
-            finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
-            recommendation={recommendation} recommendationText={recommendationText}
-          />
+          <div ref={resultsDashboardRef}>
+            <ResultsDashboard
+              isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+              finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+              recommendation={recommendation} recommendationText={recommendationText}
+            />
+          </div>
         )}
 
         {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
@@ -611,6 +639,14 @@ const RightIssueCalculator: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* Floating Summary Bar */}
+      <FloatingSummary
+        isVisible={resultsOutOfView && isCalculated}
+        stockCode={stockCode || undefined}
+        avgPrice={finalAvgPrice}
+        terp={theoreticalPrice}
+        recommendation={recommendation}
+      />
       {/* Header - Gradient with branding */}
       <header className="header-gradient relative overflow-hidden">
         {/* Mesh texture overlay */}
@@ -628,6 +664,11 @@ const RightIssueCalculator: React.FC = () => {
                 {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
               </p>
             </div>
+
+            {/* Progress Ring - wizard mode, not yet calculated */}
+            {useWizardMode && !isCalculated && activeTab === 'calculator' && (
+              <ProgressRing percent={completionPercent} />
+            )}
             
             {/* Desktop toolbar */}
             <div className="hidden md:flex items-center gap-1.5">

@@ -88,7 +88,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <div
-      className={`rounded-xl border border-border/50 border-l-[3px] p-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1 ${glowMap[accentColor]} ${accentMap[accentColor]} ${
+      className={`rounded-xl border border-border/50 border-l-[3px] p-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1 dark:bg-card/50 dark:backdrop-blur-md dark:border-border/30 dark:hover:border-primary/20 dark:hover:shadow-[0_4px_20px_-4px_hsl(var(--primary)/0.15)] ${glowMap[accentColor]} ${accentMap[accentColor]} ${
         show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
       }`}
     >
