@@ -9,8 +9,7 @@ import WarrantResultSection from './WarrantSection';
 import DilutionSimulator from './DilutionSimulator';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
-import ThemeToggle from './ThemeToggle';
-import LanguageToggle from './LanguageToggle';
+import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import AdvancedAnalysisSection from './AdvancedAnalysisSection';
@@ -440,6 +439,10 @@ const RightIssueCalculator: React.FC = () => {
     threshold: 50,
   });
 
+  // Settings modal states
+  const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
+  const [embedOpen, setEmbedOpen] = useState(false);
+
   // Toolbar items
   const toolbarItems = (
     <>
@@ -459,10 +462,12 @@ const RightIssueCalculator: React.FC = () => {
           <RotateCcw className="w-4 h-4" />
         </button>
       )}
-      <KeyboardShortcutsHelp />
-      <EmbedCodeModal />
-      <LanguageToggle />
-      <ThemeToggle />
+      <SettingsDropdown
+        onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
+        onOpenEmbed={() => setEmbedOpen(true)}
+      />
+      <KeyboardShortcutsHelp externalOpen={keyboardHelpOpen} onExternalOpenChange={setKeyboardHelpOpen} />
+      <EmbedCodeModal externalOpen={embedOpen} onExternalOpenChange={setEmbedOpen} />
     </>
   );
 

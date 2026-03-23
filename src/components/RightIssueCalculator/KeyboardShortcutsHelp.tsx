@@ -15,10 +15,17 @@ interface ShortcutItem {
   descriptionEn: string;
 }
 
-const KeyboardShortcutsHelp: React.FC = () => {
+interface KeyboardShortcutsHelpProps {
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
+}
+
+const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ externalOpen, onExternalOpenChange }) => {
   const { language, t } = useLanguage();
   const [isMac, setIsMac] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onExternalOpenChange || setInternalOpen;
 
   useEffect(() => {
     setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
@@ -56,15 +63,6 @@ const KeyboardShortcutsHelp: React.FC = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button
-          className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
-          aria-label={t('shortcuts.title')}
-          title={t('shortcuts.title')}
-        >
-          <Keyboard className="w-4 h-4" />
-        </button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

@@ -29,9 +29,16 @@ const sizes: Record<SizeOption, { width: number; height: number; label: string }
   large: { width: 500, height: 600, label: 'Large (500×600)' },
 };
 
-const EmbedCodeModal: React.FC = () => {
+interface EmbedCodeModalProps {
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
+}
+
+const EmbedCodeModal: React.FC<EmbedCodeModalProps> = ({ externalOpen, onExternalOpenChange }) => {
   const { t, language } = useLanguage();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onExternalOpenChange || setInternalOpen;
   const [copied, setCopied] = useState(false);
   const [size, setSize] = useState<SizeOption>('medium');
   const [theme, setTheme] = useState<ThemeOption>('auto');
@@ -75,15 +82,6 @@ const EmbedCodeModal: React.FC = () => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button
-          className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
-          aria-label={t('embed.title')}
-          title={t('embed.title')}
-        >
-          <Code className="w-4 h-4" />
-        </button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
