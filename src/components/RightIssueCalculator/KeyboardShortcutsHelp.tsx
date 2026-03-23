@@ -15,10 +15,17 @@ interface ShortcutItem {
   descriptionEn: string;
 }
 
-const KeyboardShortcutsHelp: React.FC = () => {
+interface KeyboardShortcutsHelpProps {
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
+}
+
+const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ externalOpen, onExternalOpenChange }) => {
   const { language, t } = useLanguage();
   const [isMac, setIsMac] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onExternalOpenChange || setInternalOpen;
 
   useEffect(() => {
     setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
