@@ -63,15 +63,6 @@ const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ externalO
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button
-          className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors"
-          aria-label={t('shortcuts.title')}
-          title={t('shortcuts.title')}
-        >
-          <Keyboard className="w-4 h-4" />
-        </button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
