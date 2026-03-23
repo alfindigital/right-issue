@@ -29,9 +29,16 @@ const sizes: Record<SizeOption, { width: number; height: number; label: string }
   large: { width: 500, height: 600, label: 'Large (500×600)' },
 };
 
-const EmbedCodeModal: React.FC = () => {
+interface EmbedCodeModalProps {
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
+}
+
+const EmbedCodeModal: React.FC<EmbedCodeModalProps> = ({ externalOpen, onExternalOpenChange }) => {
   const { t, language } = useLanguage();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onExternalOpenChange || setInternalOpen;
   const [copied, setCopied] = useState(false);
   const [size, setSize] = useState<SizeOption>('medium');
   const [theme, setTheme] = useState<ThemeOption>('auto');
