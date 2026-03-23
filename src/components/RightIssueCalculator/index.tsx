@@ -58,7 +58,7 @@ const RightIssueCalculator: React.FC = () => {
   
   // Wizard step state
   const [wizardStep, setWizardStep] = useState(1);
-  const [useWizardMode, setUseWizardMode] = useState(true);
+  const [useWizardMode, setUseWizardMode] = useState(false);
   
   // Mobile toolbar
   const [toolbarOpen, setToolbarOpen] = useState(false);
