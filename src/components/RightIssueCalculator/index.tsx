@@ -58,7 +58,7 @@ const RightIssueCalculator: React.FC = () => {
   
   // Wizard step state
   const [wizardStep, setWizardStep] = useState(1);
-  const [useWizardMode, setUseWizardMode] = useState(true);
+  const [useWizardMode, setUseWizardMode] = useState(false);
   
   // Mobile toolbar
   const [toolbarOpen, setToolbarOpen] = useState(false);
@@ -647,8 +647,8 @@ const RightIssueCalculator: React.FC = () => {
         terp={theoreticalPrice}
         recommendation={recommendation}
       />
-      {/* Header - Gradient with branding */}
-      <header className="header-gradient relative overflow-hidden">
+      {/* Header - Gradient with branding (sticky) */}
+      <header className="header-gradient relative overflow-hidden sticky top-0 z-40">
         {/* Mesh texture overlay */}
         <div className="absolute inset-0 opacity-10" style={{
           backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)',
@@ -723,11 +723,11 @@ const RightIssueCalculator: React.FC = () => {
         </Tabs>
       </main>
 
-      {/* Footer */}
-      <footer className={`py-3 px-4 border-t border-border mt-auto ${isMobile ? 'mb-14' : ''}`}>
-        <p className="text-center text-[11px] text-muted-foreground/70 flex items-center justify-center gap-1">
-          Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by{' '}
-          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
+      {/* Footer - same color as header */}
+      <footer className={`header-gradient relative overflow-hidden py-3 px-4 mt-auto ${isMobile ? 'mb-14' : ''}`}>
+        <p className="text-center text-[11px] text-primary-foreground/70 flex items-center justify-center gap-1 relative z-10">
+          Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> by{' '}
+          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-foreground transition-colors text-primary-foreground/80">alfindigital</a>
         </p>
       </footer>
 
