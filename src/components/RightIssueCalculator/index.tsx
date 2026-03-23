@@ -723,11 +723,11 @@ const RightIssueCalculator: React.FC = () => {
         </Tabs>
       </main>
 
-      {/* Footer */}
-      <footer className={`py-3 px-4 border-t border-border mt-auto ${isMobile ? 'mb-14' : ''}`}>
-        <p className="text-center text-[11px] text-muted-foreground/70 flex items-center justify-center gap-1">
-          Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by{' '}
-          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">alfindigital</a>
+      {/* Footer - same color as header */}
+      <footer className={`header-gradient relative overflow-hidden py-3 px-4 mt-auto ${isMobile ? 'mb-14' : ''}`}>
+        <p className="text-center text-[11px] text-primary-foreground/70 flex items-center justify-center gap-1 relative z-10">
+          Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> by{' '}
+          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-foreground transition-colors text-primary-foreground/80">alfindigital</a>
         </p>
       </footer>
 
