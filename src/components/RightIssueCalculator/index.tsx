@@ -25,6 +25,7 @@ import StepWizard from './StepWizard';
 import ProgressRing from './ProgressRing';
 import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
+import Logo from './Logo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
