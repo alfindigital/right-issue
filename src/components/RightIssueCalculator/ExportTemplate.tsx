@@ -216,17 +216,29 @@ const ExportTemplate: React.FC<ExportTemplateProps> = ({ data }) => {
       <div style={{ 
         textAlign: 'center',
         paddingTop: '12px',
-        borderTop: '1px solid rgba(255,255,255,0.1)'
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '4px',
       }}>
-        <p style={{ 
-          fontSize: '11px', 
-          fontWeight: '600',
-          color: 'rgba(255,255,255,0.6)',
-          margin: '0 0 4px 0',
-          letterSpacing: '0.5px'
-        }}>
-          alfindigital.com
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <svg width="16" height="16" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="30" width="8" height="14" rx="2" fill="rgba(255,255,255,0.5)" />
+            <rect x="18" y="20" width="8" height="24" rx="2" fill="rgba(255,255,255,0.5)" />
+            <rect x="30" y="10" width="8" height="34" rx="2" fill="rgba(255,255,255,0.5)" />
+            <path d="M32 8 L42 4 L38 14" stroke="rgba(255,255,255,0.5)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            <line x1="26" y1="18" x2="42" y2="4" stroke="rgba(255,255,255,0.5)" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+          <span style={{ 
+            fontSize: '11px', 
+            fontWeight: '600',
+            color: 'rgba(255,255,255,0.6)',
+            letterSpacing: '0.5px'
+          }}>
+            alfindigital.com
+          </span>
+        </div>
         <p style={{ 
           fontSize: '9px', 
           color: 'rgba(255,255,255,0.3)',
