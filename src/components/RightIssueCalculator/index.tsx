@@ -668,9 +668,10 @@ const RightIssueCalculator: React.FC = () => {
                 <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
                   {t('app.title')}
                 </h1>
-              <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
-                {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
-              </p>
+                <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
+                  {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
+                </p>
+              </div>
             </div>
 
             {/* Progress Ring - wizard mode, not yet calculated */}
