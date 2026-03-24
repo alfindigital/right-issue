@@ -25,6 +25,7 @@ import StepWizard from './StepWizard';
 import ProgressRing from './ProgressRing';
 import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
+import Logo from './Logo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -661,13 +662,16 @@ const RightIssueCalculator: React.FC = () => {
         
         <div className="relative max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
-                {t('app.title')}
-              </h1>
-              <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
-                {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
-              </p>
+            <div className="flex-1 min-w-0 flex items-center gap-2">
+              <Logo size={28} color="#fff" />
+              <div>
+                <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
+                  {t('app.title')}
+                </h1>
+                <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
+                  {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
+                </p>
+              </div>
             </div>
 
             {/* Progress Ring - wizard mode, not yet calculated */}
@@ -730,10 +734,13 @@ const RightIssueCalculator: React.FC = () => {
 
       {/* Footer - same color as header */}
       <footer className={`header-gradient relative overflow-hidden py-3 px-4 mt-auto ${isMobile ? 'mb-14' : ''}`}>
-        <p className="text-center text-[11px] text-primary-foreground/70 flex items-center justify-center gap-1 relative z-10">
-          Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> by{' '}
-          <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-foreground transition-colors text-primary-foreground/80">alfindigital</a>
-        </p>
+        <div className="flex items-center justify-center gap-2 relative z-10">
+          <Logo size={16} color="rgba(255,255,255,0.6)" />
+          <p className="text-[11px] text-primary-foreground/70 flex items-center gap-1">
+            Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> by{' '}
+            <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-foreground transition-colors text-primary-foreground/80">alfindigital</a>
+          </p>
+        </div>
       </footer>
 
       {/* Mobile Bottom Nav */}
