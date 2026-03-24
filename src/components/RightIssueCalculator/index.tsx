@@ -662,10 +662,12 @@ const RightIssueCalculator: React.FC = () => {
         
         <div className="relative max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
-                {t('app.title')}
-              </h1>
+            <div className="flex-1 min-w-0 flex items-center gap-2">
+              <Logo size={28} color="#fff" />
+              <div>
+                <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
+                  {t('app.title')}
+                </h1>
               <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
                 {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
               </p>
