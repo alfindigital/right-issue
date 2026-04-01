@@ -654,7 +654,7 @@ const RightIssueCalculator: React.FC = () => {
         recommendation={recommendation}
       />
       {/* Header - Gradient with branding (sticky) */}
-      <header className="header-gradient relative overflow-hidden sticky top-0 z-40">
+      <header className="header-gradient relative overflow-hidden sticky top-0 z-50">
         {/* Mesh texture overlay */}
         <div className="absolute inset-0 opacity-10" style={{
           backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)',
