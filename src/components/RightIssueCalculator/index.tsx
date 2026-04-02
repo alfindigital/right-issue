@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
-import { RotateCcw, Heart, ChevronRight, ChevronLeft, Menu, X, Zap } from 'lucide-react';
+import { RotateCcw, Heart, ChevronRight, ChevronLeft, Zap } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
