@@ -1,25 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
 import { RotateCcw, Heart, ChevronRight, ChevronLeft, Menu, X, Zap } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
-import DilutionSimulator from './DilutionSimulator';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
-import AdvancedAnalysisSection from './AdvancedAnalysisSection';
 import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
-import ScenarioComparison from './ScenarioComparison';
-import EducationSection from './EducationSection';
-import WhatIfTargetPrice from './WhatIfTargetPrice';
-import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import ResultsDashboard from './ResultsDashboard';
 import StepWizard from './StepWizard';
 import ProgressRing from './ProgressRing';
@@ -35,6 +28,24 @@ import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load heavy components (charts, analysis)
+const DilutionSimulator = lazy(() => import('./DilutionSimulator'));
+const ScenarioComparison = lazy(() => import('./ScenarioComparison'));
+const AdvancedAnalysisSection = lazy(() => import('./AdvancedAnalysisSection'));
+const WhatIfTargetPrice = lazy(() => import('./WhatIfTargetPrice'));
+const EducationSection = lazy(() => import('./EducationSection'));
+const BudgetLotPlanner = lazy(() => import('./BudgetLotPlanner'));
+// Lazy type import for callback
+type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
+
+const LazyFallback = () => (
+  <div className="space-y-3 p-4">
+    <Skeleton className="h-4 w-32" />
+    <Skeleton className="h-24 w-full" />
+  </div>
+);
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
