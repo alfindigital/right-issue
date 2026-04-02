@@ -71,9 +71,6 @@ const RightIssueCalculator: React.FC = () => {
   const [wizardStep, setWizardStep] = useState(1);
   const [useWizardMode, setUseWizardMode] = useState(false);
   
-  // Mobile toolbar
-  const [toolbarOpen, setToolbarOpen] = useState(false);
-  
   // Stock Code
   const [stockCode, setStockCode] = useState('');
   
