@@ -634,13 +634,31 @@ const RightIssueCalculator: React.FC = () => {
         />
 
         {isCalculated && (
-          <div ref={resultsDashboardRef}>
-            <ResultsDashboard
-              isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
-              finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
-              recommendation={recommendation} recommendationText={recommendationText}
-            />
-          </div>
+          <>
+            <div ref={resultsDashboardRef}>
+              <ResultsDashboard
+                isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+                recommendation={recommendation} recommendationText={recommendationText}
+              />
+            </div>
+            {/* Mobile action bar - share/export/reset */}
+            <div className="flex md:hidden items-center justify-center gap-2 py-2">
+              <ShareButtons
+                resultRef={resultRef}
+                isCalculated={isCalculated}
+                shareData={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice }}
+                exportData={{ currentTotalValue, newSharesCount: newLotsCount, newTotalValue, finalShares: finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, hasWarrant, warrantCount }}
+              />
+              <ExportPDFButton
+                isCalculated={isCalculated}
+                data={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, newLotsCount, finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, warrantCount, currentTotalValue, newTotalValue }}
+              />
+              <button onClick={reset} className="p-2 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground transition-colors" aria-label="Reset">
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            </div>
+          </>
         )}
 
         {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
