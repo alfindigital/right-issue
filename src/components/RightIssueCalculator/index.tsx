@@ -602,7 +602,7 @@ const RightIssueCalculator: React.FC = () => {
               className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
             >
               <Zap className="w-3 h-3" />
-              {language === 'id' ? 'Mode Wizard' : 'Wizard Mode'}
+              {language === 'id' ? 'Mode Step-by-Step' : 'Step-by-Step Mode'}
             </button>
           </div>
         )}
