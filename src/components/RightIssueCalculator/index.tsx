@@ -739,11 +739,15 @@ const RightIssueCalculator: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="budget" className="mt-0">
-            <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
+            <Suspense fallback={<LazyFallback />}>
+              <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
+            </Suspense>
           </TabsContent>
           
           <TabsContent value="education" className="mt-0">
-            <EducationSection />
+            <Suspense fallback={<LazyFallback />}>
+              <EducationSection />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </main>
