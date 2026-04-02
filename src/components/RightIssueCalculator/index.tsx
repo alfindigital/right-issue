@@ -283,8 +283,9 @@ const RightIssueCalculator: React.FC = () => {
       setRecommendationText(
         `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
       );
-      // 🎉 Confetti celebration
-      setTimeout(() => {
+      // 🎉 Confetti celebration (dynamic import)
+      setTimeout(async () => {
+        const { default: confetti } = await import('canvas-confetti');
         confetti({
           particleCount: 80,
           spread: 70,
