@@ -676,15 +676,15 @@ const RightIssueCalculator: React.FC = () => {
           backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)',
         }} />
         
-        <div className="relative max-w-2xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="relative max-w-2xl mx-auto px-3 py-3 md:px-4 md:py-4">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex-1 min-w-0 flex items-center gap-2">
-              <Logo size={28} color="#fff" />
-              <div>
-                <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
+              <Logo size={24} color="#fff" className="flex-shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-base md:text-xl font-black tracking-tight text-primary-foreground truncate">
                   {t('app.title')}
                 </h1>
-                <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
+                <p className="text-[9px] md:text-xs text-primary-foreground/70 mt-0.5 truncate">
                   {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
                 </p>
               </div>
@@ -700,21 +700,15 @@ const RightIssueCalculator: React.FC = () => {
               {toolbarItems}
             </div>
 
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setToolbarOpen(!toolbarOpen)}
-              className="md:hidden p-2 rounded-xl bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-all"
-            >
-              {toolbarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-          </div>
-
-          {/* Mobile toolbar dropdown */}
-          {toolbarOpen && (
-            <div className="md:hidden mt-3 flex flex-wrap items-center gap-1.5 animate-fade-in pb-1">
-              {toolbarItems}
+            {/* Mobile: History + Settings only */}
+            <div className="flex md:hidden items-center gap-1">
+              <HistoryDropdown history={history} onSelectHistory={loadFromHistory} onRemoveHistory={removeFromHistory} onClearHistory={clearHistory} />
+              <SettingsDropdown
+                onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
+                onOpenEmbed={() => setEmbedOpen(true)}
+              />
             </div>
-          )}
+          </div>
         </div>
       </header>
 
