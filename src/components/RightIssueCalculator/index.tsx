@@ -1,25 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { RotateCcw, Heart, ChevronRight, ChevronLeft, Menu, X, Zap } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
+import { RotateCcw, Heart, ChevronRight, ChevronLeft, Zap } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
-import DilutionSimulator from './DilutionSimulator';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
-import AdvancedAnalysisSection from './AdvancedAnalysisSection';
 import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
-import ScenarioComparison from './ScenarioComparison';
-import EducationSection from './EducationSection';
-import WhatIfTargetPrice from './WhatIfTargetPrice';
-import BudgetLotPlanner, { BudgetPlannerData } from './BudgetLotPlanner';
 import ResultsDashboard from './ResultsDashboard';
 import StepWizard from './StepWizard';
 import ProgressRing from './ProgressRing';
@@ -35,6 +28,24 @@ import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load heavy components (charts, analysis)
+const DilutionSimulator = lazy(() => import('./DilutionSimulator'));
+const ScenarioComparison = lazy(() => import('./ScenarioComparison'));
+const AdvancedAnalysisSection = lazy(() => import('./AdvancedAnalysisSection'));
+const WhatIfTargetPrice = lazy(() => import('./WhatIfTargetPrice'));
+const EducationSection = lazy(() => import('./EducationSection'));
+const BudgetLotPlanner = lazy(() => import('./BudgetLotPlanner'));
+// Lazy type import for callback
+type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
+
+const LazyFallback = () => (
+  <div className="space-y-3 p-4">
+    <Skeleton className="h-4 w-32" />
+    <Skeleton className="h-24 w-full" />
+  </div>
+);
 
 const formatCurrency = (value: number): string => {
   return `Rp ${new Intl.NumberFormat('id-ID').format(value)}`;
@@ -59,9 +70,6 @@ const RightIssueCalculator: React.FC = () => {
   // Wizard step state
   const [wizardStep, setWizardStep] = useState(1);
   const [useWizardMode, setUseWizardMode] = useState(false);
-  
-  // Mobile toolbar
-  const [toolbarOpen, setToolbarOpen] = useState(false);
   
   // Stock Code
   const [stockCode, setStockCode] = useState('');
@@ -272,8 +280,9 @@ const RightIssueCalculator: React.FC = () => {
       setRecommendationText(
         `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
       );
-      // 🎉 Confetti celebration
-      setTimeout(() => {
+      // 🎉 Confetti celebration (dynamic import)
+      setTimeout(async () => {
+        const { default: confetti } = await import('canvas-confetti');
         confetti({
           particleCount: 80,
           spread: 70,
@@ -543,10 +552,12 @@ const RightIssueCalculator: React.FC = () => {
                   totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice}
                   recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated}
                 />
-                <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-                <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-                <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-                <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+                <Suspense fallback={<LazyFallback />}>
+                  <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+                  <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
+                  <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
+                  <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+                </Suspense>
               </div>
             )}
             </div>
@@ -623,22 +634,42 @@ const RightIssueCalculator: React.FC = () => {
         />
 
         {isCalculated && (
-          <div ref={resultsDashboardRef}>
-            <ResultsDashboard
-              isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
-              finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
-              recommendation={recommendation} recommendationText={recommendationText}
-            />
-          </div>
+          <>
+            <div ref={resultsDashboardRef}>
+              <ResultsDashboard
+                isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
+                recommendation={recommendation} recommendationText={recommendationText}
+              />
+            </div>
+            {/* Mobile action bar - share/export/reset */}
+            <div className="flex md:hidden items-center justify-center gap-2 py-2">
+              <ShareButtons
+                resultRef={resultRef}
+                isCalculated={isCalculated}
+                shareData={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice }}
+                exportData={{ currentTotalValue, newSharesCount: newLotsCount, newTotalValue, finalShares: finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, hasWarrant, warrantCount }}
+              />
+              <ExportPDFButton
+                isCalculated={isCalculated}
+                data={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, newLotsCount, finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, warrantCount, currentTotalValue, newTotalValue }}
+              />
+              <button onClick={reset} className="p-2 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground transition-colors" aria-label="Reset">
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            </div>
+          </>
         )}
 
         {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
         <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
         <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-        <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-        <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-        <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-        <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+        <Suspense fallback={<LazyFallback />}>
+          <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+          <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
+          <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
+          <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+        </Suspense>
       </div>
     );
   };
@@ -660,15 +691,15 @@ const RightIssueCalculator: React.FC = () => {
           backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)',
         }} />
         
-        <div className="relative max-w-2xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="relative max-w-2xl mx-auto px-3 py-3 md:px-4 md:py-4">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex-1 min-w-0 flex items-center gap-2">
-              <Logo size={28} color="#fff" />
-              <div>
-                <h1 className="text-lg md:text-xl font-black tracking-tight text-primary-foreground">
+              <Logo size={24} color="#fff" className="flex-shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-base md:text-xl font-black tracking-tight text-primary-foreground truncate">
                   {t('app.title')}
                 </h1>
-                <p className="text-[10px] md:text-xs text-primary-foreground/70 mt-0.5">
+                <p className="text-[9px] md:text-xs text-primary-foreground/70 mt-0.5 truncate">
                   {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
                 </p>
               </div>
@@ -684,21 +715,15 @@ const RightIssueCalculator: React.FC = () => {
               {toolbarItems}
             </div>
 
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setToolbarOpen(!toolbarOpen)}
-              className="md:hidden p-2 rounded-xl bg-primary-foreground/10 hover:bg-primary-foreground/20 text-primary-foreground transition-all"
-            >
-              {toolbarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-          </div>
-
-          {/* Mobile toolbar dropdown */}
-          {toolbarOpen && (
-            <div className="md:hidden mt-3 flex flex-wrap items-center gap-1.5 animate-fade-in pb-1">
-              {toolbarItems}
+            {/* Mobile: History + Settings only */}
+            <div className="flex md:hidden items-center gap-1">
+              <HistoryDropdown history={history} onSelectHistory={loadFromHistory} onRemoveHistory={removeFromHistory} onClearHistory={clearHistory} />
+              <SettingsDropdown
+                onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
+                onOpenEmbed={() => setEmbedOpen(true)}
+              />
             </div>
-          )}
+          </div>
         </div>
       </header>
 
@@ -723,11 +748,15 @@ const RightIssueCalculator: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="budget" className="mt-0">
-            <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
+            <Suspense fallback={<LazyFallback />}>
+              <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
+            </Suspense>
           </TabsContent>
           
           <TabsContent value="education" className="mt-0">
-            <EducationSection />
+            <Suspense fallback={<LazyFallback />}>
+              <EducationSection />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </main>
