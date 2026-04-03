@@ -526,6 +526,8 @@ const RightIssueCalculator: React.FC = () => {
                   finalLots={finalLots} finalAvgPrice={finalAvgPrice} finalTotalValue={finalTotalValue}
                   onCurrentLotsChange={setCurrentLots} onCurrentAvgPriceChange={setCurrentAvgPrice}
                   onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
+                  noOwnership={noOwnership} onNoOwnershipChange={setNoOwnership}
+                  hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
                 />
               </div>
             )}
