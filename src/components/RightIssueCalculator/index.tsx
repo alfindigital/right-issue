@@ -429,7 +429,7 @@ const RightIssueCalculator: React.FC = () => {
   // Wizard navigation
   const canGoNext = () => {
     if (wizardStep === 1) return !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError);
-    if (wizardStep === 2) return !!(currentLots && currentAvgPrice);
+    if (wizardStep === 2) return noOwnership ? !!hmetdLots : !!(currentLots && currentAvgPrice);
     if (wizardStep === 3) return isWarrantRatioValid;
     return false;
   };
