@@ -83,6 +83,10 @@ const RightIssueCalculator: React.FC = () => {
   // Current Ownership (in lots)
   const [currentLots, setCurrentLots] = useState('');
   const [currentAvgPrice, setCurrentAvgPrice] = useState('');
+  
+  // No ownership mode (buy HMETD from market)
+  const [noOwnership, setNoOwnership] = useState(false);
+  const [hmetdLots, setHmetdLots] = useState('');
 
   // Warrant
   const [hasWarrant, setHasWarrant] = useState(false);
@@ -119,10 +123,12 @@ const RightIssueCalculator: React.FC = () => {
 
   // Completion percentage for progress ring
   const completionPercent = useMemo(() => {
-    const fields = [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice];
+    const fields = noOwnership 
+      ? [ratioOld, ratioNew, rightPrice, cumDatePrice, hmetdLots]
+      : [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice];
     const filled = fields.filter(f => f.trim() !== '').length;
     return Math.round((filled / fields.length) * 100);
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, noOwnership, hmetdLots]);
 
   // IntersectionObserver for floating summary
   useEffect(() => {
@@ -214,7 +220,7 @@ const RightIssueCalculator: React.FC = () => {
   }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
 
   const isWarrantRatioValid = !hasWarrant || (warrantRatioOld && warrantRatioNew && !warrantRatioError);
-  const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && currentLots && currentAvgPrice && !ratioError && isWarrantRatioValid);
+  const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError && isWarrantRatioValid && (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)));
 
   useEffect(() => {
     const lots = parseInt(currentLots) || 0;
@@ -228,13 +234,19 @@ const RightIssueCalculator: React.FC = () => {
     const rNew = parseDecimalId(ratioNew);
     const riPrice = parseInt(rightPrice) || 0;
     const cumPrice = parseInt(cumDatePrice) || 0;
-    const lots = parseInt(currentLots) || 0;
+    
+    // Handle noOwnership mode: user buys HMETD from market
+    const lots = noOwnership ? 0 : (parseInt(currentLots) || 0);
     const shares = lots * 100;
-    const avgPrice = parseInt(currentAvgPrice) || 0;
+    const avgPrice = noOwnership ? 0 : (parseInt(currentAvgPrice) || 0);
 
     if (rOld === 0 || rNew === 0) return;
 
-    const newShares = Math.floor((shares / rOld) * rNew);
+    // In noOwnership mode, newShares = hmetdLots * 100 (direct purchase)
+    const newShares = noOwnership 
+      ? (parseInt(hmetdLots) || 0) * 100 
+      : Math.floor((shares / rOld) * rNew);
+    
     const newLots = newShares / 100;
     const isWholeLot = Number.isInteger(newLots);
     setNewLotsCount(isWholeLot ? formatNumber(newLots) : newLots.toFixed(2).replace('.', ','));
@@ -324,7 +336,7 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots]);
 
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
@@ -336,6 +348,7 @@ const RightIssueCalculator: React.FC = () => {
   const reset = useCallback(() => {
     setStockCode(''); setRatioOld(''); setRatioNew(''); setRightPrice(''); setCumDatePrice('');
     setCurrentLots(''); setCurrentAvgPrice(''); setHasWarrant(false); setWarrantRatioOld(''); setWarrantRatioNew('');
+    setNoOwnership(false); setHmetdLots('');
     setCurrentTotalValue('Rp 0'); setNewLotsCount('0'); setNewAvgPrice('Rp 0'); setNewTotalValue('Rp 0');
     setFinalLots('0'); setFinalAvgPrice('Rp 0'); setFinalTotalValue('Rp 0'); setTheoreticalPrice('-');
     setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false); setIsCalculating(false);
@@ -418,7 +431,7 @@ const RightIssueCalculator: React.FC = () => {
   // Wizard navigation
   const canGoNext = () => {
     if (wizardStep === 1) return !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError);
-    if (wizardStep === 2) return !!(currentLots && currentAvgPrice);
+    if (wizardStep === 2) return noOwnership ? !!hmetdLots : !!(currentLots && currentAvgPrice);
     if (wizardStep === 3) return isWarrantRatioValid;
     return false;
   };
@@ -522,6 +535,8 @@ const RightIssueCalculator: React.FC = () => {
                   finalLots={finalLots} finalAvgPrice={finalAvgPrice} finalTotalValue={finalTotalValue}
                   onCurrentLotsChange={setCurrentLots} onCurrentAvgPriceChange={setCurrentAvgPrice}
                   onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
+                  noOwnership={noOwnership} onNoOwnershipChange={setNoOwnership}
+                  hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
                 />
               </div>
             )}
@@ -631,6 +646,8 @@ const RightIssueCalculator: React.FC = () => {
           finalLots={finalLots} finalAvgPrice={finalAvgPrice} finalTotalValue={finalTotalValue}
           onCurrentLotsChange={setCurrentLots} onCurrentAvgPriceChange={setCurrentAvgPrice}
           onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
+          noOwnership={noOwnership} onNoOwnershipChange={setNoOwnership}
+          hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
         />
 
         {isCalculated && (
