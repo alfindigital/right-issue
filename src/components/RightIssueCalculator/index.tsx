@@ -334,7 +334,7 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots]);
 
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
