@@ -83,6 +83,10 @@ const RightIssueCalculator: React.FC = () => {
   // Current Ownership (in lots)
   const [currentLots, setCurrentLots] = useState('');
   const [currentAvgPrice, setCurrentAvgPrice] = useState('');
+  
+  // No ownership mode (buy HMETD from market)
+  const [noOwnership, setNoOwnership] = useState(false);
+  const [hmetdLots, setHmetdLots] = useState('');
 
   // Warrant
   const [hasWarrant, setHasWarrant] = useState(false);
