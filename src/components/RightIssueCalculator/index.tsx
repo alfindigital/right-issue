@@ -232,12 +232,18 @@ const RightIssueCalculator: React.FC = () => {
     const rNew = parseDecimalId(ratioNew);
     const riPrice = parseInt(rightPrice) || 0;
     const cumPrice = parseInt(cumDatePrice) || 0;
-    const lots = parseInt(currentLots) || 0;
+    
+    // Handle noOwnership mode: user buys HMETD from market
+    const lots = noOwnership ? 0 : (parseInt(currentLots) || 0);
     const shares = lots * 100;
-    const avgPrice = parseInt(currentAvgPrice) || 0;
+    const avgPrice = noOwnership ? 0 : (parseInt(currentAvgPrice) || 0);
 
     if (rOld === 0 || rNew === 0) return;
 
+    // In noOwnership mode, newShares = hmetdLots * 100 (direct purchase)
+    const newShares = noOwnership 
+      ? (parseInt(hmetdLots) || 0) * 100 
+      : Math.floor((shares / rOld) * rNew);
     const newShares = Math.floor((shares / rOld) * rNew);
     const newLots = newShares / 100;
     const isWholeLot = Number.isInteger(newLots);
