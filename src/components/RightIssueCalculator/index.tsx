@@ -244,7 +244,7 @@ const RightIssueCalculator: React.FC = () => {
     const newShares = noOwnership 
       ? (parseInt(hmetdLots) || 0) * 100 
       : Math.floor((shares / rOld) * rNew);
-    const newShares = Math.floor((shares / rOld) * rNew);
+    
     const newLots = newShares / 100;
     const isWholeLot = Number.isInteger(newLots);
     setNewLotsCount(isWholeLot ? formatNumber(newLots) : newLots.toFixed(2).replace('.', ','));
