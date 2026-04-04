@@ -87,6 +87,7 @@ const RightIssueCalculator: React.FC = () => {
   // No ownership mode (buy HMETD from market)
   const [noOwnership, setNoOwnership] = useState(false);
   const [hmetdLots, setHmetdLots] = useState('');
+  const [hmetdPrice, setHmetdPrice] = useState('');
 
   // Warrant
   const [hasWarrant, setHasWarrant] = useState(false);
@@ -124,11 +125,11 @@ const RightIssueCalculator: React.FC = () => {
   // Completion percentage for progress ring
   const completionPercent = useMemo(() => {
     const fields = noOwnership 
-      ? [ratioOld, ratioNew, rightPrice, cumDatePrice, hmetdLots]
+      ? [ratioOld, ratioNew, rightPrice, cumDatePrice, hmetdLots, hmetdPrice]
       : [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice];
     const filled = fields.filter(f => f.trim() !== '').length;
     return Math.round((filled / fields.length) * 100);
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, noOwnership, hmetdLots]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, noOwnership, hmetdLots, hmetdPrice]);
 
   // IntersectionObserver for floating summary
   useEffect(() => {
@@ -261,7 +262,9 @@ const RightIssueCalculator: React.FC = () => {
     setFinalLots(isWholeFinalLot ? formatNumber(totalLotsNum) : totalLotsNum.toFixed(2).replace('.', ','));
 
     const currentValue = shares * avgPrice;
-    const totalValue = currentValue + newValue;
+    // In noOwnership mode, include HMETD purchase cost in total investment
+    const hmetdPurchaseCost = noOwnership ? ((parseInt(hmetdPrice) || 0) * newShares) : 0;
+    const totalValue = currentValue + newValue + hmetdPurchaseCost;
     setFinalTotalValue(formatCurrency(totalValue));
 
     const finalAvg = totalShares > 0 ? Math.round(totalValue / totalShares) : 0;
@@ -336,7 +339,7 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice]);
 
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
@@ -348,7 +351,7 @@ const RightIssueCalculator: React.FC = () => {
   const reset = useCallback(() => {
     setStockCode(''); setRatioOld(''); setRatioNew(''); setRightPrice(''); setCumDatePrice('');
     setCurrentLots(''); setCurrentAvgPrice(''); setHasWarrant(false); setWarrantRatioOld(''); setWarrantRatioNew('');
-    setNoOwnership(false); setHmetdLots('');
+    setNoOwnership(false); setHmetdLots(''); setHmetdPrice('');
     setCurrentTotalValue('Rp 0'); setNewLotsCount('0'); setNewAvgPrice('Rp 0'); setNewTotalValue('Rp 0');
     setFinalLots('0'); setFinalAvgPrice('Rp 0'); setFinalTotalValue('Rp 0'); setTheoreticalPrice('-');
     setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false); setIsCalculating(false);
@@ -537,6 +540,8 @@ const RightIssueCalculator: React.FC = () => {
                   onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
                   noOwnership={noOwnership} onNoOwnershipChange={setNoOwnership}
                   hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
+                  hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
+                  hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
                 />
               </div>
             )}
@@ -648,6 +653,8 @@ const RightIssueCalculator: React.FC = () => {
           onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
           noOwnership={noOwnership} onNoOwnershipChange={setNoOwnership}
           hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
+          hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
+          hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
         />
 
         {isCalculated && (
