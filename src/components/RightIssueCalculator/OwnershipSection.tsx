@@ -48,6 +48,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   onNoOwnershipChange,
   hmetdLots,
   onHmetdLotsChange,
+  hmetdPrice,
+  onHmetdPriceChange,
+  hmetdTotalCost,
 }) => {
   const { t, language } = useLanguage();
   
