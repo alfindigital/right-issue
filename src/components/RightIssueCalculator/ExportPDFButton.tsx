@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { FileDown, Loader2 } from 'lucide-react';
-import { jsPDF } from 'jspdf';
+
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
 
@@ -42,11 +42,12 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
   const { language } = useLanguage();
   const [isExporting, setIsExporting] = useState(false);
 
-  const generatePDF = useCallback(() => {
+  const generatePDF = useCallback(async () => {
     if (!isCalculated) return;
     setIsExporting(true);
 
     try {
+      const { jsPDF } = await import('jspdf');
       const doc = new jsPDF('p', 'mm', 'a4');
       const pageWidth = 210;
       const margin = 15;

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Download, Link2, Share2, ChevronDown, MessageCircle, Clipboard } from 'lucide-react';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,6 +71,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
         throw new Error('Export template not found');
       }
 
+      const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(exportElement, {
         backgroundColor: null,
         scale: 2,
@@ -111,6 +112,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
       const exportElement = container.querySelector('#export-template') as HTMLElement;
       if (!exportElement) throw new Error('Export template not found');
 
+      const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(exportElement, {
         backgroundColor: null,
         scale: 2,
