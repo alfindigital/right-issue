@@ -103,8 +103,24 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   placeholder="0"
                   className="input-calculator"
                   inputMode="numeric"
-                />
+              />
               </div>
+
+              <CurrencyInput
+                id="hmetd-price"
+                label={language === 'id' ? 'Harga HMETD per Lembar' : 'HMETD Price per Share'}
+                value={hmetdPrice}
+                onChange={onHmetdPriceChange}
+                tooltip={language === 'id' ? "Harga beli HMETD per lembar di pasar sekunder. Cek harga HMETD-R di broker Anda." : "HMETD purchase price per share in secondary market. Check HMETD-R price at your broker."}
+              />
+
+              {hmetdTotalCost && (
+                <ReadOnlyField
+                  label={language === 'id' ? 'Total Biaya Akuisisi' : 'Total Acquisition Cost'}
+                  value={hmetdTotalCost}
+                  tooltip={language === 'id' ? "Total biaya = (harga HMETD × lembar) + (harga pelaksanaan RI × lembar). Ini adalah total modal yang Anda keluarkan." : "Total cost = (HMETD price × shares) + (RI exercise price × shares). This is your total capital outlay."}
+                />
+              )}
 
               <div className="p-3 rounded-lg bg-accent/30 border border-accent/50">
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
