@@ -538,6 +538,8 @@ const RightIssueCalculator: React.FC = () => {
                   onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
                   noOwnership={noOwnership} onNoOwnershipChange={setNoOwnership}
                   hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
+                  hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
+                  hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
                 />
               </div>
             )}
