@@ -42,7 +42,7 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
   const { language } = useLanguage();
   const [isExporting, setIsExporting] = useState(false);
 
-  const generatePDF = useCallback(() => {
+  const generatePDF = useCallback(async () => {
     if (!isCalculated) return;
     setIsExporting(true);
 
