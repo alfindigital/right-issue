@@ -47,6 +47,7 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
     setIsExporting(true);
 
     try {
+      const { jsPDF } = await import('jspdf');
       const doc = new jsPDF('p', 'mm', 'a4');
       const pageWidth = 210;
       const margin = 15;
