@@ -24,6 +24,9 @@ interface OwnershipSectionProps {
   onNoOwnershipChange: (value: boolean) => void;
   hmetdLots: string;
   onHmetdLotsChange: (value: string) => void;
+  hmetdPrice: string;
+  onHmetdPriceChange: (value: string) => void;
+  hmetdTotalCost?: string;
 }
 
 const OwnershipSection: React.FC<OwnershipSectionProps> = ({
