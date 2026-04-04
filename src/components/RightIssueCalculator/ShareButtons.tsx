@@ -71,6 +71,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
         throw new Error('Export template not found');
       }
 
+      const html2canvas = (await import('html2canvas')).default;
       const canvas = await html2canvas(exportElement, {
         backgroundColor: null,
         scale: 2,
