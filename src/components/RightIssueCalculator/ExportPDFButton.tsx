@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { FileDown, Loader2 } from 'lucide-react';
-import { jsPDF } from 'jspdf';
+import type { jsPDF as JsPDFType } from 'jspdf';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
 
