@@ -262,7 +262,9 @@ const RightIssueCalculator: React.FC = () => {
     setFinalLots(isWholeFinalLot ? formatNumber(totalLotsNum) : totalLotsNum.toFixed(2).replace('.', ','));
 
     const currentValue = shares * avgPrice;
-    const totalValue = currentValue + newValue;
+    // In noOwnership mode, include HMETD purchase cost in total investment
+    const hmetdPurchaseCost = noOwnership ? ((parseInt(hmetdPrice) || 0) * newShares) : 0;
+    const totalValue = currentValue + newValue + hmetdPurchaseCost;
     setFinalTotalValue(formatCurrency(totalValue));
 
     const finalAvg = totalShares > 0 ? Math.round(totalValue / totalShares) : 0;
