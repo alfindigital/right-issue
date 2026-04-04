@@ -125,11 +125,11 @@ const RightIssueCalculator: React.FC = () => {
   // Completion percentage for progress ring
   const completionPercent = useMemo(() => {
     const fields = noOwnership 
-      ? [ratioOld, ratioNew, rightPrice, cumDatePrice, hmetdLots]
+      ? [ratioOld, ratioNew, rightPrice, cumDatePrice, hmetdLots, hmetdPrice]
       : [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice];
     const filled = fields.filter(f => f.trim() !== '').length;
     return Math.round((filled / fields.length) * 100);
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, noOwnership, hmetdLots]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, noOwnership, hmetdLots, hmetdPrice]);
 
   // IntersectionObserver for floating summary
   useEffect(() => {
