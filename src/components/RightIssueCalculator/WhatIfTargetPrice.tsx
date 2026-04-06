@@ -29,7 +29,7 @@ const WhatIfTargetPrice = React.forwardRef<HTMLDivElement, WhatIfTargetPriceProp
   riPrice,
   cumPrice,
   terp,
-}) => {
+}, ref) => {
   const { language } = useLanguage();
   const [targets, setTargets] = useState<string[]>(['']);
 

@@ -23,7 +23,7 @@ const DilutionSimulator = React.forwardRef<HTMLDivElement, DilutionSimulatorProp
   newSharesEntitled,
   ratioOld,
   ratioNew,
-}) => {
+}, ref) => {
   const { language } = useLanguage();
 
   const scenarios = useMemo(() => {
