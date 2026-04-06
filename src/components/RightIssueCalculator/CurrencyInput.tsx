@@ -10,14 +10,14 @@ interface CurrencyInputProps {
   tooltip?: string;
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({
+const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   id,
   label,
   value,
   onChange,
   placeholder = "0",
   tooltip
-}) => {
+}, ref) => {
   const formatNumber = (num: string): string => {
     const cleanNum = num.replace(/\D/g, '');
     if (!cleanNum) return '';
@@ -30,7 +30,7 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
   };
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5" ref={ref}>
       <label htmlFor={id} className="text-xs font-medium text-foreground flex items-center">
         {label}
         {tooltip && <InfoTooltip text={tooltip} />}
@@ -46,6 +46,8 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({
       />
     </div>
   );
-};
+});
+
+CurrencyInput.displayName = 'CurrencyInput';
 
 export default CurrencyInput;
