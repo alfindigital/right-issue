@@ -8,10 +8,10 @@ interface WarrantResultSectionProps {
   isCalculated: boolean;
 }
 
-const WarrantResultSection: React.FC<WarrantResultSectionProps> = ({
+const WarrantResultSection = React.forwardRef<HTMLElement, WarrantResultSectionProps>(({
   warrantCount,
   isCalculated
-}) => {
+}, ref) => {
   const { t, language } = useLanguage();
   
   if (!isCalculated) return null;
@@ -34,6 +34,8 @@ const WarrantResultSection: React.FC<WarrantResultSectionProps> = ({
       </div>
     </section>
   );
-};
+});
+
+WarrantResultSection.displayName = 'WarrantResultSection';
 
 export default WarrantResultSection;

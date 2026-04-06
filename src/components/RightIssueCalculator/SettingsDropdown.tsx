@@ -14,7 +14,7 @@ interface SettingsDropdownProps {
   onOpenEmbed: () => void;
 }
 
-const SettingsDropdown: React.FC<SettingsDropdownProps> = ({ onOpenKeyboardHelp, onOpenEmbed }) => {
+const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed }, ref) => {
   const { language, setLanguage, t } = useLanguage();
   const [isDark, setIsDark] = useState(false);
 
@@ -80,6 +80,8 @@ const SettingsDropdown: React.FC<SettingsDropdownProps> = ({ onOpenKeyboardHelp,
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+});
+
+SettingsDropdown.displayName = 'SettingsDropdown';
 
 export default SettingsDropdown;
