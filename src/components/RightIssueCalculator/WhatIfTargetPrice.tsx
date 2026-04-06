@@ -21,7 +21,7 @@ const formatPercent = (value: number): string => {
   return `${sign}${value.toFixed(2)}%`;
 };
 
-const WhatIfTargetPrice: React.FC<WhatIfTargetPriceProps> = ({
+const WhatIfTargetPrice = React.forwardRef<HTMLDivElement, WhatIfTargetPriceProps>(({
   isCalculated,
   currentShares,
   newSharesCount,
@@ -307,6 +307,8 @@ const WhatIfTargetPrice: React.FC<WhatIfTargetPriceProps> = ({
       )}
     </section>
   );
-};
+});
+
+WhatIfTargetPrice.displayName = 'WhatIfTargetPrice';
 
 export default WhatIfTargetPrice;

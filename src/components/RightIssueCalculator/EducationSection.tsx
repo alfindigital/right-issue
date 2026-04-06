@@ -402,7 +402,7 @@ const FAQSection: React.FC = () => {
 
 type SubTab = 'glossary' | 'steps' | 'faq';
 
-const EducationSection: React.FC = () => {
+const EducationSection = React.forwardRef<HTMLDivElement, {}>((props, ref) => {
   const { language } = useLanguage();
   const [subTab, setSubTab] = useState<SubTab>('steps');
 
@@ -471,6 +471,8 @@ const EducationSection: React.FC = () => {
       </section>
     </div>
   );
-};
+});
+
+EducationSection.displayName = 'EducationSection';
 
 export default EducationSection;
