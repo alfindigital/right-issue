@@ -20,7 +20,7 @@ interface KeyboardShortcutsHelpProps {
   onExternalOpenChange?: (open: boolean) => void;
 }
 
-const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ externalOpen, onExternalOpenChange }) => {
+const KeyboardShortcutsHelp = React.forwardRef<HTMLDivElement, KeyboardShortcutsHelpProps>(({ externalOpen, onExternalOpenChange }, ref) => {
   const { language, t } = useLanguage();
   const [isMac, setIsMac] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
@@ -102,6 +102,8 @@ const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ externalO
       </DialogContent>
     </Dialog>
   );
-};
+});
+
+KeyboardShortcutsHelp.displayName = 'KeyboardShortcutsHelp';
 
 export default KeyboardShortcutsHelp;

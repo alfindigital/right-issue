@@ -8,12 +8,12 @@ interface RatioInputProps {
   className?: string;
 }
 
-const RatioInput: React.FC<RatioInputProps> = ({
+const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
   value,
   onChange,
   placeholder,
   className = ''
-}) => {
+}, ref) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const sanitized = sanitizeRatioInput(e.target.value);
     onChange(sanitized);
@@ -21,6 +21,7 @@ const RatioInput: React.FC<RatioInputProps> = ({
 
   return (
     <input
+      ref={ref}
       type="text"
       value={value}
       onChange={handleChange}
@@ -29,6 +30,8 @@ const RatioInput: React.FC<RatioInputProps> = ({
       inputMode="decimal"
     />
   );
-};
+});
+
+RatioInput.displayName = 'RatioInput';
 
 export default RatioInput;

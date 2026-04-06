@@ -10,16 +10,17 @@ interface SummaryItemProps {
   tooltip?: string;
 }
 
-const SummaryItem: React.FC<SummaryItemProps> = ({
+const SummaryItem = React.forwardRef<HTMLDivElement, SummaryItemProps>(({
   label,
   value,
   highlight = false,
   animated = false,
   delay = 0,
   tooltip
-}) => {
+}, ref) => {
   return (
     <div 
+      ref={ref}
       className={`flex justify-between items-center py-3 border-b border-border last:border-b-0 transition-all duration-500 ${animated ? 'animate-slide-in' : ''}`}
       style={{ animationDelay: animated ? `${delay}ms` : '0ms' }}
     >
@@ -32,6 +33,8 @@ const SummaryItem: React.FC<SummaryItemProps> = ({
       </span>
     </div>
   );
-};
+});
+
+SummaryItem.displayName = 'SummaryItem';
 
 export default SummaryItem;

@@ -10,16 +10,16 @@ interface ReadOnlyFieldProps {
   tooltip?: string;
 }
 
-const ReadOnlyField: React.FC<ReadOnlyFieldProps> = ({
+const ReadOnlyField = React.forwardRef<HTMLDivElement, ReadOnlyFieldProps>(({
   label,
   value,
   highlight = false,
   animated = false,
   delay = 0,
   tooltip
-}) => {
+}, ref) => {
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5" ref={ref}>
       <label className="text-xs font-medium text-muted-foreground flex items-center">
         {label}
         {tooltip && <InfoTooltip text={tooltip} />}
@@ -32,6 +32,8 @@ const ReadOnlyField: React.FC<ReadOnlyFieldProps> = ({
       </div>
     </div>
   );
-};
+});
+
+ReadOnlyField.displayName = 'ReadOnlyField';
 
 export default ReadOnlyField;

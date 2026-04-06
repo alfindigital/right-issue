@@ -17,13 +17,13 @@ const COLORS = {
   otherShares: 'hsl(var(--muted-foreground) / 0.3)',
 };
 
-const DilutionSimulator: React.FC<DilutionSimulatorProps> = ({
+const DilutionSimulator = React.forwardRef<HTMLDivElement, DilutionSimulatorProps>(({
   isCalculated,
   currentShares,
   newSharesEntitled,
   ratioOld,
   ratioNew,
-}) => {
+}, ref) => {
   const { language } = useLanguage();
 
   const scenarios = useMemo(() => {
@@ -185,6 +185,8 @@ const DilutionSimulator: React.FC<DilutionSimulatorProps> = ({
       </div>
     </section>
   );
-};
+});
+
+DilutionSimulator.displayName = 'DilutionSimulator';
 
 export default DilutionSimulator;

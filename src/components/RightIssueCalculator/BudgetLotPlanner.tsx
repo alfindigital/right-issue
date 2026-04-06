@@ -53,7 +53,7 @@ const formatInputNumber = (num: string): string => {
   return new Intl.NumberFormat('id-ID').format(parseInt(cleanNum));
 };
 
-const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator }) => {
+const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>(({ onApplyToCalculator }, ref) => {
   const { t } = useLanguage();
   
   // RI Info inputs
@@ -582,6 +582,8 @@ const BudgetLotPlanner: React.FC<BudgetLotPlannerProps> = ({ onApplyToCalculator
       )}
     </div>
   );
-};
+});
+
+BudgetLotPlanner.displayName = 'BudgetLotPlanner';
 
 export default BudgetLotPlanner;
