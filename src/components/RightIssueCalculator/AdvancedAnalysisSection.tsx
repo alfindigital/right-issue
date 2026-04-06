@@ -15,7 +15,7 @@ interface AdvancedAnalysisSectionProps {
   terp: number;
 }
 
-const AdvancedAnalysisSection: React.FC<AdvancedAnalysisSectionProps> = ({
+const AdvancedAnalysisSection = React.forwardRef<HTMLDivElement, AdvancedAnalysisSectionProps>(({
   isCalculated,
   cumPrice,
   riPrice,
@@ -24,7 +24,7 @@ const AdvancedAnalysisSection: React.FC<AdvancedAnalysisSectionProps> = ({
   newSharesCount,
   avgBaru,
   terp,
-}) => {
+}, ref) => {
   const { t } = useLanguage();
 
   if (!isCalculated) {
@@ -55,6 +55,8 @@ const AdvancedAnalysisSection: React.FC<AdvancedAnalysisSectionProps> = ({
       />
     </div>
   );
-};
+});
+
+AdvancedAnalysisSection.displayName = 'AdvancedAnalysisSection';
 
 export default AdvancedAnalysisSection;
