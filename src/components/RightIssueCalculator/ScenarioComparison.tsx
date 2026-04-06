@@ -48,7 +48,7 @@ const formatPercent = (value: number): string => {
   return `${sign}${value.toFixed(2)}%`;
 };
 
-const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
+const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonProps>(({
   isCalculated,
   cumPrice,
   riPrice,
@@ -58,7 +58,7 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
   currentShares,
   newSharesCount,
   currentAvgPrice,
-}) => {
+}, ref) => {
   const { t } = useLanguage();
   const [partialPercent, setPartialPercent] = useState(50);
   const [isSliding, setIsSliding] = useState(false);
@@ -429,6 +429,8 @@ const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
       </Tabs>
     </div>
   );
-};
+});
+
+ScenarioComparison.displayName = 'ScenarioComparison';
 
 export default ScenarioComparison;
