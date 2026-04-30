@@ -29,14 +29,25 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ChartSkeleton, SectionSkeleton } from './ChartSkeleton';
+import useIdlePrefetch from '@/hooks/useIdlePrefetch';
 
 // Lazy load heavy components (charts, analysis)
-const DilutionSimulator = lazy(() => import('./DilutionSimulator'));
-const ScenarioComparison = lazy(() => import('./ScenarioComparison'));
-const AdvancedAnalysisSection = lazy(() => import('./AdvancedAnalysisSection'));
-const WhatIfTargetPrice = lazy(() => import('./WhatIfTargetPrice'));
-const EducationSection = lazy(() => import('./EducationSection'));
-const BudgetLotPlanner = lazy(() => import('./BudgetLotPlanner'));
+// Importers shared between React.lazy and the idle-prefetcher so the same
+// chunk is reused (no double-fetch).
+const importDilution = () => import('./DilutionSimulator');
+const importScenario = () => import('./ScenarioComparison');
+const importAdvanced = () => import('./AdvancedAnalysisSection');
+const importWhatIf = () => import('./WhatIfTargetPrice');
+const importEducation = () => import('./EducationSection');
+const importBudget = () => import('./BudgetLotPlanner');
+
+const DilutionSimulator = lazy(importDilution);
+const ScenarioComparison = lazy(importScenario);
+const AdvancedAnalysisSection = lazy(importAdvanced);
+const WhatIfTargetPrice = lazy(importWhatIf);
+const EducationSection = lazy(importEducation);
+const BudgetLotPlanner = lazy(importBudget);
 // Lazy type import for callback
 type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
 
@@ -63,6 +74,19 @@ const RightIssueCalculator: React.FC = () => {
   const hasRestoredRef = useRef(false);
   const pendingAutoCalculateRef = useRef(false);
   const isMobile = useIsMobile();
+
+  // Prefetch heavy chunks when browser is idle so tab switches feel instant.
+  // Education + Budget Planner live behind tabs; chart sections appear after
+  // calculation. Loading them in the background after first paint avoids any
+  // visible spinner on first interaction.
+  useIdlePrefetch([
+    importBudget,
+    importEducation,
+    importDilution,
+    importScenario,
+    importAdvanced,
+    importWhatIf,
+  ]);
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
