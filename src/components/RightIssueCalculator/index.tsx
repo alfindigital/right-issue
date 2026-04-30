@@ -29,14 +29,25 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ChartSkeleton, SectionSkeleton } from './ChartSkeleton';
+import useIdlePrefetch from '@/hooks/useIdlePrefetch';
 
 // Lazy load heavy components (charts, analysis)
-const DilutionSimulator = lazy(() => import('./DilutionSimulator'));
-const ScenarioComparison = lazy(() => import('./ScenarioComparison'));
-const AdvancedAnalysisSection = lazy(() => import('./AdvancedAnalysisSection'));
-const WhatIfTargetPrice = lazy(() => import('./WhatIfTargetPrice'));
-const EducationSection = lazy(() => import('./EducationSection'));
-const BudgetLotPlanner = lazy(() => import('./BudgetLotPlanner'));
+// Importers shared between React.lazy and the idle-prefetcher so the same
+// chunk is reused (no double-fetch).
+const importDilution = () => import('./DilutionSimulator');
+const importScenario = () => import('./ScenarioComparison');
+const importAdvanced = () => import('./AdvancedAnalysisSection');
+const importWhatIf = () => import('./WhatIfTargetPrice');
+const importEducation = () => import('./EducationSection');
+const importBudget = () => import('./BudgetLotPlanner');
+
+const DilutionSimulator = lazy(importDilution);
+const ScenarioComparison = lazy(importScenario);
+const AdvancedAnalysisSection = lazy(importAdvanced);
+const WhatIfTargetPrice = lazy(importWhatIf);
+const EducationSection = lazy(importEducation);
+const BudgetLotPlanner = lazy(importBudget);
 // Lazy type import for callback
 type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
 
@@ -63,6 +74,19 @@ const RightIssueCalculator: React.FC = () => {
   const hasRestoredRef = useRef(false);
   const pendingAutoCalculateRef = useRef(false);
   const isMobile = useIsMobile();
+
+  // Prefetch heavy chunks when browser is idle so tab switches feel instant.
+  // Education + Budget Planner live behind tabs; chart sections appear after
+  // calculation. Loading them in the background after first paint avoids any
+  // visible spinner on first interaction.
+  useIdlePrefetch([
+    importBudget,
+    importEducation,
+    importDilution,
+    importScenario,
+    importAdvanced,
+    importWhatIf,
+  ]);
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
@@ -572,7 +596,7 @@ const RightIssueCalculator: React.FC = () => {
                   totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice}
                   recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated}
                 />
-                <Suspense fallback={<LazyFallback />}>
+                <Suspense fallback={<ChartSkeleton height={180} />}>
                   <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
                   <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
                   <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
@@ -688,7 +712,7 @@ const RightIssueCalculator: React.FC = () => {
         {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
         <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
         <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-        <Suspense fallback={<LazyFallback />}>
+        <Suspense fallback={<ChartSkeleton height={180} />}>
           <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
           <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
           <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
@@ -772,13 +796,13 @@ const RightIssueCalculator: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="budget" className="mt-0">
-            <Suspense fallback={<LazyFallback />}>
+            <Suspense fallback={<SectionSkeleton />}>
               <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
             </Suspense>
           </TabsContent>
           
           <TabsContent value="education" className="mt-0">
-            <Suspense fallback={<LazyFallback />}>
+            <Suspense fallback={<SectionSkeleton />}>
               <EducationSection />
             </Suspense>
           </TabsContent>

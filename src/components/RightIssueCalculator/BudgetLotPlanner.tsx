@@ -1,15 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { Wallet, Target, TrendingUp, CheckCircle2, AlertCircle, ArrowRight, Save } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import RatioInput from './RatioInput';
 import { parseDecimalId } from '@/lib/parseDecimal';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import BudgetAllocationChart from './BudgetAllocationChart';
+import { ChartSkeleton } from './ChartSkeleton';
 import { useBudgetPlannerHistory, BudgetPlannerHistoryItem } from '@/hooks/useBudgetPlannerHistory';
 import BudgetPlannerHistoryDropdown from './BudgetPlannerHistoryDropdown';
 import { toast } from 'sonner';
 import InfoTooltip from './InfoTooltip';
+
+// Recharts is heavy (~140KB) — only load when allocation chart is visible
+const BudgetAllocationChart = lazy(() => import('./BudgetAllocationChart'));
 
 interface LotOption {
   lots: number;
@@ -510,12 +513,14 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
 
           {/* Chart Visualization */}
           {recommendedOption && (
-            <BudgetAllocationChart
-              buyingCost={recommendedOption.buyingCost}
-              exerciseCost={recommendedOption.riCost}
-              remainingBudget={recommendedOption.remainingBudget}
-              totalBudget={parseInt(budget) || 0}
-            />
+            <Suspense fallback={<ChartSkeleton height={160} />}>
+              <BudgetAllocationChart
+                buyingCost={recommendedOption.buyingCost}
+                exerciseCost={recommendedOption.riCost}
+                remainingBudget={recommendedOption.remainingBudget}
+                totalBudget={parseInt(budget) || 0}
+              />
+            </Suspense>
           )}
 
           {/* All Options Table */}
