@@ -449,6 +449,16 @@ const translations: Record<Language, Record<string, string>> = {
     'tab.calculator': 'RI Calculator',
     'tab.budgetPlanner': 'Budget Planner',
     'tab.education': 'Education',
+
+    // Section Groups
+    'section.lotPlanning': 'Lot Planning',
+    'section.lotPlanningSub': 'Optimize lots & warrant bonus',
+    'section.scenarios': 'Scenarios & Projection',
+    'section.scenariosSub': 'Compare scenarios, what-if price, & break-even',
+    'section.dilution': 'Ownership Impact',
+    'section.dilutionSub': 'Ownership dilution simulation',
+    'section.advanced': 'Advanced Analysis',
+    'section.advancedSub': 'Price comparison chart & strategy',
   },
 };
 
