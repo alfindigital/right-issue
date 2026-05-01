@@ -714,15 +714,81 @@ const RightIssueCalculator: React.FC = () => {
           </>
         )}
 
-        {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
-        <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
+        {/* Conclusion always shown right after results, no collapse */}
         <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-        <Suspense fallback={<ChartSkeleton height={180} />}>
-          <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-          <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-          <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-          <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
-        </Suspense>
+
+        {/* Group 3: Lot Planning — open by default */}
+        <CollapsibleSection
+          title={t('section.lotPlanning')}
+          subtitle={t('section.lotPlanningSub')}
+          icon={<Layers className="w-4 h-4" />}
+          defaultOpen={true}
+          storageKey="lot-planning"
+          badge={isCalculated && hasWarrant ? `${warrantCount} ${language === 'id' ? 'waran' : 'warrants'}` : undefined}
+        >
+          <div className="space-y-3">
+            {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
+            <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
+          </div>
+        </CollapsibleSection>
+
+        {/* Group 4: Scenarios & Projection — collapsed, sub-tabs inside */}
+        {isCalculated && (
+          <CollapsibleSection
+            title={t('section.scenarios')}
+            subtitle={t('section.scenariosSub')}
+            icon={<BarChart3 className="w-4 h-4" />}
+            defaultOpen={false}
+            storageKey="scenarios"
+          >
+            <Suspense fallback={<ChartSkeleton height={180} />}>
+              <ScenarioProjectionTabs
+                isCalculated={isCalculated}
+                cumPrice={parseInt(cumDatePrice) || 0}
+                riPrice={parseInt(rightPrice) || 0}
+                terp={numericValues.terp}
+                ratioOld={parseDecimalId(ratioOld)}
+                ratioNew={parseDecimalId(ratioNew)}
+                currentShares={(parseInt(currentLots) || 0) * 100}
+                newSharesCount={numericValues.newSharesCount}
+                currentAvgPrice={parseInt(currentAvgPrice) || 0}
+                totalShares={numericValues.totalShares}
+                totalModal={numericValues.totalModal}
+                avgBaru={numericValues.avgBaru}
+              />
+            </Suspense>
+          </CollapsibleSection>
+        )}
+
+        {/* Group 5: Ownership Impact (Dilution) — collapsed */}
+        {isCalculated && !noOwnership && (
+          <CollapsibleSection
+            title={t('section.dilution')}
+            subtitle={t('section.dilutionSub')}
+            icon={<PieChart className="w-4 h-4" />}
+            defaultOpen={false}
+            storageKey="dilution"
+          >
+            <Suspense fallback={<ChartSkeleton height={180} />}>
+              <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+            </Suspense>
+          </CollapsibleSection>
+        )}
+
+        {/* Group 6: Advanced Analysis — collapsed */}
+        {isCalculated && (
+          <CollapsibleSection
+            title={t('section.advanced')}
+            subtitle={t('section.advancedSub')}
+            icon={<TrendingUp className="w-4 h-4" />}
+            defaultOpen={false}
+            storageKey="advanced"
+          >
+            <Suspense fallback={<ChartSkeleton height={180} />}>
+              <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+            </Suspense>
+          </CollapsibleSection>
+        )}
       </div>
     );
   };
