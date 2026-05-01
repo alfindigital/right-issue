@@ -8,6 +8,7 @@ interface CurrencyInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   tooltip?: string;
+  error?: string;
 }
 
 const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
@@ -16,7 +17,8 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   value,
   onChange,
   placeholder = "0",
-  tooltip
+  tooltip,
+  error,
 }, ref) => {
   const formatNumber = (num: string): string => {
     const cleanNum = num.replace(/\D/g, '');
@@ -41,9 +43,16 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
         value={formatNumber(value)}
         onChange={handleChange}
         placeholder={placeholder}
-        className="input-calculator"
+        className={`input-calculator ${error ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
         inputMode="numeric"
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
       />
+      {error && (
+        <p id={`${id}-error`} className="text-xs text-destructive mt-1 animate-fade-in">
+          {error}
+        </p>
+      )}
     </div>
   );
 });
