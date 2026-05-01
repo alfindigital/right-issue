@@ -15,6 +15,9 @@ interface RightIssueInfoSectionProps {
   onRightPriceChange: (value: string) => void;
   onCumDatePriceChange: (value: string) => void;
   ratioError?: string;
+  rightPriceError?: string;
+  cumDatePriceError?: string;
+  priceWarning?: string;
   // Warrant props
   hasWarrant: boolean;
   onHasWarrantChange: (value: boolean) => void;
@@ -35,6 +38,9 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   onRightPriceChange,
   onCumDatePriceChange,
   ratioError,
+  rightPriceError,
+  cumDatePriceError,
+  priceWarning,
   hasWarrant,
   onHasWarrantChange,
   warrantRatioOld,
@@ -82,6 +88,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           value={rightPrice}
           onChange={onRightPriceChange}
           tooltip={t('rightIssue.priceHelp')}
+          error={rightPriceError}
         />
 
         <CurrencyInput
@@ -90,7 +97,15 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           value={cumDatePrice}
           onChange={onCumDatePriceChange}
           tooltip={t('rightIssue.cumPriceHelp')}
+          error={cumDatePriceError}
         />
+
+        {priceWarning && !rightPriceError && !cumDatePriceError && (
+          <p className="text-xs text-amber-600 dark:text-amber-400 animate-fade-in flex items-start gap-1">
+            <span aria-hidden>⚠️</span>
+            <span>{priceWarning}</span>
+          </p>
+        )}
 
         {/* Bonus Warrant Section */}
         <div className="pt-2 border-t border-border">
