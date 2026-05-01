@@ -566,9 +566,14 @@ const RightIssueCalculator: React.FC = () => {
                 <RightIssueInfoSection
                   ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
                   onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
-                  ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+                  ratioError={ratioError || validation.errors.ratioOld || validation.errors.ratioNew}
+                  rightPriceError={validation.errors.rightPrice}
+                  cumDatePriceError={validation.errors.cumDatePrice}
+                  priceWarning={validation.warnings.priceWarning}
+                  hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
                   warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew}
+                  warrantRatioError={warrantRatioError || validation.errors.warrantRatioOld || validation.errors.warrantRatioNew}
                 />
               </div>
             )}
@@ -585,6 +590,10 @@ const RightIssueCalculator: React.FC = () => {
                   hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
                   hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
                   hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
+                  currentLotsError={validation.errors.currentLots}
+                  currentAvgPriceError={validation.errors.currentAvgPrice}
+                  hmetdLotsError={validation.errors.hmetdLots}
+                  hmetdPriceError={validation.errors.hmetdPrice}
                 />
               </div>
             )}
@@ -684,9 +693,14 @@ const RightIssueCalculator: React.FC = () => {
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
           onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
-          ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+          ratioError={ratioError || validation.errors.ratioOld || validation.errors.ratioNew}
+          rightPriceError={validation.errors.rightPrice}
+          cumDatePriceError={validation.errors.cumDatePrice}
+          priceWarning={validation.warnings.priceWarning}
+          hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
           warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-          onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+          onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew}
+          warrantRatioError={warrantRatioError || validation.errors.warrantRatioOld || validation.errors.warrantRatioNew}
         />
         <OwnershipSection
           currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
@@ -698,6 +712,10 @@ const RightIssueCalculator: React.FC = () => {
           hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
           hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
+          currentLotsError={validation.errors.currentLots}
+          currentAvgPriceError={validation.errors.currentAvgPrice}
+          hmetdLotsError={validation.errors.hmetdLots}
+          hmetdPriceError={validation.errors.hmetdPrice}
         />
 
         {isCalculated && (
