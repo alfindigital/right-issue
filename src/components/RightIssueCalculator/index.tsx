@@ -274,6 +274,21 @@ const RightIssueCalculator: React.FC = () => {
   }, [currentLots, currentAvgPrice]);
 
   const calculate = useCallback(() => {
+    // Block calculation if there are validation errors. Show first error as toast
+    // so users who triggered via Ctrl+Enter still get clear feedback.
+    if (validation.hasErrors) {
+      const firstError = Object.values(validation.errors)[0];
+      if (firstError) {
+        toast({
+          title: language === 'id' ? 'Input tidak valid' : 'Invalid input',
+          description: firstError,
+          variant: 'destructive',
+          duration: 4000,
+        });
+      }
+      return;
+    }
+
     const rOld = parseDecimalId(ratioOld);
     const rNew = parseDecimalId(ratioNew);
     const riPrice = parseInt(rightPrice) || 0;
@@ -382,7 +397,7 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice, validation, language]);
 
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
