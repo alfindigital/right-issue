@@ -33,6 +33,7 @@ import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartSkeleton, SectionSkeleton } from './ChartSkeleton';
 import useIdlePrefetch from '@/hooks/useIdlePrefetch';
+import useInputValidation from '@/hooks/useInputValidation';
 
 // Lazy load heavy components (charts, analysis)
 // Importers shared between React.lazy and the idle-prefetcher so the same
@@ -151,6 +152,14 @@ const RightIssueCalculator: React.FC = () => {
   const [resultsOutOfView, setResultsOutOfView] = useState(false);
   const resultsDashboardRef = useRef<HTMLDivElement>(null);
 
+  // Centralized input validation (sane bounds, zero/negative, unrealistic values)
+  const validation = useInputValidation({
+    ratioOld, ratioNew, rightPrice, cumDatePrice,
+    currentLots, currentAvgPrice,
+    noOwnership, hmetdLots, hmetdPrice,
+    hasWarrant, warrantRatioOld, warrantRatioNew,
+  });
+
   // Completion percentage for progress ring
   const completionPercent = useMemo(() => {
     const fields = noOwnership 
@@ -250,7 +259,12 @@ const RightIssueCalculator: React.FC = () => {
   }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
 
   const isWarrantRatioValid = !hasWarrant || (warrantRatioOld && warrantRatioNew && !warrantRatioError);
-  const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError && isWarrantRatioValid && (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)));
+  const isCalculateEnabled = !!(
+    ratioOld && ratioNew && rightPrice && cumDatePrice &&
+    !ratioError && isWarrantRatioValid &&
+    (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)) &&
+    !validation.hasErrors
+  );
 
   useEffect(() => {
     const lots = parseInt(currentLots) || 0;
