@@ -225,6 +225,16 @@ const translations: Record<Language, Record<string, string>> = {
     'tab.calculator': 'Kalkulator RI',
     'tab.budgetPlanner': 'Budget Planner',
     'tab.education': 'Edukasi',
+
+    // Section Groups
+    'section.lotPlanning': 'Perencanaan Lot',
+    'section.lotPlanningSub': 'Optimasi lot & bonus waran',
+    'section.scenarios': 'Skenario & Proyeksi',
+    'section.scenariosSub': 'Bandingkan skenario, what-if harga, & break-even',
+    'section.dilution': 'Dampak Kepemilikan',
+    'section.dilutionSub': 'Simulasi dilusi kepemilikan',
+    'section.advanced': 'Analisis Lanjutan',
+    'section.advancedSub': 'Chart perbandingan harga & strategi',
   },
   en: {
     // Header
