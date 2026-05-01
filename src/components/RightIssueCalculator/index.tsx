@@ -19,6 +19,8 @@ import ProgressRing from './ProgressRing';
 import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import Logo from './Logo';
+import CollapsibleSection from './CollapsibleSection';
+import { Layers, BarChart3, PieChart, TrendingUp } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -41,6 +43,7 @@ const importAdvanced = () => import('./AdvancedAnalysisSection');
 const importWhatIf = () => import('./WhatIfTargetPrice');
 const importEducation = () => import('./EducationSection');
 const importBudget = () => import('./BudgetLotPlanner');
+const importScenarioTabs = () => import('./ScenarioProjectionTabs');
 
 const DilutionSimulator = lazy(importDilution);
 const ScenarioComparison = lazy(importScenario);
@@ -48,6 +51,7 @@ const AdvancedAnalysisSection = lazy(importAdvanced);
 const WhatIfTargetPrice = lazy(importWhatIf);
 const EducationSection = lazy(importEducation);
 const BudgetLotPlanner = lazy(importBudget);
+const ScenarioProjectionTabs = lazy(importScenarioTabs);
 // Lazy type import for callback
 type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
 
@@ -86,6 +90,7 @@ const RightIssueCalculator: React.FC = () => {
     importScenario,
     importAdvanced,
     importWhatIf,
+    importScenarioTabs,
   ]);
   
   // Tab state
