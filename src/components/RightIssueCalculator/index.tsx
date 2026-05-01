@@ -33,6 +33,7 @@ import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartSkeleton, SectionSkeleton } from './ChartSkeleton';
 import useIdlePrefetch from '@/hooks/useIdlePrefetch';
+import useInputValidation from '@/hooks/useInputValidation';
 
 // Lazy load heavy components (charts, analysis)
 // Importers shared between React.lazy and the idle-prefetcher so the same
@@ -151,6 +152,14 @@ const RightIssueCalculator: React.FC = () => {
   const [resultsOutOfView, setResultsOutOfView] = useState(false);
   const resultsDashboardRef = useRef<HTMLDivElement>(null);
 
+  // Centralized input validation (sane bounds, zero/negative, unrealistic values)
+  const validation = useInputValidation({
+    ratioOld, ratioNew, rightPrice, cumDatePrice,
+    currentLots, currentAvgPrice,
+    noOwnership, hmetdLots, hmetdPrice,
+    hasWarrant, warrantRatioOld, warrantRatioNew,
+  });
+
   // Completion percentage for progress ring
   const completionPercent = useMemo(() => {
     const fields = noOwnership 
@@ -250,7 +259,12 @@ const RightIssueCalculator: React.FC = () => {
   }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
 
   const isWarrantRatioValid = !hasWarrant || (warrantRatioOld && warrantRatioNew && !warrantRatioError);
-  const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError && isWarrantRatioValid && (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)));
+  const isCalculateEnabled = !!(
+    ratioOld && ratioNew && rightPrice && cumDatePrice &&
+    !ratioError && isWarrantRatioValid &&
+    (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)) &&
+    !validation.hasErrors
+  );
 
   useEffect(() => {
     const lots = parseInt(currentLots) || 0;
@@ -260,6 +274,21 @@ const RightIssueCalculator: React.FC = () => {
   }, [currentLots, currentAvgPrice]);
 
   const calculate = useCallback(() => {
+    // Block calculation if there are validation errors. Show first error as toast
+    // so users who triggered via Ctrl+Enter still get clear feedback.
+    if (validation.hasErrors) {
+      const firstError = Object.values(validation.errors)[0];
+      if (firstError) {
+        toast({
+          title: language === 'id' ? 'Input tidak valid' : 'Invalid input',
+          description: firstError,
+          variant: 'destructive',
+          duration: 4000,
+        });
+      }
+      return;
+    }
+
     const rOld = parseDecimalId(ratioOld);
     const rNew = parseDecimalId(ratioNew);
     const riPrice = parseInt(rightPrice) || 0;
@@ -368,7 +397,7 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice, validation, language]);
 
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
@@ -552,9 +581,14 @@ const RightIssueCalculator: React.FC = () => {
                 <RightIssueInfoSection
                   ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
                   onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
-                  ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+                  ratioError={ratioError || validation.errors.ratioOld || validation.errors.ratioNew}
+                  rightPriceError={validation.errors.rightPrice}
+                  cumDatePriceError={validation.errors.cumDatePrice}
+                  priceWarning={validation.warnings.priceWarning}
+                  hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
                   warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew}
+                  warrantRatioError={warrantRatioError || validation.errors.warrantRatioOld || validation.errors.warrantRatioNew}
                 />
               </div>
             )}
@@ -571,6 +605,10 @@ const RightIssueCalculator: React.FC = () => {
                   hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
                   hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
                   hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
+                  currentLotsError={validation.errors.currentLots}
+                  currentAvgPriceError={validation.errors.currentAvgPrice}
+                  hmetdLotsError={validation.errors.hmetdLots}
+                  hmetdPriceError={validation.errors.hmetdPrice}
                 />
               </div>
             )}
@@ -670,9 +708,14 @@ const RightIssueCalculator: React.FC = () => {
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
           onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
-          ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+          ratioError={ratioError || validation.errors.ratioOld || validation.errors.ratioNew}
+          rightPriceError={validation.errors.rightPrice}
+          cumDatePriceError={validation.errors.cumDatePrice}
+          priceWarning={validation.warnings.priceWarning}
+          hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
           warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-          onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+          onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew}
+          warrantRatioError={warrantRatioError || validation.errors.warrantRatioOld || validation.errors.warrantRatioNew}
         />
         <OwnershipSection
           currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
@@ -684,6 +727,10 @@ const RightIssueCalculator: React.FC = () => {
           hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
           hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
+          currentLotsError={validation.errors.currentLots}
+          currentAvgPriceError={validation.errors.currentAvgPrice}
+          hmetdLotsError={validation.errors.hmetdLots}
+          hmetdPriceError={validation.errors.hmetdPrice}
         />
 
         {isCalculated && (

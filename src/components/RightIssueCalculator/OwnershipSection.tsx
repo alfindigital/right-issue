@@ -27,6 +27,10 @@ interface OwnershipSectionProps {
   hmetdPrice: string;
   onHmetdPriceChange: (value: string) => void;
   hmetdTotalCost?: string;
+  currentLotsError?: string;
+  currentAvgPriceError?: string;
+  hmetdLotsError?: string;
+  hmetdPriceError?: string;
 }
 
 const OwnershipSection: React.FC<OwnershipSectionProps> = ({
@@ -51,6 +55,10 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   hmetdPrice,
   onHmetdPriceChange,
   hmetdTotalCost,
+  currentLotsError,
+  currentAvgPriceError,
+  hmetdLotsError,
+  hmetdPriceError,
 }) => {
   const { t, language } = useLanguage();
   
@@ -101,9 +109,13 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   value={hmetdLots ? new Intl.NumberFormat('id-ID').format(parseInt(hmetdLots)) : ''}
                   onChange={(e) => onHmetdLotsChange(e.target.value.replace(/\D/g, ''))}
                   placeholder="0"
-                  className="input-calculator"
+                  className={`input-calculator ${hmetdLotsError ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
                   inputMode="numeric"
+                  aria-invalid={!!hmetdLotsError}
               />
+                {hmetdLotsError && (
+                  <p className="text-xs text-destructive mt-1 animate-fade-in">{hmetdLotsError}</p>
+                )}
               </div>
 
               <CurrencyInput
@@ -112,6 +124,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 value={hmetdPrice}
                 onChange={onHmetdPriceChange}
                 tooltip={language === 'id' ? "Harga beli HMETD per lembar di pasar sekunder. Cek harga HMETD-R di broker Anda." : "HMETD purchase price per share in secondary market. Check HMETD-R price at your broker."}
+                error={hmetdPriceError}
               />
 
               {hmetdTotalCost && (
@@ -147,9 +160,13 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   value={currentLots ? new Intl.NumberFormat('id-ID').format(parseInt(currentLots)) : ''}
                   onChange={(e) => onCurrentLotsChange(e.target.value.replace(/\D/g, ''))}
                   placeholder="0"
-                  className="input-calculator"
+                  className={`input-calculator ${currentLotsError ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
                   inputMode="numeric"
+                  aria-invalid={!!currentLotsError}
                 />
+                {currentLotsError && (
+                  <p className="text-xs text-destructive mt-1 animate-fade-in">{currentLotsError}</p>
+                )}
               </div>
 
               <CurrencyInput
@@ -158,6 +175,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 value={currentAvgPrice}
                 onChange={onCurrentAvgPriceChange}
                 tooltip={t('ownership.avgPriceHelp')}
+                error={currentAvgPriceError}
               />
 
               <ReadOnlyField
