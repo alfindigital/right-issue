@@ -68,18 +68,21 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             <RatioInput
               value={ratioOld}
               onChange={onRatioOldChange}
-              placeholder={language === 'id' ? "Lama" : "Old"}
+              placeholder={language === 'id' ? "cth: 4" : "e.g. 4"}
             />
             <span className="text-lg font-bold text-muted-foreground">:</span>
             <RatioInput
               value={ratioNew}
               onChange={onRatioNewChange}
-              placeholder={language === 'id' ? "Baru" : "New"}
+              placeholder={language === 'id' ? "cth: 1" : "e.g. 1"}
             />
           </div>
           {ratioError && (
             <p className="text-xs text-destructive mt-1 animate-fade-in">{ratioError}</p>
           )}
+          <p className="text-[10px] text-muted-foreground">
+            {language === 'id' ? 'Contoh umum: 4 : 1 atau 2 : 1' : 'Common: 4 : 1 or 2 : 1'}
+          </p>
         </div>
 
         <CurrencyInput
@@ -87,6 +90,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           label={t('rightIssue.price')}
           value={rightPrice}
           onChange={onRightPriceChange}
+          placeholder={language === 'id' ? 'cth: 500' : 'e.g. 500'}
           tooltip={t('rightIssue.priceHelp')}
           error={rightPriceError}
         />
@@ -96,6 +100,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           label={t('rightIssue.cumPrice')}
           value={cumDatePrice}
           onChange={onCumDatePriceChange}
+          placeholder={language === 'id' ? 'cth: 1.000' : 'e.g. 1,000'}
           tooltip={t('rightIssue.cumPriceHelp')}
           error={cumDatePriceError}
         />
@@ -136,14 +141,14 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                   <RatioInput
                     value={warrantRatioOld}
                     onChange={onWarrantRatioOldChange}
-                    placeholder="RI"
+                    placeholder={language === 'id' ? "cth: 2" : "e.g. 2"}
                     className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
                   />
                   <span className="text-lg font-bold text-muted-foreground">:</span>
                   <RatioInput
                     value={warrantRatioNew}
                     onChange={onWarrantRatioNewChange}
-                    placeholder={language === 'id' ? "Waran" : "Warrant"}
+                    placeholder={language === 'id' ? "cth: 1" : "e.g. 1"}
                     className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
                   />
                 </div>

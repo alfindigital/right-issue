@@ -108,7 +108,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   type="text"
                   value={hmetdLots ? new Intl.NumberFormat('id-ID').format(parseInt(hmetdLots)) : ''}
                   onChange={(e) => onHmetdLotsChange(e.target.value.replace(/\D/g, ''))}
-                  placeholder="0"
+                  placeholder={language === 'id' ? 'cth: 10' : 'e.g. 10'}
                   className={`input-calculator ${hmetdLotsError ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
                   inputMode="numeric"
                   aria-invalid={!!hmetdLotsError}
@@ -116,6 +116,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 {hmetdLotsError && (
                   <p className="text-xs text-destructive mt-1 animate-fade-in">{hmetdLotsError}</p>
                 )}
+                <p className="text-[10px] text-muted-foreground">
+                  {language === 'id' ? 'Contoh: 10–500 lot' : 'Range: 10–500 lots'}
+                </p>
               </div>
 
               <CurrencyInput
@@ -123,6 +126,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 label={language === 'id' ? 'Harga HMETD per Lembar' : 'HMETD Price per Share'}
                 value={hmetdPrice}
                 onChange={onHmetdPriceChange}
+                placeholder={language === 'id' ? 'cth: 50' : 'e.g. 50'}
                 tooltip={language === 'id' ? "Harga beli HMETD per lembar di pasar sekunder. Cek harga HMETD-R di broker Anda." : "HMETD purchase price per share in secondary market. Check HMETD-R price at your broker."}
                 error={hmetdPriceError}
               />
@@ -159,7 +163,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   type="text"
                   value={currentLots ? new Intl.NumberFormat('id-ID').format(parseInt(currentLots)) : ''}
                   onChange={(e) => onCurrentLotsChange(e.target.value.replace(/\D/g, ''))}
-                  placeholder="0"
+                  placeholder={language === 'id' ? 'cth: 50' : 'e.g. 50'}
                   className={`input-calculator ${currentLotsError ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
                   inputMode="numeric"
                   aria-invalid={!!currentLotsError}
@@ -167,6 +171,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 {currentLotsError && (
                   <p className="text-xs text-destructive mt-1 animate-fade-in">{currentLotsError}</p>
                 )}
+                <p className="text-[10px] text-muted-foreground">
+                  {language === 'id' ? 'Contoh: 10–1.000 lot' : 'Range: 10–1,000 lots'}
+                </p>
               </div>
 
               <CurrencyInput
@@ -174,6 +181,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 label={t('ownership.avgPrice')}
                 value={currentAvgPrice}
                 onChange={onCurrentAvgPriceChange}
+                placeholder={language === 'id' ? 'cth: 1.200' : 'e.g. 1,200'}
                 tooltip={t('ownership.avgPriceHelp')}
                 error={currentAvgPriceError}
               />
