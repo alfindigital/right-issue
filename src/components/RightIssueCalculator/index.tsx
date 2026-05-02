@@ -10,6 +10,7 @@ import HistoryDropdown from './HistoryDropdown';
 import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
+import ErrorSummary from './ErrorSummary';
 import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
@@ -705,6 +706,7 @@ const RightIssueCalculator: React.FC = () => {
           </div>
         )}
         <StockCodeInput value={stockCode} onChange={setStockCode} />
+        <ErrorSummary errors={validation.errors} />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
           onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
