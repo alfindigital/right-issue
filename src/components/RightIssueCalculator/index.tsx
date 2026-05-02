@@ -10,6 +10,7 @@ import HistoryDropdown from './HistoryDropdown';
 import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
+import ErrorSummary from './ErrorSummary';
 import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
