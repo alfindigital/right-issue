@@ -49,4 +49,24 @@ describe("sanitizeRatioInput", () => {
   it("returns empty for fully invalid input", () => {
     expect(sanitizeRatioInput("abc")).toBe("");
   });
+
+  it("converts dot decimal to comma", () => {
+    expect(sanitizeRatioInput("1.5")).toBe("1,5");
+  });
+
+  it("treats dot as thousands when paired with currency-like paste", () => {
+    expect(sanitizeRatioInput("Rp 1.500")).toBe("1500");
+  });
+
+  it("handles US format with comma thousands and dot decimal", () => {
+    expect(sanitizeRatioInput("1,234.56")).toBe("1234,56");
+  });
+
+  it("handles ID format with dot thousands and comma decimal", () => {
+    expect(sanitizeRatioInput("1.234,56")).toBe("1234,56");
+  });
+
+  it("strips internal whitespace", () => {
+    expect(sanitizeRatioInput(" 2 , 5 ")).toBe("2,5");
+  });
 });
