@@ -705,6 +705,7 @@ const RightIssueCalculator: React.FC = () => {
           </div>
         )}
         <StockCodeInput value={stockCode} onChange={setStockCode} />
+        <ErrorSummary errors={validation.errors} />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
           onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
