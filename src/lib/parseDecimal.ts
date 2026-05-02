@@ -37,8 +37,10 @@ export const sanitizeRatioInput = (value: string): string => {
     s = decPart ? `${intPart},${decPart}` : intPart;
   } else if (hasDot) {
     const parts = s.split('.');
-    // If exactly one dot AND right side is 1-3 digits, treat as decimal; else thousands
-    if (parts.length === 2 && parts[1].length > 0 && parts[1].length <= 3 && parts[0].length <= 3) {
+    // In ID context, dot is usually a thousands separator. Treat as decimal only
+    // if exactly one dot AND right side is 1-2 digits (e.g. "1.5", "0.25").
+    // "1.500" stays as thousands -> "1500".
+    if (parts.length === 2 && parts[1].length > 0 && parts[1].length <= 2) {
       s = `${parts[0]},${parts[1]}`;
     } else {
       s = parts.join('');
