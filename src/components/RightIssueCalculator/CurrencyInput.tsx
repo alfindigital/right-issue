@@ -31,6 +31,17 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
     onChange(rawValue);
   };
 
+  // Auto-correct on blur: clear "0"/all-zero, trim leading zeros (e.g. "007" -> "7")
+  const handleBlur = () => {
+    if (!value) return;
+    if (/^0+$/.test(value)) {
+      onChange('');
+      return;
+    }
+    const trimmed = value.replace(/^0+/, '');
+    if (trimmed !== value) onChange(trimmed);
+  };
+
   return (
     <div className="space-y-1.5" ref={ref}>
       <label htmlFor={id} className="text-xs font-medium text-foreground flex items-center">
@@ -42,6 +53,7 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
         id={id}
         value={formatNumber(value)}
         onChange={handleChange}
+        onBlur={handleBlur}
         placeholder={placeholder}
         className={`input-calculator ${error ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
         inputMode="numeric"
