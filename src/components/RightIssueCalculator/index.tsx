@@ -11,6 +11,7 @@ import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import ErrorSummary from './ErrorSummary';
+import InputSummary from './InputSummary';
 import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
@@ -707,6 +708,21 @@ const RightIssueCalculator: React.FC = () => {
         )}
         <StockCodeInput value={stockCode} onChange={setStockCode} />
         <ErrorSummary errors={validation.errors} />
+        <InputSummary
+          errors={validation.errors}
+          ratioOld={ratioOld}
+          ratioNew={ratioNew}
+          rightPrice={rightPrice}
+          cumDatePrice={cumDatePrice}
+          noOwnership={noOwnership}
+          currentLots={currentLots}
+          currentAvgPrice={currentAvgPrice}
+          hmetdLots={hmetdLots}
+          hmetdPrice={hmetdPrice}
+          hasWarrant={hasWarrant}
+          warrantRatioOld={warrantRatioOld}
+          warrantRatioNew={warrantRatioNew}
+        />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
           onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
