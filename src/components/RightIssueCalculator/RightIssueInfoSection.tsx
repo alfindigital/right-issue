@@ -83,6 +83,9 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           <p className="text-[10px] text-muted-foreground">
             {language === 'id' ? 'Contoh umum: 4 : 1 atau 2 : 1' : 'Common: 4 : 1 or 2 : 1'}
           </p>
+          <p className="text-[10px] text-muted-foreground">
+            {language === 'id' ? 'Format: angka saja, mis. 4 : 1 (bukan "4/1")' : 'Format: numbers only, e.g. 4 : 1 (not "4/1")'}
+          </p>
         </div>
 
         <CurrencyInput
@@ -93,6 +96,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           placeholder={language === 'id' ? 'cth: 500' : 'e.g. 500'}
           tooltip={t('rightIssue.priceHelp')}
           error={rightPriceError}
+          hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 500)' : 'Format: numbers only, no "Rp" (e.g. 500)'}
         />
 
         <CurrencyInput
@@ -103,6 +107,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           placeholder={language === 'id' ? 'cth: 1.000' : 'e.g. 1,000'}
           tooltip={t('rightIssue.cumPriceHelp')}
           error={cumDatePriceError}
+          hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 1.000)' : 'Format: numbers only, no "Rp" (e.g. 1,000)'}
         />
 
         {priceWarning && !rightPriceError && !cumDatePriceError && (
@@ -159,6 +164,9 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     {t('rightIssue.warrantRatioRequired')}
                   </p>
                 )}
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {language === 'id' ? 'Format: angka saja, mis. 2 : 1' : 'Format: numbers only, e.g. 2 : 1'}
+                </p>
               </div>
             </div>
           )}

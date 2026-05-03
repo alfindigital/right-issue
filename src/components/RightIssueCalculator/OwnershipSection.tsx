@@ -119,6 +119,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 <p className="text-[10px] text-muted-foreground">
                   {language === 'id' ? 'Contoh: 10–500 lot' : 'Range: 10–500 lots'}
                 </p>
+                <p className="text-[10px] text-muted-foreground">
+                  {language === 'id' ? 'Format: angka lot saja (1 lot = 100 lembar)' : 'Format: lots only (1 lot = 100 shares)'}
+                </p>
               </div>
 
               <CurrencyInput
@@ -129,6 +132,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 placeholder={language === 'id' ? 'cth: 50' : 'e.g. 50'}
                 tooltip={language === 'id' ? "Harga beli HMETD per lembar di pasar sekunder. Cek harga HMETD-R di broker Anda." : "HMETD purchase price per share in secondary market. Check HMETD-R price at your broker."}
                 error={hmetdPriceError}
+                hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 50)' : 'Format: numbers only, no "Rp" (e.g. 50)'}
               />
 
               {hmetdTotalCost && (
@@ -174,6 +178,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 <p className="text-[10px] text-muted-foreground">
                   {language === 'id' ? 'Contoh: 10–1.000 lot' : 'Range: 10–1,000 lots'}
                 </p>
+                <p className="text-[10px] text-muted-foreground">
+                  {language === 'id' ? 'Format: angka lot saja (1 lot = 100 lembar)' : 'Format: lots only (1 lot = 100 shares)'}
+                </p>
               </div>
 
               <CurrencyInput
@@ -184,6 +191,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 placeholder={language === 'id' ? 'cth: 1.200' : 'e.g. 1,200'}
                 tooltip={t('ownership.avgPriceHelp')}
                 error={currentAvgPriceError}
+                hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 1.200)' : 'Format: numbers only, no "Rp" (e.g. 1,200)'}
               />
 
               <ReadOnlyField
