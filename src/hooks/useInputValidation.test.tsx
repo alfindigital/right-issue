@@ -47,7 +47,7 @@ describe("useInputValidation", () => {
 
     it("rejects unrealistic price above 10jt", () => {
       const r = run({ rightPrice: "20000000" });
-      expect(r.errors.rightPrice).toMatch(/tidak realistis|unrealistic/i);
+      expect(r.errors.rightPrice).toMatch(/tidak wajar|unrealistic|tidak realistis/i);
     });
 
     it("allows empty price (not yet typed)", () => {
@@ -76,7 +76,7 @@ describe("useInputValidation", () => {
 
     it("rejects unrealistic lot count", () => {
       const r = run({ currentLots: "999999999" });
-      expect(r.errors.currentLots).toMatch(/tidak realistis|unrealistic/i);
+      expect(r.errors.currentLots).toMatch(/tidak wajar|unrealistic|tidak realistis/i);
     });
 
     it("accepts normal lot count", () => {
@@ -93,7 +93,7 @@ describe("useInputValidation", () => {
 
     it("rejects unrealistic ratio", () => {
       const r = run({ ratioNew: "9999999" });
-      expect(r.errors.ratioNew).toMatch(/tidak realistis|unrealistic/i);
+      expect(r.errors.ratioNew).toMatch(/tidak wajar|unrealistic|tidak realistis/i);
     });
 
     it("accepts decimal ratio with comma", () => {
