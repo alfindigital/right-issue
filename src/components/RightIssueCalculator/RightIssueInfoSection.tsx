@@ -97,6 +97,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           tooltip={t('rightIssue.priceHelp')}
           error={rightPriceError}
           hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 500)' : 'Format: numbers only, no "Rp" (e.g. 500)'}
+          unit={language === 'id' ? 'Rp / lembar' : 'Rp / share'}
         />
 
         <CurrencyInput
@@ -108,6 +109,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           tooltip={t('rightIssue.cumPriceHelp')}
           error={cumDatePriceError}
           hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 1.000)' : 'Format: numbers only, no "Rp" (e.g. 1,000)'}
+          unit={language === 'id' ? 'Rp / lembar' : 'Rp / share'}
         />
 
         {priceWarning && !rightPriceError && !cumDatePriceError && (

@@ -55,3 +55,13 @@ export const sanitizeRatioInput = (value: string): string => {
 
   return s;
 };
+
+/**
+ * Sanitize integer/currency input — strips ALL non-digit characters so values
+ * pasted with thousands separators (1.000, 1,000, 1 000, "Rp 1.000") parse as 1000.
+ */
+export const sanitizeIntegerInput = (value: string): string => {
+  if (!value) return '';
+  // Drop currency prefix, spaces, dots, commas, and any non-digit char
+  return value.replace(/[^\d]/g, '');
+};
