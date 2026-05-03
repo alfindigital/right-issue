@@ -9,6 +9,7 @@ interface CurrencyInputProps {
   placeholder?: string;
   tooltip?: string;
   error?: string;
+  hint?: string;
 }
 
 const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
@@ -19,6 +20,7 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   placeholder = "0",
   tooltip,
   error,
+  hint,
 }, ref) => {
   const formatNumber = (num: string): string => {
     const cleanNum = num.replace(/\D/g, '');
@@ -64,6 +66,9 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
         <p id={`${id}-error`} className="text-xs text-destructive mt-1 animate-fade-in">
           {error}
         </p>
+      )}
+      {!error && hint && (
+        <p className="text-[10px] text-muted-foreground mt-0.5">{hint}</p>
       )}
     </div>
   );
