@@ -1,5 +1,6 @@
 import React from 'react';
 import InfoTooltip from './InfoTooltip';
+import { sanitizeIntegerInput } from '@/lib/parseDecimal';
 
 interface CurrencyInputProps {
   id: string;
@@ -10,6 +11,8 @@ interface CurrencyInputProps {
   tooltip?: string;
   error?: string;
   hint?: string;
+  unit?: string; // e.g. "Rp / lembar", "lot"
+  prefix?: string; // e.g. "Rp"
 }
 
 const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
@@ -21,6 +24,8 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   tooltip,
   error,
   hint,
+  unit = 'Rp / lembar',
+  prefix = 'Rp',
 }, ref) => {
   const formatNumber = (num: string): string => {
     const cleanNum = num.replace(/\D/g, '');
@@ -29,7 +34,8 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, '');
+    // Use shared sanitizer so paste of "1.000", "1,000", "Rp 1.000" → "1000"
+    const rawValue = sanitizeIntegerInput(e.target.value);
     onChange(rawValue);
   };
 
@@ -48,20 +54,28 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
     <div className="space-y-1.5" ref={ref}>
       <label htmlFor={id} className="text-xs font-medium text-foreground flex items-center">
         {label}
+        <span className="ml-1 text-[10px] font-normal text-muted-foreground">({unit})</span>
         {tooltip && <InfoTooltip text={tooltip} />}
       </label>
-      <input
-        type="text"
-        id={id}
-        value={formatNumber(value)}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        placeholder={placeholder}
-        className={`input-calculator ${error ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
-        inputMode="numeric"
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
-      />
+      <div className="relative">
+        {prefix && (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground select-none">
+            {prefix}
+          </span>
+        )}
+        <input
+          type="text"
+          id={id}
+          value={formatNumber(value)}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          className={`input-calculator ${prefix ? 'pl-8' : ''} ${error ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
+          inputMode="numeric"
+          aria-invalid={!!error}
+          aria-describedby={error ? `${id}-error` : undefined}
+        />
+      </div>
       {error && (
         <p id={`${id}-error`} className="text-xs text-destructive mt-1 animate-fade-in">
           {error}
