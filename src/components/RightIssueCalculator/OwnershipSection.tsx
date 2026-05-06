@@ -4,7 +4,6 @@ import ReadOnlyField from './ReadOnlyField';
 import SummaryItem from './SummaryItem';
 import InfoTooltip from './InfoTooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { sanitizeIntegerInput } from '@/lib/parseDecimal';
 
 interface OwnershipSectionProps {
   currentLots: string;
@@ -28,10 +27,6 @@ interface OwnershipSectionProps {
   hmetdPrice: string;
   onHmetdPriceChange: (value: string) => void;
   hmetdTotalCost?: string;
-  currentLotsError?: string;
-  currentAvgPriceError?: string;
-  hmetdLotsError?: string;
-  hmetdPriceError?: string;
 }
 
 const OwnershipSection: React.FC<OwnershipSectionProps> = ({
@@ -56,10 +51,6 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   hmetdPrice,
   onHmetdPriceChange,
   hmetdTotalCost,
-  currentLotsError,
-  currentAvgPriceError,
-  hmetdLotsError,
-  hmetdPriceError,
 }) => {
   const { t, language } = useLanguage();
   
@@ -103,30 +94,16 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground flex items-center">
                   {language === 'id' ? 'Jumlah Lot HMETD' : 'HMETD Lots'}
-                  <span className="ml-1 text-[10px] font-normal text-muted-foreground">(lot)</span>
                   <InfoTooltip text={language === 'id' ? "Jumlah lot HMETD yang ingin dibeli. 1 lot HMETD = hak tebus 100 lembar saham baru." : "Number of HMETD lots to buy. 1 HMETD lot = right to subscribe 100 new shares."} />
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={hmetdLots ? new Intl.NumberFormat('id-ID').format(parseInt(hmetdLots)) : ''}
-                    onChange={(e) => onHmetdLotsChange(sanitizeIntegerInput(e.target.value))}
-                    placeholder={language === 'id' ? 'cth: 10' : 'e.g. 10'}
-                    className={`input-calculator pr-10 ${hmetdLotsError ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
-                    inputMode="numeric"
-                    aria-invalid={!!hmetdLotsError}
-                  />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground select-none">lot</span>
-                </div>
-                {hmetdLotsError && (
-                  <p className="text-xs text-destructive mt-1 animate-fade-in">{hmetdLotsError}</p>
-                )}
-                <p className="text-[10px] text-muted-foreground">
-                  {language === 'id' ? 'Contoh: 10–500 lot' : 'Range: 10–500 lots'}
-                </p>
-                <p className="text-[10px] text-muted-foreground">
-                  {language === 'id' ? 'Format: angka lot saja (1 lot = 100 lembar)' : 'Format: lots only (1 lot = 100 shares)'}
-                </p>
+                <input
+                  type="text"
+                  value={hmetdLots ? new Intl.NumberFormat('id-ID').format(parseInt(hmetdLots)) : ''}
+                  onChange={(e) => onHmetdLotsChange(e.target.value.replace(/\D/g, ''))}
+                  placeholder="0"
+                  className="input-calculator"
+                  inputMode="numeric"
+              />
               </div>
 
               <CurrencyInput
@@ -134,11 +111,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 label={language === 'id' ? 'Harga HMETD per Lembar' : 'HMETD Price per Share'}
                 value={hmetdPrice}
                 onChange={onHmetdPriceChange}
-                placeholder={language === 'id' ? 'cth: 50' : 'e.g. 50'}
                 tooltip={language === 'id' ? "Harga beli HMETD per lembar di pasar sekunder. Cek harga HMETD-R di broker Anda." : "HMETD purchase price per share in secondary market. Check HMETD-R price at your broker."}
-                error={hmetdPriceError}
-                hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 50)' : 'Format: numbers only, no "Rp" (e.g. 50)'}
-                unit={language === 'id' ? 'Rp / lembar' : 'Rp / share'}
               />
 
               {hmetdTotalCost && (
@@ -167,30 +140,16 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground flex items-center">
                   {t('ownership.currentLots')}
-                  <span className="ml-1 text-[10px] font-normal text-muted-foreground">(lot)</span>
                   <InfoTooltip text={language === 'id' ? "1 lot = 100 lembar saham." : "1 lot = 100 shares."} />
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={currentLots ? new Intl.NumberFormat('id-ID').format(parseInt(currentLots)) : ''}
-                    onChange={(e) => onCurrentLotsChange(sanitizeIntegerInput(e.target.value))}
-                    placeholder={language === 'id' ? 'cth: 50' : 'e.g. 50'}
-                    className={`input-calculator pr-10 ${currentLotsError ? 'border-destructive focus:border-destructive ring-1 ring-destructive/30' : ''}`}
-                    inputMode="numeric"
-                    aria-invalid={!!currentLotsError}
-                  />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground select-none">lot</span>
-                </div>
-                {currentLotsError && (
-                  <p className="text-xs text-destructive mt-1 animate-fade-in">{currentLotsError}</p>
-                )}
-                <p className="text-[10px] text-muted-foreground">
-                  {language === 'id' ? 'Contoh: 10–1.000 lot' : 'Range: 10–1,000 lots'}
-                </p>
-                <p className="text-[10px] text-muted-foreground">
-                  {language === 'id' ? 'Format: angka lot saja (1 lot = 100 lembar)' : 'Format: lots only (1 lot = 100 shares)'}
-                </p>
+                <input
+                  type="text"
+                  value={currentLots ? new Intl.NumberFormat('id-ID').format(parseInt(currentLots)) : ''}
+                  onChange={(e) => onCurrentLotsChange(e.target.value.replace(/\D/g, ''))}
+                  placeholder="0"
+                  className="input-calculator"
+                  inputMode="numeric"
+                />
               </div>
 
               <CurrencyInput
@@ -198,11 +157,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 label={t('ownership.avgPrice')}
                 value={currentAvgPrice}
                 onChange={onCurrentAvgPriceChange}
-                placeholder={language === 'id' ? 'cth: 1.200' : 'e.g. 1,200'}
                 tooltip={t('ownership.avgPriceHelp')}
-                error={currentAvgPriceError}
-                hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 1.200)' : 'Format: numbers only, no "Rp" (e.g. 1,200)'}
-                unit={language === 'id' ? 'Rp / lembar' : 'Rp / share'}
               />
 
               <ReadOnlyField

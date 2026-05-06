@@ -10,49 +10,6 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  build: {
-    // Higher inline limit for tiny assets to reduce request count
-    assetsInlineLimit: 4096,
-    // Target modern browsers (smaller output, native ESM features)
-    target: "es2020",
-    cssCodeSplit: true,
-    rollupOptions: {
-      output: {
-        // Split heavy vendor libs into stable, cache-friendly chunks
-        manualChunks(id) {
-          if (!id.includes("node_modules")) return undefined;
-
-          if (id.includes("recharts") || id.includes("d3-")) {
-            return "vendor-charts";
-          }
-          if (id.includes("jspdf") || id.includes("html2canvas")) {
-            return "vendor-pdf";
-          }
-          if (id.includes("@radix-ui")) {
-            return "vendor-radix";
-          }
-          if (
-            id.includes("react-router") ||
-            id.includes("/react-dom/") ||
-            id.includes("/react/") ||
-            id.includes("scheduler")
-          ) {
-            return "vendor-react";
-          }
-          if (id.includes("lucide-react")) {
-            return "vendor-icons";
-          }
-          if (id.includes("canvas-confetti")) {
-            return "vendor-confetti";
-          }
-          return "vendor";
-        },
-      },
-    },
-  },
-  optimizeDeps: {
-    include: ["react", "react-dom", "react-router-dom", "lucide-react"],
-  },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
@@ -91,25 +48,7 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallback: "index.html",
         navigateFallbackDenylist: [/^\/api/, /^\/~oauth/],
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: false,
         runtimeCaching: [
-          {
-            // Lazy-loaded JS/CSS chunks: cache-first for instant repeat visits
-            urlPattern: ({ request, url }) =>
-              (request.destination === "script" || request.destination === "style") &&
-              url.pathname.startsWith("/assets/"),
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "app-chunks",
-              expiration: {
-                maxEntries: 60,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
-              },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "StaleWhileRevalidate",

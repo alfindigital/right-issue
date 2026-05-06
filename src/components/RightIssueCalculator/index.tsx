@@ -10,8 +10,6 @@ import HistoryDropdown from './HistoryDropdown';
 import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
-import ErrorSummary from './ErrorSummary';
-import InputSummary from './InputSummary';
 import BackToTopButton from './BackToTopButton';
 import KeyboardShortcutsHelp from './KeyboardShortcutsHelp';
 import EmbedCodeModal from './EmbedCodeModal';
@@ -21,8 +19,6 @@ import ProgressRing from './ProgressRing';
 import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import Logo from './Logo';
-import CollapsibleSection from './CollapsibleSection';
-import { Layers, BarChart3, PieChart, TrendingUp } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -33,28 +29,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChartSkeleton, SectionSkeleton } from './ChartSkeleton';
-import useIdlePrefetch from '@/hooks/useIdlePrefetch';
-import useInputValidation from '@/hooks/useInputValidation';
 
 // Lazy load heavy components (charts, analysis)
-// Importers shared between React.lazy and the idle-prefetcher so the same
-// chunk is reused (no double-fetch).
-const importDilution = () => import('./DilutionSimulator');
-const importScenario = () => import('./ScenarioComparison');
-const importAdvanced = () => import('./AdvancedAnalysisSection');
-const importWhatIf = () => import('./WhatIfTargetPrice');
-const importEducation = () => import('./EducationSection');
-const importBudget = () => import('./BudgetLotPlanner');
-const importScenarioTabs = () => import('./ScenarioProjectionTabs');
-
-const DilutionSimulator = lazy(importDilution);
-const ScenarioComparison = lazy(importScenario);
-const AdvancedAnalysisSection = lazy(importAdvanced);
-const WhatIfTargetPrice = lazy(importWhatIf);
-const EducationSection = lazy(importEducation);
-const BudgetLotPlanner = lazy(importBudget);
-const ScenarioProjectionTabs = lazy(importScenarioTabs);
+const DilutionSimulator = lazy(() => import('./DilutionSimulator'));
+const ScenarioComparison = lazy(() => import('./ScenarioComparison'));
+const AdvancedAnalysisSection = lazy(() => import('./AdvancedAnalysisSection'));
+const WhatIfTargetPrice = lazy(() => import('./WhatIfTargetPrice'));
+const EducationSection = lazy(() => import('./EducationSection'));
+const BudgetLotPlanner = lazy(() => import('./BudgetLotPlanner'));
 // Lazy type import for callback
 type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
 
@@ -81,20 +63,6 @@ const RightIssueCalculator: React.FC = () => {
   const hasRestoredRef = useRef(false);
   const pendingAutoCalculateRef = useRef(false);
   const isMobile = useIsMobile();
-
-  // Prefetch heavy chunks when browser is idle so tab switches feel instant.
-  // Education + Budget Planner live behind tabs; chart sections appear after
-  // calculation. Loading them in the background after first paint avoids any
-  // visible spinner on first interaction.
-  useIdlePrefetch([
-    importBudget,
-    importEducation,
-    importDilution,
-    importScenario,
-    importAdvanced,
-    importWhatIf,
-    importScenarioTabs,
-  ]);
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
@@ -153,14 +121,6 @@ const RightIssueCalculator: React.FC = () => {
   const [warrantRatioError, setWarrantRatioError] = useState('');
   const [resultsOutOfView, setResultsOutOfView] = useState(false);
   const resultsDashboardRef = useRef<HTMLDivElement>(null);
-
-  // Centralized input validation (sane bounds, zero/negative, unrealistic values)
-  const validation = useInputValidation({
-    ratioOld, ratioNew, rightPrice, cumDatePrice,
-    currentLots, currentAvgPrice,
-    noOwnership, hmetdLots, hmetdPrice,
-    hasWarrant, warrantRatioOld, warrantRatioNew,
-  });
 
   // Completion percentage for progress ring
   const completionPercent = useMemo(() => {
@@ -261,12 +221,7 @@ const RightIssueCalculator: React.FC = () => {
   }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
 
   const isWarrantRatioValid = !hasWarrant || (warrantRatioOld && warrantRatioNew && !warrantRatioError);
-  const isCalculateEnabled = !!(
-    ratioOld && ratioNew && rightPrice && cumDatePrice &&
-    !ratioError && isWarrantRatioValid &&
-    (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)) &&
-    !validation.hasErrors
-  );
+  const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError && isWarrantRatioValid && (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)));
 
   useEffect(() => {
     const lots = parseInt(currentLots) || 0;
@@ -276,21 +231,6 @@ const RightIssueCalculator: React.FC = () => {
   }, [currentLots, currentAvgPrice]);
 
   const calculate = useCallback(() => {
-    // Block calculation if there are validation errors. Show first error as toast
-    // so users who triggered via Ctrl+Enter still get clear feedback.
-    if (validation.hasErrors) {
-      const firstError = Object.values(validation.errors)[0];
-      if (firstError) {
-        toast({
-          title: language === 'id' ? 'Input tidak valid' : 'Invalid input',
-          description: firstError,
-          variant: 'destructive',
-          duration: 4000,
-        });
-      }
-      return;
-    }
-
     const rOld = parseDecimalId(ratioOld);
     const rNew = parseDecimalId(ratioNew);
     const riPrice = parseInt(rightPrice) || 0;
@@ -399,7 +339,7 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice, validation, language]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice]);
 
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
@@ -583,14 +523,9 @@ const RightIssueCalculator: React.FC = () => {
                 <RightIssueInfoSection
                   ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
                   onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
-                  ratioError={ratioError || validation.errors.ratioOld || validation.errors.ratioNew}
-                  rightPriceError={validation.errors.rightPrice}
-                  cumDatePriceError={validation.errors.cumDatePrice}
-                  priceWarning={validation.warnings.priceWarning}
-                  hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+                  ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
                   warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew}
-                  warrantRatioError={warrantRatioError || validation.errors.warrantRatioOld || validation.errors.warrantRatioNew}
+                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
                 />
               </div>
             )}
@@ -607,10 +542,6 @@ const RightIssueCalculator: React.FC = () => {
                   hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
                   hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
                   hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
-                  currentLotsError={validation.errors.currentLots}
-                  currentAvgPriceError={validation.errors.currentAvgPrice}
-                  hmetdLotsError={validation.errors.hmetdLots}
-                  hmetdPriceError={validation.errors.hmetdPrice}
                 />
               </div>
             )}
@@ -641,7 +572,7 @@ const RightIssueCalculator: React.FC = () => {
                   totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice}
                   recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated}
                 />
-                <Suspense fallback={<ChartSkeleton height={180} />}>
+                <Suspense fallback={<LazyFallback />}>
                   <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
                   <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
                   <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
@@ -707,33 +638,12 @@ const RightIssueCalculator: React.FC = () => {
           </div>
         )}
         <StockCodeInput value={stockCode} onChange={setStockCode} />
-        <ErrorSummary errors={validation.errors} />
-        <InputSummary
-          errors={validation.errors}
-          ratioOld={ratioOld}
-          ratioNew={ratioNew}
-          rightPrice={rightPrice}
-          cumDatePrice={cumDatePrice}
-          noOwnership={noOwnership}
-          currentLots={currentLots}
-          currentAvgPrice={currentAvgPrice}
-          hmetdLots={hmetdLots}
-          hmetdPrice={hmetdPrice}
-          hasWarrant={hasWarrant}
-          warrantRatioOld={warrantRatioOld}
-          warrantRatioNew={warrantRatioNew}
-        />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
           onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
-          ratioError={ratioError || validation.errors.ratioOld || validation.errors.ratioNew}
-          rightPriceError={validation.errors.rightPrice}
-          cumDatePriceError={validation.errors.cumDatePrice}
-          priceWarning={validation.warnings.priceWarning}
-          hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
+          ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
           warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-          onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew}
-          warrantRatioError={warrantRatioError || validation.errors.warrantRatioOld || validation.errors.warrantRatioNew}
+          onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
         />
         <OwnershipSection
           currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
@@ -745,10 +655,6 @@ const RightIssueCalculator: React.FC = () => {
           hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
           hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
-          currentLotsError={validation.errors.currentLots}
-          currentAvgPriceError={validation.errors.currentAvgPrice}
-          hmetdLotsError={validation.errors.hmetdLots}
-          hmetdPriceError={validation.errors.hmetdPrice}
         />
 
         {isCalculated && (
@@ -779,81 +685,15 @@ const RightIssueCalculator: React.FC = () => {
           </>
         )}
 
-        {/* Conclusion always shown right after results, no collapse */}
+        {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
+        <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
         <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-
-        {/* Group 3: Lot Planning — open by default */}
-        <CollapsibleSection
-          title={t('section.lotPlanning')}
-          subtitle={t('section.lotPlanningSub')}
-          icon={<Layers className="w-4 h-4" />}
-          defaultOpen={true}
-          storageKey="lot-planning"
-          badge={isCalculated && hasWarrant ? `${warrantCount} ${language === 'id' ? 'waran' : 'warrants'}` : undefined}
-        >
-          <div className="space-y-3">
-            {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
-            <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
-          </div>
-        </CollapsibleSection>
-
-        {/* Group 4: Scenarios & Projection — collapsed, sub-tabs inside */}
-        {isCalculated && (
-          <CollapsibleSection
-            title={t('section.scenarios')}
-            subtitle={t('section.scenariosSub')}
-            icon={<BarChart3 className="w-4 h-4" />}
-            defaultOpen={false}
-            storageKey="scenarios"
-          >
-            <Suspense fallback={<ChartSkeleton height={180} />}>
-              <ScenarioProjectionTabs
-                isCalculated={isCalculated}
-                cumPrice={parseInt(cumDatePrice) || 0}
-                riPrice={parseInt(rightPrice) || 0}
-                terp={numericValues.terp}
-                ratioOld={parseDecimalId(ratioOld)}
-                ratioNew={parseDecimalId(ratioNew)}
-                currentShares={(parseInt(currentLots) || 0) * 100}
-                newSharesCount={numericValues.newSharesCount}
-                currentAvgPrice={parseInt(currentAvgPrice) || 0}
-                totalShares={numericValues.totalShares}
-                totalModal={numericValues.totalModal}
-                avgBaru={numericValues.avgBaru}
-              />
-            </Suspense>
-          </CollapsibleSection>
-        )}
-
-        {/* Group 5: Ownership Impact (Dilution) — collapsed */}
-        {isCalculated && !noOwnership && (
-          <CollapsibleSection
-            title={t('section.dilution')}
-            subtitle={t('section.dilutionSub')}
-            icon={<PieChart className="w-4 h-4" />}
-            defaultOpen={false}
-            storageKey="dilution"
-          >
-            <Suspense fallback={<ChartSkeleton height={180} />}>
-              <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-            </Suspense>
-          </CollapsibleSection>
-        )}
-
-        {/* Group 6: Advanced Analysis — collapsed */}
-        {isCalculated && (
-          <CollapsibleSection
-            title={t('section.advanced')}
-            subtitle={t('section.advancedSub')}
-            icon={<TrendingUp className="w-4 h-4" />}
-            defaultOpen={false}
-            storageKey="advanced"
-          >
-            <Suspense fallback={<ChartSkeleton height={180} />}>
-              <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
-            </Suspense>
-          </CollapsibleSection>
-        )}
+        <Suspense fallback={<LazyFallback />}>
+          <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+          <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
+          <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
+          <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+        </Suspense>
       </div>
     );
   };
@@ -932,13 +772,13 @@ const RightIssueCalculator: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="budget" className="mt-0">
-            <Suspense fallback={<SectionSkeleton />}>
+            <Suspense fallback={<LazyFallback />}>
               <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
             </Suspense>
           </TabsContent>
           
           <TabsContent value="education" className="mt-0">
-            <Suspense fallback={<SectionSkeleton />}>
+            <Suspense fallback={<LazyFallback />}>
               <EducationSection />
             </Suspense>
           </TabsContent>

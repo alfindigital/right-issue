@@ -15,9 +15,6 @@ interface RightIssueInfoSectionProps {
   onRightPriceChange: (value: string) => void;
   onCumDatePriceChange: (value: string) => void;
   ratioError?: string;
-  rightPriceError?: string;
-  cumDatePriceError?: string;
-  priceWarning?: string;
   // Warrant props
   hasWarrant: boolean;
   onHasWarrantChange: (value: boolean) => void;
@@ -38,9 +35,6 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   onRightPriceChange,
   onCumDatePriceChange,
   ratioError,
-  rightPriceError,
-  cumDatePriceError,
-  priceWarning,
   hasWarrant,
   onHasWarrantChange,
   warrantRatioOld,
@@ -68,24 +62,18 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             <RatioInput
               value={ratioOld}
               onChange={onRatioOldChange}
-              placeholder={language === 'id' ? "cth: 4" : "e.g. 4"}
+              placeholder={language === 'id' ? "Lama" : "Old"}
             />
             <span className="text-lg font-bold text-muted-foreground">:</span>
             <RatioInput
               value={ratioNew}
               onChange={onRatioNewChange}
-              placeholder={language === 'id' ? "cth: 1" : "e.g. 1"}
+              placeholder={language === 'id' ? "Baru" : "New"}
             />
           </div>
           {ratioError && (
             <p className="text-xs text-destructive mt-1 animate-fade-in">{ratioError}</p>
           )}
-          <p className="text-[10px] text-muted-foreground">
-            {language === 'id' ? 'Contoh umum: 4 : 1 atau 2 : 1' : 'Common: 4 : 1 or 2 : 1'}
-          </p>
-          <p className="text-[10px] text-muted-foreground">
-            {language === 'id' ? 'Format: angka saja, mis. 4 : 1 (bukan "4/1")' : 'Format: numbers only, e.g. 4 : 1 (not "4/1")'}
-          </p>
         </div>
 
         <CurrencyInput
@@ -93,11 +81,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           label={t('rightIssue.price')}
           value={rightPrice}
           onChange={onRightPriceChange}
-          placeholder={language === 'id' ? 'cth: 500' : 'e.g. 500'}
           tooltip={t('rightIssue.priceHelp')}
-          error={rightPriceError}
-          hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 500)' : 'Format: numbers only, no "Rp" (e.g. 500)'}
-          unit={language === 'id' ? 'Rp / lembar' : 'Rp / share'}
         />
 
         <CurrencyInput
@@ -105,19 +89,8 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           label={t('rightIssue.cumPrice')}
           value={cumDatePrice}
           onChange={onCumDatePriceChange}
-          placeholder={language === 'id' ? 'cth: 1.000' : 'e.g. 1,000'}
           tooltip={t('rightIssue.cumPriceHelp')}
-          error={cumDatePriceError}
-          hint={language === 'id' ? 'Format: angka saja tanpa "Rp" (mis. 1.000)' : 'Format: numbers only, no "Rp" (e.g. 1,000)'}
-          unit={language === 'id' ? 'Rp / lembar' : 'Rp / share'}
         />
-
-        {priceWarning && !rightPriceError && !cumDatePriceError && (
-          <p className="text-xs text-amber-600 dark:text-amber-400 animate-fade-in flex items-start gap-1">
-            <span aria-hidden>⚠️</span>
-            <span>{priceWarning}</span>
-          </p>
-        )}
 
         {/* Bonus Warrant Section */}
         <div className="pt-2 border-t border-border">
@@ -148,14 +121,14 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                   <RatioInput
                     value={warrantRatioOld}
                     onChange={onWarrantRatioOldChange}
-                    placeholder={language === 'id' ? "cth: 2" : "e.g. 2"}
+                    placeholder="RI"
                     className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
                   />
                   <span className="text-lg font-bold text-muted-foreground">:</span>
                   <RatioInput
                     value={warrantRatioNew}
                     onChange={onWarrantRatioNewChange}
-                    placeholder={language === 'id' ? "cth: 1" : "e.g. 1"}
+                    placeholder={language === 'id' ? "Waran" : "Warrant"}
                     className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
                   />
                 </div>
@@ -166,9 +139,6 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     {t('rightIssue.warrantRatioRequired')}
                   </p>
                 )}
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  {language === 'id' ? 'Format: angka saja, mis. 2 : 1' : 'Format: numbers only, e.g. 2 : 1'}
-                </p>
               </div>
             </div>
           )}

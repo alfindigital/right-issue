@@ -1,102 +1,57 @@
-# Plan: Konsolidasi Section dengan Progressive Disclosure
 
-Mengurangi cognitive load dari 15+ section terpisah menjadi 6 section utama yang dikelompokkan secara logis. Pemula tidak overwhelmed, power user tetap bisa akses semua fitur via expand/sub-tabs.
 
-## Struktur Baru (Setelah Konsolidasi)
+# Plan: Logo & Favicon Refresh
 
-```
-1. INPUT  (selalu terlihat)
-   ├─ StockCodeInput
-   ├─ RightIssueInfoSection (info RI + warrant)
-   └─ OwnershipSection (kepemilikan / no-ownership mode)
+## Ringkasan
+Buat logo SVG kustom (ikon chart + arrow up) yang merepresentasikan Right Issue / growth, lalu gunakan sebagai favicon, PWA icon, watermark di header/footer, dan share card.
 
-2. HASIL UTAMA  (muncul setelah Hitung)
-   ├─ ResultsDashboard (hero card + 2x2 grid)
-   └─ ConclusionSection (rekomendasi)
+## 1. Buat Logo SVG Component
 
-3. PERENCANAAN LOT  (collapsible, default: open)
-   └─ LotOptimizationSection + WarrantSection (jika hasWarrant)
-      Catatan: BudgetLotPlanner tetap di tab "Budget" (use-case berbeda)
+**File baru:** `src/components/RightIssueCalculator/Logo.tsx`
 
-4. SKENARIO & PROYEKSI  (collapsible, default: closed — sub-tabs di dalam)
-   ├─ Tab "Skenario"      → ScenarioComparison
-   ├─ Tab "What-If Harga" → WhatIfTargetPrice
-   └─ Tab "Break-Even"    → BreakEvenROICalculator (jika ada)
+Komponen SVG inline — desain: bar chart sederhana (3 bar ascending) dengan arrow pointing up, warna primary (blue gradient). Props: `size`, `className`, `withText` (opsional tampilkan "RI Calc" di samping).
 
-5. DAMPAK KEPEMILIKAN  (collapsible, default: closed)
-   ├─ DilutionSimulator (PieChart)
-   └─ Mini-summary OwnershipSection (badge: "kepemilikan turun X%")
+## 2. Generate PNG untuk Favicon & PWA Icons
 
-6. ANALISIS LANJUTAN  (collapsible, default: closed)
-   └─ AdvancedAnalysisSection (price comparison chart)
+**File:** `public/favicon.svg` — SVG version untuk favicon  
+**File:** `public/pwa-192x192.png` — Generate ulang dengan desain baru  
+**File:** `public/pwa-512x512.png` — Generate ulang dengan desain baru  
 
-PELAJARI RI  → tetap di tab "Education" (tidak digabung ke Calculator,
-              karena konten panjang & target audience beda)
-```
+Akan menggunakan AI image generation untuk membuat PNG icons yang clean dan recognizable di ukuran kecil.
 
-Hasil: dari **8 section flat** di tab Calculator → **6 section utama** dengan 3 di antaranya collapsed by default. Initial scroll length berkurang ~60% pada mobile.
+## 3. Update index.html
 
-## Komponen Baru
+**File:** `index.html`
+- Tambah `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`
+- Update apple-touch-icon reference
 
-**`CollapsibleSection.tsx`** — wrapper reusable berbasis Radix `Collapsible` (sudah ada di `src/components/ui/collapsible.tsx`):
-- Props: `title`, `icon`, `subtitle?`, `defaultOpen`, `badge?` (untuk preview metric saat collapsed, contoh: "Dilusi: 15%"), `storageKey?` (persist open/close state ke localStorage per-section).
-- Header: chevron rotate + smooth animation (`data-[state=open]:animate-accordion-down`).
-- Tetap rounded-2xl + glassmorphism style sesuai memory.
-- Saat collapsed, tampilkan 1-line preview value supaya user tahu isinya tanpa expand.
+## 4. Update Header & Footer dengan Logo
 
-**`ScenarioProjectionTabs.tsx`** — internal sub-tabs untuk grup #4:
-- Pakai komponen `Tabs` yang sudah ada, variant lebih ringan (pill style).
-- Lazy-mount tab content (hanya render aktif tab) untuk hemat render.
+**File:** `src/components/RightIssueCalculator/index.tsx`
+- Import `Logo` component
+- Render logo di samping title di header (ukuran ~24px)
+- Render logo kecil di footer sebagai branding
 
-## Perubahan File
+## 5. Update ExportTemplate Watermark
 
-**`src/components/RightIssueCalculator/index.tsx`**
-- Refactor `renderCalculatorContent()` (full mode, baris 651-722) — bungkus section dengan `CollapsibleSection`.
-- Susun ulang urutan: Input → Results → Lot Planning → Scenarios (sub-tabs) → Dilution → Advanced.
-- Wizard mode (baris 526-647) tetap apa adanya — wizard sudah progressive by design.
-- Pindahkan `WarrantResultSection` ke dalam grup "Perencanaan Lot".
+**File:** `src/components/RightIssueCalculator/ExportTemplate.tsx`
+- Tambah inline SVG logo di footer section (sebelah "alfindigital.com")
+- Logo dalam warna putih/semi-transparent agar cocok dengan dark background template
 
-**`src/components/RightIssueCalculator/CollapsibleSection.tsx`** — komponen baru.
+## 6. Update PWA Manifest
 
-**`src/components/RightIssueCalculator/ScenarioProjectionTabs.tsx`** — komponen baru, gabungkan ScenarioComparison + WhatIfTargetPrice + BreakEvenROI dalam Tabs.
+**File:** `vite.config.ts`
+- Icon references tetap sama (path tidak berubah), hanya file PNG-nya yang di-replace
 
-**`src/contexts/LanguageContext.tsx`** — tambah translations:
-- `section.lotPlanning` ("Perencanaan Lot" / "Lot Planning")
-- `section.scenarios` ("Skenario & Proyeksi" / "Scenarios & Projection")
-- `section.dilution` ("Dampak Kepemilikan" / "Ownership Impact")
-- `section.advanced` ("Analisis Lanjutan" / "Advanced Analysis")
-- Sub-tab labels.
+## Detail Teknis
 
-## Detail UX
+Logo SVG design:
+- 3 ascending bars (representing growth/chart)
+- Arrow pointing up-right dari bar terakhir
+- Rounded corners, modern flat style
+- Primary color: `#3b82f6` (blue-500) dengan gradient ke `#60a5fa`
+- Compact dan readable di 16x16 (favicon) maupun 512x512
 
-**Preview badges saat collapsed** (penting untuk UX) — user tidak perlu expand untuk lihat metric kunci:
-- Lot Planning: "+X lot saran" atau "Sudah optimal"
-- Scenarios: "Best: Ikut RI (+Rp X jt)"
-- Dilution: "Kepemilikan turun X%" (warna merah jika >5%)
-- Advanced: "Lihat chart perbandingan"
+**Total file baru:** 2 (`Logo.tsx`, `favicon.svg`)
+**File diubah:** 4 (`index.html`, `index.tsx`, `ExportTemplate.tsx`, PNG files replaced)
 
-**State persistence** — simpan open/closed state per section ke `localStorage` (key: `ri-section-{name}`) supaya user tidak perlu re-expand setiap kali. Default state hanya berlaku first-visit.
-
-**Smooth animations** — pakai Radix data-state animations + `animate-fade-in` untuk content. Hindari layout shift dengan placeholder height saat lazy chunk loading (sudah pakai `ChartSkeleton`).
-
-**Mobile-first** — collapsible header full-width tappable (min 44x44px touch target), chevron di kanan.
-
-**Backward compatibility** — fitur yang sudah ada tetap berfungsi 100%, hanya layout/grouping berubah. PDF export, share buttons, history, floating summary tidak terdampak.
-
-## Out of Scope
-
-- BudgetLotPlanner tetap di tab terpisah (use-case beda: planning dari budget vs analysis dari kepemilikan).
-- EducationSection tetap di tab terpisah (konten edukasi panjang, target pemula).
-- Wizard mode tidak diubah (sudah step-by-step).
-- Tidak ada perubahan kalkulasi/business logic.
-
-## Verifikasi
-
-- Typecheck pass.
-- Console clean (no forwardRef warnings dari komponen baru).
-- Test manual: expand/collapse persist setelah reload, sub-tab switching tidak re-trigger calculation, lazy chunks tetap prefetched via `useIdlePrefetch`.
-- Visual QA di mobile (375px) dan desktop.
-
-## Setelah Approve
-
-Setelah selesai implementasi, perlu Publish ulang ke `rightissue.lovable.app`.

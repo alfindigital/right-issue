@@ -225,16 +225,6 @@ const translations: Record<Language, Record<string, string>> = {
     'tab.calculator': 'Kalkulator RI',
     'tab.budgetPlanner': 'Budget Planner',
     'tab.education': 'Edukasi',
-
-    // Section Groups
-    'section.lotPlanning': 'Perencanaan Lot',
-    'section.lotPlanningSub': 'Optimasi lot & bonus waran',
-    'section.scenarios': 'Skenario & Proyeksi',
-    'section.scenariosSub': 'Bandingkan skenario, what-if harga, & break-even',
-    'section.dilution': 'Dampak Kepemilikan',
-    'section.dilutionSub': 'Simulasi dilusi kepemilikan',
-    'section.advanced': 'Analisis Lanjutan',
-    'section.advancedSub': 'Chart perbandingan harga & strategi',
   },
   en: {
     // Header
@@ -449,16 +439,6 @@ const translations: Record<Language, Record<string, string>> = {
     'tab.calculator': 'RI Calculator',
     'tab.budgetPlanner': 'Budget Planner',
     'tab.education': 'Education',
-
-    // Section Groups
-    'section.lotPlanning': 'Lot Planning',
-    'section.lotPlanningSub': 'Optimize lots & warrant bonus',
-    'section.scenarios': 'Scenarios & Projection',
-    'section.scenariosSub': 'Compare scenarios, what-if price, & break-even',
-    'section.dilution': 'Ownership Impact',
-    'section.dilutionSub': 'Ownership dilution simulation',
-    'section.advanced': 'Advanced Analysis',
-    'section.advancedSub': 'Price comparison chart & strategy',
   },
 };
 
