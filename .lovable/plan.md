@@ -1,57 +1,111 @@
 
+# Plan: 4 UX Improvements
 
-# Plan: Logo & Favicon Refresh
+Implementasi 4 fitur secara berurutan dalam satu rangkaian. Semua perubahan murni frontend, tidak menyentuh logika kalkulasi.
 
-## Ringkasan
-Buat logo SVG kustom (ikon chart + arrow up) yang merepresentasikan Right Issue / growth, lalu gunakan sebagai favicon, PWA icon, watermark di header/footer, dan share card.
+---
 
-## 1. Buat Logo SVG Component
+## 1. Onboarding Tour Sekali Jalan (react-joyride)
 
-**File baru:** `src/components/RightIssueCalculator/Logo.tsx`
+**Goal:** User baru dipandu lewat 5–6 langkah saat pertama kali buka app, menjelaskan TERP, HMETD, dan dilusi langsung di konteksnya.
 
-Komponen SVG inline — desain: bar chart sederhana (3 bar ascending) dengan arrow pointing up, warna primary (blue gradient). Props: `size`, `className`, `withText` (opsional tampilkan "RI Calc" di samping).
+**Implementasi:**
+- Install `react-joyride`.
+- Buat `src/components/RightIssueCalculator/OnboardingTour.tsx` yang:
+  - Cek `localStorage` key `ri-onboarding-v1`. Jika sudah ada → tidak tampil.
+  - Render `<Joyride>` dengan `continuous`, `showProgress`, `showSkipButton`, `disableScrolling: false`, styling dark/light sesuai design tokens (primary, popover bg).
+  - Locale ID/EN dari `useLanguage`.
+- Tambahkan `data-tour` attribute ke elemen target di `index.tsx`, `RightIssueInfoSection.tsx`, `OwnershipSection.tsx`, `ResultsDashboard.tsx`, `DilutionSimulator.tsx`:
+  - `data-tour="stock-code"` → input kode saham
+  - `data-tour="ratio"` → input rasio RI (jelaskan HMETD)
+  - `data-tour="right-price"` → harga pelaksanaan
+  - `data-tour="calculate"` → tombol Hitung
+  - `data-tour="terp"` → kartu TERP di hasil (jelaskan TERP)
+  - `data-tour="dilution"` → simulator dilusi
+- Mount `<OnboardingTour />` di root `RightIssueCalculator/index.tsx`.
+- Tambah menu "Tampilkan tour ulang" di `SettingsDropdown.tsx` (hapus key localStorage + reload state).
+- Tambahkan kunci i18n untuk teks setiap step di `LanguageContext.tsx`.
 
-## 2. Generate PNG untuk Favicon & PWA Icons
+---
 
-**File:** `public/favicon.svg` — SVG version untuk favicon  
-**File:** `public/pwa-192x192.png` — Generate ulang dengan desain baru  
-**File:** `public/pwa-512x512.png` — Generate ulang dengan desain baru  
+## 2. Standardisasi Icon ke lucide-react
 
-Akan menggunakan AI image generation untuk membuat PNG icons yang clean dan recognizable di ukuran kecil.
+**Goal:** Hilangkan semua emoji kontekstual (💡⚠️✅📊📈💰🎁) di komponen UI; pertahankan emoji hanya di string share/WhatsApp (karena memang dirender di luar app).
 
-## 3. Update index.html
+**Mapping:**
+| Emoji | Lucide |
+|-------|--------|
+| 💡 | `Lightbulb` |
+| ⚠️ | `AlertTriangle` |
+| ✅ | `CheckCircle2` |
+| 📊 | `BarChart3` |
+| 📈 | `TrendingUp` |
+| 💰 | `Wallet` / `Coins` |
+| 🎁 | `Gift` |
+| 🎉 (komentar saja) | biarkan |
 
-**File:** `index.html`
-- Tambah `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`
-- Update apple-touch-icon reference
+**File yang diubah:**
+- `WhatIfTargetPrice.tsx` (baris 188–189, 289–290): ganti dengan `<CheckCircle2>` / `<AlertTriangle>` + `<Lightbulb>` inline.
+- `LotOptimizationSection.tsx` (113): `<CheckCircle2>` inline.
+- `OwnershipSection.tsx` (128–129): `<Lightbulb>` inline.
+- `DilutionSimulator.tsx` (116–117): `<AlertTriangle>` inline.
+- `ResultsDashboard.tsx` (157–158): `<CheckCircle2>` / `<AlertTriangle>`.
+- `EducationSection.tsx`: ubah field `icon: string` jadi `icon: LucideIcon` (component reference), update render dari `<span>{icon}</span>` ke `<Icon className="..." />`.
+- `ShareButtons.tsx`: **biarkan emoji** untuk `toast.success` dan template WhatsApp (line 90, 218, 232, 249–250 dst) — ini teks output, bukan UI ikon.
 
-## 4. Update Header & Footer dengan Logo
+**Style:** semua ikon `className="w-4 h-4 inline-block mr-1.5 text-{contextual-color}"` dengan token semantic (mis. `text-emerald-500`, `text-amber-500`).
 
-**File:** `src/components/RightIssueCalculator/index.tsx`
-- Import `Logo` component
-- Render logo di samping title di header (ukuran ~24px)
-- Render logo kecil di footer sebagai branding
+---
 
-## 5. Update ExportTemplate Watermark
+## 3. Tooltip → Bottom Sheet di Mobile
 
-**File:** `src/components/RightIssueCalculator/ExportTemplate.tsx`
-- Tambah inline SVG logo di footer section (sebelah "alfindigital.com")
-- Logo dalam warna putih/semi-transparent agar cocok dengan dark background template
+**Goal:** Di viewport `<640px`, klik info icon membuka bottom sheet (vaul `Drawer`) yang lebih mudah dibaca; di desktop tetap `Tooltip` standar.
 
-## 6. Update PWA Manifest
+**Implementasi:**
+- Edit `src/components/RightIssueCalculator/InfoTooltip.tsx`:
+  - Pakai `useIsMobile()` hook yang sudah ada.
+  - Jika `isMobile`: render `<Drawer>` (dari `@/components/ui/drawer`) dengan trigger ikon Info dan content berisi `text` (font lebih besar, padding nyaman, ada drag handle bawaan).
+  - Jika desktop: kode tooltip eksisting tidak berubah.
+  - Tambah opsional prop `title?: string` untuk header drawer (default: "Info" / "Information" via i18n).
+- Tidak perlu ubah call sites — interface `InfoTooltipProps` backward compatible.
 
-**File:** `vite.config.ts`
-- Icon references tetap sama (path tidak berubah), hanya file PNG-nya yang di-replace
+---
 
-## Detail Teknis
+## 4. Swipe Between Tabs (Calculator ↔ Budget ↔ Education)
 
-Logo SVG design:
-- 3 ascending bars (representing growth/chart)
-- Arrow pointing up-right dari bar terakhir
-- Rounded corners, modern flat style
-- Primary color: `#3b82f6` (blue-500) dengan gradient ke `#60a5fa`
-- Compact dan readable di 16x16 (favicon) maupun 512x512
+**Goal:** Di mobile, swipe horizontal di area konten memindahkan tab.
 
-**Total file baru:** 2 (`Logo.tsx`, `favicon.svg`)
-**File diubah:** 4 (`index.html`, `index.tsx`, `ExportTemplate.tsx`, PNG files replaced)
+**Implementasi:**
+- Di `RightIssueCalculator/index.tsx`:
+  - Definisikan urutan: `const TAB_ORDER = ['calculator', 'budget', 'education']`.
+  - Buat handler:
+    ```ts
+    const goNextTab = () => {
+      const i = TAB_ORDER.indexOf(activeTab);
+      if (i < TAB_ORDER.length - 1) setActiveTab(TAB_ORDER[i + 1]);
+    };
+    const goPrevTab = () => { /* sebaliknya */ };
+    ```
+  - Pakai `useSwipeGesture({ onSwipeLeft: goNextTab, onSwipeRight: goPrevTab, threshold: 60 })`.
+  - Hanya aktif di mobile: spread handler `{...(isMobile ? swipeHandlers : {})}` ke wrapper `<div>` yang membungkus `<Tabs>`.
+- Tambah animasi transisi tab fade (sudah ada `data-[state=active]:animate-tab-fade-in` di `tabs.tsx`).
+- Pastikan swipe di dalam komponen scroll horizontal (chart Recharts) tidak conflict — `useSwipeGesture` sudah filter via `Math.abs(deltaX) > Math.abs(deltaY)`.
 
+---
+
+## Urutan Implementasi
+1. Standardisasi icon (paling cepat, no deps).
+2. Bottom sheet tooltip (refactor file kecil).
+3. Swipe tabs (1 file edit + handler).
+4. Onboarding tour (install dep + komponen baru + tag elemen).
+
+## Verifikasi
+- Build harus lolos.
+- Cek console preview: tidak ada warning baru.
+- Manual: resize viewport ke <640px untuk verifikasi tooltip bottom sheet & swipe.
+- Buka mode incognito untuk lihat tour pertama kali jalan.
+
+## Catatan Teknis
+- `react-joyride` ~30KB gzip — acceptable; bisa di-`lazy` import jika perlu.
+- Tidak ada perubahan ke business logic / kalkulasi / storage.
+- Memori "Consistently use InfoTooltip" tetap terjaga (interface InfoTooltip tidak berubah).
