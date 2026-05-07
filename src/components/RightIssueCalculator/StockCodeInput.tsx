@@ -16,7 +16,7 @@ const StockCodeInput: React.FC<StockCodeInputProps> = ({ value, onChange }) => {
   };
 
   return (
-    <div className="card-calculator">
+    <div className="card-calculator" data-tour="stock-code">
       <div className="flex items-center gap-2 mb-2">
         <Tag className="w-4 h-4 text-primary" />
         <span className="text-sm font-semibold">{t('stockCode.label')}</span>

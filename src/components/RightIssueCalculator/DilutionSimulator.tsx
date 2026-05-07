@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { AlertTriangle } from 'lucide-react';
 import InfoTooltip from './InfoTooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -97,7 +98,7 @@ const DilutionSimulator = React.forwardRef<HTMLDivElement, DilutionSimulatorProp
   const dilutionDelta = scenarios.beforeRI.pct - scenarios.noParticipation.pct;
 
   return (
-    <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.3s' }}>
+    <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.3s' }} data-tour="dilution">
       <h2 className="section-title flex items-center">
         {language === 'id' ? 'Simulasi Dilusi Kepemilikan' : 'Ownership Dilution Simulator'}
         <InfoTooltip
@@ -111,10 +112,13 @@ const DilutionSimulator = React.forwardRef<HTMLDivElement, DilutionSimulatorProp
 
       {/* Dilution Warning */}
       <div className="mb-4 p-2.5 rounded-xl bg-gradient-to-r from-amber-100 to-amber-50 border border-amber-200 dark:from-amber-900/30 dark:to-amber-950/20 dark:border-amber-800">
-        <p className="text-xs text-foreground leading-relaxed">
-          {language === 'id'
-            ? `⚠️ Jika Anda tidak ikut RI, kepemilikan Anda terdilusi sebesar ~${dilutionDelta.toFixed(2)}% (dari ${scenarios.beforeRI.pct.toFixed(2)}% → ${scenarios.noParticipation.pct.toFixed(2)}%).`
-            : `⚠️ If you don't participate in RI, your ownership dilutes by ~${dilutionDelta.toFixed(2)}% (from ${scenarios.beforeRI.pct.toFixed(2)}% → ${scenarios.noParticipation.pct.toFixed(2)}%).`}
+        <p className="text-xs text-foreground leading-relaxed flex items-start gap-1.5">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <span>
+            {language === 'id'
+              ? `Jika Anda tidak ikut RI, kepemilikan Anda terdilusi sebesar ~${dilutionDelta.toFixed(2)}% (dari ${scenarios.beforeRI.pct.toFixed(2)}% → ${scenarios.noParticipation.pct.toFixed(2)}%).`
+              : `If you don't participate in RI, your ownership dilutes by ~${dilutionDelta.toFixed(2)}% (from ${scenarios.beforeRI.pct.toFixed(2)}% → ${scenarios.noParticipation.pct.toFixed(2)}%).`}
+          </span>
         </p>
       </div>
 

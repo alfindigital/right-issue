@@ -19,6 +19,7 @@ import ProgressRing from './ProgressRing';
 import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import Logo from './Logo';
+import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -468,6 +469,28 @@ const RightIssueCalculator: React.FC = () => {
   // Settings modal states
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
   const [embedOpen, setEmbedOpen] = useState(false);
+  const [tourReplayKey, setTourReplayKey] = useState(0);
+  const [tourForceRun, setTourForceRun] = useState(false);
+
+  const replayTour = useCallback(() => {
+    localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    setTourForceRun(true);
+    setTourReplayKey((k) => k + 1);
+  }, []);
+
+  // Swipe between main tabs (mobile only, not when in wizard mode on calculator)
+  const TAB_ORDER = ['calculator', 'budget', 'education'];
+  const goToAdjacentTab = useCallback((dir: 1 | -1) => {
+    const i = TAB_ORDER.indexOf(activeTab);
+    const next = i + dir;
+    if (next >= 0 && next < TAB_ORDER.length) setActiveTab(TAB_ORDER[next]);
+  }, [activeTab]);
+  const tabSwipeHandlers = useSwipeGesture({
+    onSwipeLeft: () => goToAdjacentTab(1),
+    onSwipeRight: () => goToAdjacentTab(-1),
+    threshold: 70,
+  });
+  const enableTabSwipe = isMobile && !(useWizardMode && activeTab === 'calculator');
 
   // Toolbar items
   const toolbarItems = (
@@ -491,6 +514,7 @@ const RightIssueCalculator: React.FC = () => {
       <SettingsDropdown
         onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
         onOpenEmbed={() => setEmbedOpen(true)}
+        onReplayTour={replayTour}
       />
       <KeyboardShortcutsHelp externalOpen={keyboardHelpOpen} onExternalOpenChange={setKeyboardHelpOpen} />
       <EmbedCodeModal externalOpen={embedOpen} onExternalOpenChange={setEmbedOpen} />
@@ -745,6 +769,7 @@ const RightIssueCalculator: React.FC = () => {
               <SettingsDropdown
                 onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
                 onOpenEmbed={() => setEmbedOpen(true)}
+                onReplayTour={replayTour}
               />
             </div>
           </div>
@@ -752,7 +777,11 @@ const RightIssueCalculator: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main ref={resultRef} className={`flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 ${isMobile ? 'pb-20' : ''}`}>
+      <main
+        ref={resultRef}
+        className={`flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 ${isMobile ? 'pb-20' : ''}`}
+        {...(enableTabSwipe ? tabSwipeHandlers : {})}
+      >
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Desktop tabs */}
           <TabsList className="w-full mb-4 hidden md:flex">
@@ -800,6 +829,11 @@ const RightIssueCalculator: React.FC = () => {
       {isMobile && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <BackToTopButton />
+      <OnboardingTour
+        key={tourReplayKey}
+        forceRun={tourForceRun}
+        onFinish={() => setTourForceRun(false)}
+      />
     </div>
   );
 };

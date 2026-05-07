@@ -46,7 +46,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   const { t, language } = useLanguage();
   
   return (
-    <section className="card-calculator animate-fade-in">
+    <section className="card-calculator animate-fade-in" data-tour="ri-info">
       <h2 className="section-title flex items-center">
         {t('rightIssue.title')}
         <InfoTooltip text={language === 'id' ? "Informasi tentang right issue yang diterbitkan emiten." : "Information about the right issue issued by the company."} />

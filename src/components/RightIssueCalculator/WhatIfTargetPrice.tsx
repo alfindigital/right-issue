@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Target, Plus, X, TrendingUp, TrendingDown, ArrowRightLeft } from 'lucide-react';
+import { Target, Plus, X, TrendingUp, TrendingDown, ArrowRightLeft, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
 import InfoTooltip from './InfoTooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -184,9 +184,16 @@ const WhatIfTargetPrice = React.forwardRef<HTMLDivElement, WhatIfTargetPriceProp
                       : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                   }`}
                 >
-                  {s.betterOption === 'exercise'
-                    ? language === 'id' ? '✅ Ikut RI lebih baik' : '✅ Exercise is better'
-                    : language === 'id' ? '⚠️ Skip RI lebih baik' : '⚠️ Skipping is better'}
+                  <span className="inline-flex items-center gap-1">
+                    {s.betterOption === 'exercise' ? (
+                      <CheckCircle2 className="w-3 h-3" />
+                    ) : (
+                      <AlertTriangle className="w-3 h-3" />
+                    )}
+                    {s.betterOption === 'exercise'
+                      ? language === 'id' ? 'Ikut RI lebih baik' : 'Exercise is better'
+                      : language === 'id' ? 'Skip RI lebih baik' : 'Skipping is better'}
+                  </span>
                 </span>
               </div>
 
@@ -284,10 +291,13 @@ const WhatIfTargetPrice = React.forwardRef<HTMLDivElement, WhatIfTargetPriceProp
           {/* Summary Insight */}
           {scenarios.length > 1 && (
             <div className="p-2.5 rounded-xl bg-gradient-to-r from-primary/5 to-transparent border border-primary/10">
-              <p className="text-[11px] text-foreground leading-relaxed">
-                {language === 'id'
-                  ? `💡 Avg baru jika ikut RI: ${formatCurrency(scenarios[0].newAvg)}. Harga jual di atas avg baru akan menghasilkan profit untuk skenario ikut RI.`
-                  : `💡 New avg if exercising RI: ${formatCurrency(scenarios[0].newAvg)}. Selling above the new avg will generate profit for the exercise scenario.`}
+              <p className="text-[11px] text-foreground leading-relaxed flex items-start gap-1.5">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <span>
+                  {language === 'id'
+                    ? `Avg baru jika ikut RI: ${formatCurrency(scenarios[0].newAvg)}. Harga jual di atas avg baru akan menghasilkan profit untuk skenario ikut RI.`
+                    : `New avg if exercising RI: ${formatCurrency(scenarios[0].newAvg)}. Selling above the new avg will generate profit for the exercise scenario.`}
+                </span>
               </p>
             </div>
           )}

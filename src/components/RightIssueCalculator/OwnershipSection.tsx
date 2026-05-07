@@ -1,4 +1,5 @@
 import React from 'react';
+import { Lightbulb } from 'lucide-react';
 import CurrencyInput from './CurrencyInput';
 import ReadOnlyField from './ReadOnlyField';
 import SummaryItem from './SummaryItem';
@@ -56,7 +57,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   
   return (
     <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.1s' }}>
-      <h2 className="section-title flex items-center">
+      <h2 className="section-title flex items-center" data-tour="ownership">
         {t('ownership.title')}
         <InfoTooltip text={language === 'id' ? "Data kepemilikan saham Anda saat ini." : "Your current stock ownership data."} />
       </h2>
@@ -123,10 +124,13 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
               )}
 
               <div className="p-3 rounded-lg bg-accent/30 border border-accent/50">
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  {language === 'id' 
-                    ? '💡 Anda akan membeli HMETD dari pasar, lalu menebus saham baru dengan harga pelaksanaan RI. Biaya total = (harga HMETD × lembar) + (harga RI × lembar).'
-                    : '💡 You will buy HMETD from the market, then exercise new shares at the RI price. Total cost = (HMETD price × shares) + (RI price × shares).'}
+                <p className="text-[11px] text-muted-foreground leading-relaxed flex items-start gap-1.5">
+                  <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                  <span>
+                    {language === 'id'
+                      ? 'Anda akan membeli HMETD dari pasar, lalu menebus saham baru dengan harga pelaksanaan RI. Biaya total = (harga HMETD × lembar) + (harga RI × lembar).'
+                      : 'You will buy HMETD from the market, then exercise new shares at the RI price. Total cost = (HMETD price × shares) + (RI price × shares).'}
+                  </span>
                 </p>
               </div>
             </>

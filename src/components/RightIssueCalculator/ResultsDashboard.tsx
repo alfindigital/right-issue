@@ -77,7 +77,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
   return (
     <div className="space-y-3 animate-fade-in">
       {/* Hero Metric */}
-      <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-primary/5 p-4">
+      <div data-tour="terp" className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-primary/5 p-4">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="relative">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
@@ -154,8 +154,8 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             <div>
               <p className="text-xs font-bold text-foreground mb-1">
                 {recommendation === 'positive'
-                  ? (language === 'id' ? '✅ Menebus RI Berpotensi Menguntungkan' : '✅ Exercising RI Potentially Profitable')
-                  : (language === 'id' ? '⚠️ Pertimbangkan Alternatif Lain' : '⚠️ Consider Other Alternatives')}
+                  ? (language === 'id' ? 'Menebus RI Berpotensi Menguntungkan' : 'Exercising RI Potentially Profitable')
+                  : (language === 'id' ? 'Pertimbangkan Alternatif Lain' : 'Consider Other Alternatives')}
               </p>
               <p className="text-[11px] text-muted-foreground leading-relaxed">{recommendationText}</p>
             </div>
