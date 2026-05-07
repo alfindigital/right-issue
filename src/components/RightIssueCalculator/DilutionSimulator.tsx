@@ -98,7 +98,7 @@ const DilutionSimulator = React.forwardRef<HTMLDivElement, DilutionSimulatorProp
   const dilutionDelta = scenarios.beforeRI.pct - scenarios.noParticipation.pct;
 
   return (
-    <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.3s' }}>
+    <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.3s' }} data-tour="dilution">
       <h2 className="section-title flex items-center">
         {language === 'id' ? 'Simulasi Dilusi Kepemilikan' : 'Ownership Dilution Simulator'}
         <InfoTooltip
