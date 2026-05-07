@@ -154,8 +154,8 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             <div>
               <p className="text-xs font-bold text-foreground mb-1">
                 {recommendation === 'positive'
-                  ? (language === 'id' ? '✅ Menebus RI Berpotensi Menguntungkan' : '✅ Exercising RI Potentially Profitable')
-                  : (language === 'id' ? '⚠️ Pertimbangkan Alternatif Lain' : '⚠️ Consider Other Alternatives')}
+                  ? (language === 'id' ? 'Menebus RI Berpotensi Menguntungkan' : 'Exercising RI Potentially Profitable')
+                  : (language === 'id' ? 'Pertimbangkan Alternatif Lain' : 'Consider Other Alternatives')}
               </p>
               <p className="text-[11px] text-muted-foreground leading-relaxed">{recommendationText}</p>
             </div>

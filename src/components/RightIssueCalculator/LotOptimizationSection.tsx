@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calculator } from 'lucide-react';
+import { Calculator, CheckCircle2 } from 'lucide-react';
 import InfoTooltip from './InfoTooltip';
 import { parseDecimalId } from '@/lib/parseDecimal';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -109,8 +109,9 @@ const LotOptimizationSection: React.FC<LotOptimizationSectionProps> = ({
 
       {optimization.isAlreadyOptimal ? (
         <div className="p-2.5 rounded-md bg-[hsl(142_76%_96%)] dark:bg-[hsl(142_76%_15%)] border border-[hsl(var(--success))]/30">
-          <p className="text-xs text-[hsl(var(--success))] font-medium">
-            ✅ {language === 'id' 
+          <p className="text-xs text-[hsl(var(--success))] font-medium flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+            {language === 'id'
               ? `Kepemilikan Anda sudah optimal! Hasil RI${showWarrantInfo ? ' dan Waran' : ''} akan genap.`
               : `Your ownership is already optimal! RI${showWarrantInfo ? ' and Warrant' : ''} results will be even.`}
           </p>

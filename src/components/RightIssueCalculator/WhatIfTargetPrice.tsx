@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Target, Plus, X, TrendingUp, TrendingDown, ArrowRightLeft } from 'lucide-react';
+import { Target, Plus, X, TrendingUp, TrendingDown, ArrowRightLeft, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
 import InfoTooltip from './InfoTooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
 
