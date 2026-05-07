@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ChevronDown, ChevronRight, ArrowRight, Search, HelpCircle, GraduationCap, List } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronRight, ArrowRight, Search, HelpCircle, GraduationCap, List, Megaphone, CalendarDays, Ticket, HelpCircle as DecisionIcon, Wallet, BarChart3, type LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // ─── Glossary Data ───────────────────────────────────────────────────
@@ -80,10 +80,10 @@ const categories = [
 ];
 
 // ─── Step-by-Step Data ───────────────────────────────────────────────
-const stepsData = [
+const stepsData: { step: number; icon: LucideIcon; id_title: string; en_title: string; id_desc: string; en_desc: string }[] = [
   {
     step: 1,
-    icon: '📢',
+    icon: Megaphone,
     id_title: 'Emiten Mengumumkan RI',
     en_title: 'Company Announces RI',
     id_desc: 'Perusahaan mengumumkan rencana Right Issue: rasio, harga pelaksanaan, dan jadwal. Contoh: PT ABC melakukan RI dengan rasio 2:1 dan harga Rp 500/lembar.',
@@ -91,7 +91,7 @@ const stepsData = [
   },
   {
     step: 2,
-    icon: '📅',
+    icon: CalendarDays,
     id_title: 'Cum-Date & Ex-Date',
     en_title: 'Cum-Date & Ex-Date',
     id_desc: 'Pada cum-date, saham terakhir kali diperdagangkan dengan hak HMETD. Setelah ex-date, harga saham biasanya turun mendekati TERP. Jika harga cum Rp 2.500, TERP = ((2.500 × 2) + (500 × 1)) ÷ 3 = Rp 1.833.',
@@ -99,7 +99,7 @@ const stepsData = [
   },
   {
     step: 3,
-    icon: '🎫',
+    icon: Ticket,
     id_title: 'HMETD Didistribusikan',
     en_title: 'HMETD Distributed',
     id_desc: 'Pemegang saham yang tercatat pada recording date mendapat HMETD. Contoh: punya 100 lot (10.000 lembar), rasio 2:1 → mendapat 5.000 HMETD (50 lot hak beli).',
@@ -107,7 +107,7 @@ const stepsData = [
   },
   {
     step: 4,
-    icon: '🤔',
+    icon: DecisionIcon,
     id_title: 'Keputusan: Tebus atau Jual',
     en_title: 'Decision: Exercise or Sell',
     id_desc: 'Anda punya 3 pilihan:\n• Tebus penuh — bayar Rp 500 × 5.000 = Rp 2,5 juta, dapat 50 lot baru\n• Tebus sebagian — tebus 25 lot, jual 25 lot HMETD\n• Jual semua HMETD — dapat uang dari penjualan hak, tapi kepemilikan terdilusi',
@@ -115,7 +115,7 @@ const stepsData = [
   },
   {
     step: 5,
-    icon: '💰',
+    icon: Wallet,
     id_title: 'Tebus HMETD (Exercise)',
     en_title: 'Exercise HMETD',
     id_desc: 'Jika menebus penuh: Total saham = 10.000 + 5.000 = 15.000 lembar (150 lot). Avg baru = (10.000 × 2.000 + 5.000 × 500) ÷ 15.000 = Rp 1.500. Avg baru di bawah TERP (Rp 1.833) → berpotensi untung!',
@@ -123,7 +123,7 @@ const stepsData = [
   },
   {
     step: 6,
-    icon: '📊',
+    icon: BarChart3,
     id_title: 'Dampak Dilusi',
     en_title: 'Dilution Impact',
     id_desc: 'Jika tidak ikut RI: total saham beredar naik 50%, tapi saham Anda tetap. Kepemilikan turun dari 10% menjadi ~6,67%. Jika ikut penuh, kepemilikan tetap 10%. Gunakan Simulasi Dilusi di kalkulator untuk melihat dampaknya.',
