@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface SettingsDropdownProps {
   onOpenKeyboardHelp: () => void;
   onOpenEmbed: () => void;
+  onReplayTour?: () => void;
 }
 
-const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed }, ref) => {
+const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed, onReplayTour }, ref) => {
   const { language, setLanguage, t } = useLanguage();
   const [isDark, setIsDark] = useState(false);
 
@@ -77,6 +78,12 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
           <Code className="w-4 h-4 mr-2" />
           {language === 'id' ? 'Embed Widget' : 'Embed Widget'}
         </DropdownMenuItem>
+        {onReplayTour && (
+          <DropdownMenuItem onClick={onReplayTour} className="cursor-pointer">
+            <HelpCircle className="w-4 h-4 mr-2" />
+            {language === 'id' ? 'Tampilkan Tur Lagi' : 'Replay Tour'}
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

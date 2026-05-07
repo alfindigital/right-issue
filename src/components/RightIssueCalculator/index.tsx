@@ -514,6 +514,7 @@ const RightIssueCalculator: React.FC = () => {
       <SettingsDropdown
         onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
         onOpenEmbed={() => setEmbedOpen(true)}
+        onReplayTour={replayTour}
       />
       <KeyboardShortcutsHelp externalOpen={keyboardHelpOpen} onExternalOpenChange={setKeyboardHelpOpen} />
       <EmbedCodeModal externalOpen={embedOpen} onExternalOpenChange={setEmbedOpen} />
@@ -768,6 +769,7 @@ const RightIssueCalculator: React.FC = () => {
               <SettingsDropdown
                 onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
                 onOpenEmbed={() => setEmbedOpen(true)}
+                onReplayTour={replayTour}
               />
             </div>
           </div>
@@ -827,6 +829,11 @@ const RightIssueCalculator: React.FC = () => {
       {isMobile && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <BackToTopButton />
+      <OnboardingTour
+        key={tourReplayKey}
+        forceRun={tourForceRun}
+        onFinish={() => setTourForceRun(false)}
+      />
     </div>
   );
 };
