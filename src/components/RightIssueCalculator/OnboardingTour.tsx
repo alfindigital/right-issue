@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
+import { Joyride, STATUS, type EventData, type Step } from 'react-joyride';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const STORAGE_KEY = 'ri-onboarding-v1';
@@ -33,7 +33,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
       placement: 'center',
       title: 'Selamat datang!',
       content: 'Tur singkat 60 detik untuk mengenal kalkulator Right Issue ini, termasuk istilah TERP, HMETD, dan dilusi.',
-      disableBeacon: true,
+      skipBeacon: true,
     },
     {
       target: '[data-tour="stock-code"]',
@@ -66,7 +66,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
       placement: 'center',
       title: 'Welcome!',
       content: 'A 60-second tour to introduce this Right Issue calculator, including TERP, HMETD, and dilution.',
-      disableBeacon: true,
+      skipBeacon: true,
     },
     {
       target: '[data-tour="stock-code"]',
@@ -99,7 +99,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
     ? { back: 'Kembali', close: 'Tutup', last: 'Selesai', next: 'Lanjut', skip: 'Lewati' }
     : { back: 'Back', close: 'Close', last: 'Done', next: 'Next', skip: 'Skip' };
 
-  const handleCallback = (data: CallBackProps) => {
+  const handleEvent = (data: EventData) => {
     const { status } = data;
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
       localStorage.setItem(STORAGE_KEY, '1');
@@ -113,21 +113,21 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
       steps={steps}
       run={run}
       continuous
-      showProgress
-      showSkipButton
       scrollToFirstStep
-      disableScrollParentFix
-      callback={handleCallback}
+      onEvent={handleEvent}
       locale={locale}
+      options={{
+        showProgress: true,
+        primaryColor: 'hsl(var(--primary))',
+        textColor: 'hsl(var(--foreground))',
+        backgroundColor: 'hsl(var(--popover))',
+        arrowColor: 'hsl(var(--popover))',
+        overlayColor: 'rgba(0,0,0,0.55)',
+        zIndex: 10000,
+        skipBeacon: true,
+        buttons: ['back', 'skip', 'primary'],
+      }}
       styles={{
-        options: {
-          primaryColor: 'hsl(var(--primary))',
-          textColor: 'hsl(var(--foreground))',
-          backgroundColor: 'hsl(var(--popover))',
-          arrowColor: 'hsl(var(--popover))',
-          overlayColor: 'rgba(0,0,0,0.55)',
-          zIndex: 10000,
-        },
         tooltip: { borderRadius: 16, fontSize: 13 },
         tooltipTitle: { fontSize: 15, fontWeight: 700 },
         buttonNext: { borderRadius: 10, padding: '8px 14px', fontWeight: 600 },
