@@ -297,7 +297,14 @@ const StepByStepSection: React.FC = () => {
       {/* Active Step Card */}
       <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-4 animate-fade-in" key={activeStep}>
         <div className="flex items-start gap-3">
-          <span className="text-2xl flex-shrink-0">{stepsData[activeStep].icon}</span>
+          {(() => {
+            const StepIcon = stepsData[activeStep].icon;
+            return (
+              <div className="flex-shrink-0 p-2 rounded-lg bg-primary/10 text-primary">
+                <StepIcon className="w-5 h-5" />
+              </div>
+            );
+          })()}
           <div className="space-y-2 min-w-0">
             <h3 className="font-bold text-sm text-foreground">
               {language === 'id' ? stepsData[activeStep].id_title : stepsData[activeStep].en_title}
@@ -337,20 +344,23 @@ const StepByStepSection: React.FC = () => {
         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
           {language === 'id' ? 'Semua Langkah' : 'All Steps'}
         </p>
-        {stepsData.map((step, idx) => (
-          <button
-            key={step.step}
-            onClick={() => setActiveStep(idx)}
-            className={`w-full text-left flex items-center gap-2.5 p-2 rounded-lg transition-all text-xs ${
-              idx === activeStep
-                ? 'bg-primary/10 text-primary font-medium'
-                : 'text-muted-foreground hover:bg-muted/50'
-            }`}
-          >
-            <span className="flex-shrink-0">{step.icon}</span>
-            <span>{language === 'id' ? step.id_title : step.en_title}</span>
-          </button>
-        ))}
+        {stepsData.map((step, idx) => {
+          const StepIcon = step.icon;
+          return (
+            <button
+              key={step.step}
+              onClick={() => setActiveStep(idx)}
+              className={`w-full text-left flex items-center gap-2.5 p-2 rounded-lg transition-all text-xs ${
+                idx === activeStep
+                  ? 'bg-primary/10 text-primary font-medium'
+                  : 'text-muted-foreground hover:bg-muted/50'
+              }`}
+            >
+              <StepIcon className="w-3.5 h-3.5 flex-shrink-0" />
+              <span>{language === 'id' ? step.id_title : step.en_title}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
