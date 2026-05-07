@@ -19,6 +19,7 @@ import ProgressRing from './ProgressRing';
 import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import Logo from './Logo';
+import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -468,6 +469,14 @@ const RightIssueCalculator: React.FC = () => {
   // Settings modal states
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
   const [embedOpen, setEmbedOpen] = useState(false);
+  const [tourReplayKey, setTourReplayKey] = useState(0);
+  const [tourForceRun, setTourForceRun] = useState(false);
+
+  const replayTour = useCallback(() => {
+    localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    setTourForceRun(true);
+    setTourReplayKey((k) => k + 1);
+  }, []);
 
   // Swipe between main tabs (mobile only, not when in wizard mode on calculator)
   const TAB_ORDER = ['calculator', 'budget', 'education'];
