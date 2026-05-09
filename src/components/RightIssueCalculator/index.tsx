@@ -488,7 +488,8 @@ const RightIssueCalculator: React.FC = () => {
   const tabSwipeHandlers = useSwipeGesture({
     onSwipeLeft: () => goToAdjacentTab(1),
     onSwipeRight: () => goToAdjacentTab(-1),
-    threshold: 70,
+    threshold: 80,
+    dominanceRatio: 1.8,
   });
   const enableTabSwipe = isMobile && !(useWizardMode && activeTab === 'calculator');
 

@@ -76,7 +76,7 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
       {/* Price Comparison Chart */}
       <div>
         <p className="text-xs font-semibold text-muted-foreground mb-2">{t('charts.priceComparison')}</p>
-        <div className="h-[140px] w-full">
+        <div className="h-[140px] w-full" data-no-swipe="true">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={priceData} layout="vertical" margin={{ top: 5, right: 50, left: 35, bottom: 5 }}>
               <XAxis type="number" domain={[0, maxPrice]} hide />
@@ -115,7 +115,7 @@ const AnalysisCharts: React.FC<AnalysisChartsProps> = ({
       {/* HMETD vs Exercise Comparison */}
       <div>
         <p className="text-xs font-semibold text-muted-foreground mb-2">{t('charts.hmetdVsExercise')}</p>
-        <div className="h-[80px] w-full">
+        <div className="h-[80px] w-full" data-no-swipe="true">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={comparisonData} layout="vertical" margin={{ top: 5, right: 60, left: 70, bottom: 5 }}>
               <XAxis type="number" domain={[0, maxComparison]} hide />

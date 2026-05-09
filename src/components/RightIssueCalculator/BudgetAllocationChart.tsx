@@ -68,7 +68,7 @@ const BudgetAllocationChart: React.FC<BudgetAllocationChartProps> = ({
       <h3 className="text-xs font-semibold text-muted-foreground mb-2">
         {t('budgetPlanner.allocation')}
       </h3>
-      <div className="h-[160px]">
+      <div className="h-[160px]" data-no-swipe="true">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

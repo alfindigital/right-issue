@@ -143,7 +143,7 @@ const DilutionSimulator = React.forwardRef<HTMLDivElement, DilutionSimulatorProp
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                 {scenario.label}
               </p>
-              <div className="h-[90px] w-full">
+              <div className="h-[90px] w-full" data-no-swipe="true">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
