@@ -30,7 +30,7 @@ const FloatingSummary: React.FC<FloatingSummaryProps> = ({
   if (!show) return null;
 
   return (
-    <div className="fixed top-[52px] md:top-[60px] left-0 right-0 z-30 animate-slide-up">
+    <div className="fixed top-[52px] md:top-[60px] left-0 right-0 z-30 animate-slide-up" data-no-swipe="true">
       <div className="max-w-2xl mx-auto px-3 py-2">
         <div className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-b-xl bg-card/80 dark:bg-card/60 backdrop-blur-xl border border-border/50 dark:border-primary/10 shadow-lg dark:shadow-[0_4px_24px_-4px_hsl(0_0%_0%/0.4)]">
           {stockCode && (
