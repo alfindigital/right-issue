@@ -254,7 +254,7 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
 
         <TabsContent value="chart" className="mt-0">
           {/* Profit/Loss Chart */}
-          <div className={`h-[180px] w-full mb-4 transition-opacity duration-200 ${isSliding ? 'opacity-80' : 'opacity-100'}`}>
+          <div className={`h-[180px] w-full mb-4 transition-opacity duration-200 ${isSliding ? 'opacity-80' : 'opacity-100'}`} data-no-swipe="true">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart key={animationKey} data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <XAxis 
