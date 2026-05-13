@@ -1,0 +1,15 @@
+# Kalkulator Right Issue IDX
+
+> Kalkulator Right Issue (HMETD) untuk saham Indonesia (IDX). Hitung jatah lembar RI, total biaya tebus, harga teoritis (TERP), dilusi kepemilikan, dan dapatkan rekomendasi tebus berbasis perhitungan matematis.
+
+Aplikasi web berbahasa Indonesia/Inggris untuk investor pasar modal Indonesia. Fitur utama: kalkulator TERP, perencana anggaran (budget planner), simulator dilusi, simulator harga target, perbandingan skenario, dan modul edukasi mekanisme Right Issue di IDX.
+
+## Pages
+
+- [Kalkulator Right Issue](/): Hitung jatah HMETD, TERP, dilusi, dan rekomendasi tebus berdasarkan rasio RI dan harga cum-date.
+- [Embed Widget](/embed): Versi mini kalkulator yang dapat disematkan ke website lain via iframe.
+
+## Optional
+
+- [Sitemap](/sitemap.xml): Daftar lengkap halaman yang dapat diindeks.
+- [Robots](/robots.txt): Aturan crawler.
