@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import MiniCalculator from '@/components/EmbedCalculator/MiniCalculator';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -55,9 +56,27 @@ const Embed: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-2">
-      <MiniCalculator />
-    </div>
+    <>
+      <Helmet>
+        <title>Embed Widget Kalkulator Right Issue IDX</title>
+        <meta
+          name="description"
+          content="Widget mini kalkulator Right Issue saham IDX yang bisa di-embed di blog atau situs lain via iframe. Mendukung tema light/dark dan bahasa ID/EN."
+        />
+        <link rel="canonical" href="https://rightissue.lovable.app/embed" />
+        <meta name="robots" content="noindex,follow" />
+        <meta property="og:title" content="Embed Widget Kalkulator Right Issue IDX" />
+        <meta
+          property="og:description"
+          content="Widget mini kalkulator Right Issue saham IDX yang bisa di-embed via iframe."
+        />
+        <meta property="og:url" content="https://rightissue.lovable.app/embed" />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      <div className="min-h-screen flex items-center justify-center p-2">
+        <MiniCalculator />
+      </div>
+    </>
   );
 };
 
