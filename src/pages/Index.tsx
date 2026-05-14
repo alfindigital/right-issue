@@ -71,6 +71,12 @@ const Index = () => {
         />
         <meta property="og:url" content="https://rightissue.lovable.app/" />
         <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Kalkulator Right Issue IDX - Hitung Jatah RI & TERP Saham" />
+        <meta
+          name="twitter:description"
+          content="Kalkulator HMETD saham Indonesia: jatah lot, biaya tebus, TERP, dilusi, dan rekomendasi tebus."
+        />
         <script type="application/ld+json">{JSON.stringify(webAppJsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
       </Helmet>
