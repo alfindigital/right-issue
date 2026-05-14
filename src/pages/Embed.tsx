@@ -72,6 +72,12 @@ const Embed: React.FC = () => {
         />
         <meta property="og:url" content="https://rightissue.lovable.app/embed" />
         <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Embed Widget Kalkulator Right Issue IDX" />
+        <meta
+          name="twitter:description"
+          content="Widget mini kalkulator Right Issue saham IDX yang bisa di-embed via iframe."
+        />
       </Helmet>
       <div className="min-h-screen flex items-center justify-center p-2">
         <MiniCalculator />
