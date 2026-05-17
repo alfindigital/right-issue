@@ -1,1 +1,4 @@
 project_id = "ybfgzwoblgcnkkyubkms"
+
+[functions.gsc-admin]
+verify_jwt = false
