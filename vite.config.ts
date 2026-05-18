@@ -4,6 +4,34 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
+const GSC_VERIFICATION_TOKEN = "J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw";
+
+// Guard: fail build if google-site-verification meta is missing or token doesn't match.
+// Also re-injects it as a safety net so the published HTML always carries it.
+const ensureGscMeta = () => ({
+  name: "ensure-gsc-verification-meta",
+  transformIndexHtml: {
+    order: "pre" as const,
+    handler(html: string) {
+      const re = /<meta\s+name=["']google-site-verification["']\s+content=["']([^"']+)["']\s*\/?>/i;
+      const m = html.match(re);
+      if (!m) {
+        throw new Error(
+          `[ensure-gsc-verification-meta] <meta name="google-site-verification"> hilang dari index.html. ` +
+            `Tambahkan kembali dengan token ${GSC_VERIFICATION_TOKEN} agar verifikasi Search Console tidak terputus.`,
+        );
+      }
+      if (m[1] !== GSC_VERIFICATION_TOKEN) {
+        throw new Error(
+          `[ensure-gsc-verification-meta] Token google-site-verification tidak cocok. ` +
+            `Ditemukan "${m[1]}", diharapkan "${GSC_VERIFICATION_TOKEN}".`,
+        );
+      }
+      return html;
+    },
+  },
+});
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -13,6 +41,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
+    ensureGscMeta(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico"],
