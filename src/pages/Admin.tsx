@@ -13,6 +13,7 @@ type StatusResp = {
   sites: { status: number; ok: boolean; body: any };
   sitemap: { status: number; ok: boolean; body: any };
   analytics: { status: number; ok: boolean; body: any };
+  metaTag?: { ok: boolean; status?: number; found?: boolean; token?: string | null; expected?: string; matches?: boolean; error?: string };
 };
 
 const PWD_KEY = "gsc_admin_pwd";
@@ -149,6 +150,38 @@ export default function Admin() {
               <p className="text-muted-foreground">
                 Terdaftar di GSC: {sitesList.find((s: any) => s.siteUrl === data?.site) ? "Ya" : "Tidak"}
               </p>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                {data?.metaTag?.matches ? <CheckCircle2 className="h-5 w-5 text-green-600" /> : <XCircle className="h-5 w-5 text-destructive" />}
+                Meta Tag di HTML Live
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm space-y-2">
+              {data?.metaTag?.error ? (
+                <p className="text-destructive">Gagal fetch: {data.metaTag.error}</p>
+              ) : (
+                <>
+                  <Badge variant={data?.metaTag?.matches ? "default" : "destructive"}>
+                    {data?.metaTag?.matches
+                      ? "Token cocok"
+                      : data?.metaTag?.found
+                      ? "Ditemukan tapi token berbeda"
+                      : "Tidak ditemukan"}
+                  </Badge>
+                  <p className="text-muted-foreground break-all">
+                    HTTP {data?.metaTag?.status} · token: <code className="text-xs">{data?.metaTag?.token || "—"}</code>
+                  </p>
+                  {!data?.metaTag?.matches && data?.metaTag?.expected && (
+                    <p className="text-muted-foreground break-all">
+                      Expected: <code className="text-xs">{data.metaTag.expected}</code>
+                    </p>
+                  )}
+                </>
+              )}
             </CardContent>
           </Card>
 
