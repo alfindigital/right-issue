@@ -10,6 +10,7 @@ const GSC_VERIFICATION_TOKEN = "J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw";
 // Also re-injects it as a safety net so the published HTML always carries it.
 const ensureGscMeta = () => ({
   name: "ensure-gsc-verification-meta",
+  apply: "build" as const,
   transformIndexHtml: {
     order: "pre" as const,
     handler(html: string) {
