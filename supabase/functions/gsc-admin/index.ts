@@ -5,6 +5,23 @@ const SITE_ENC = encodeURIComponent(SITE);
 const SITEMAP_URL = 'https://rightissue.lovable.app/sitemap.xml';
 const SITEMAP_ENC = encodeURIComponent(SITEMAP_URL);
 const GW = 'https://connector-gateway.lovable.dev/google_search_console';
+const EXPECTED_META_TOKEN = 'J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw';
+
+async function checkLiveMetaTag() {
+  try {
+    const r = await fetch(SITE, { headers: { 'cache-control': 'no-cache' } });
+    const status = r.status;
+    const html = await r.text();
+    const re = /<meta\s+name=["']google-site-verification["']\s+content=["']([^"']+)["']\s*\/?>/i;
+    const m = html.match(re);
+    const found = !!m;
+    const token = m?.[1] || null;
+    const matches = token === EXPECTED_META_TOKEN;
+    return { ok: matches, status, found, token, expected: EXPECTED_META_TOKEN, matches };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
 
 function gwHeaders() {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -43,7 +60,7 @@ Deno.serve(async (req) => {
     const action = url.searchParams.get('action') || (req.method === 'POST' ? 'submit-sitemap' : 'status');
 
     if (action === 'status') {
-      const [verification, sites, sitemap, inspect] = await Promise.all([
+      const [verification, sites, sitemap, inspect, metaTag] = await Promise.all([
         gw(`/siteVerification/v1/webResource/${SITE_ENC}`),
         gw(`/webmasters/v3/sites`),
         gw(`/webmasters/v3/sites/${SITE_ENC}/sitemaps/${SITEMAP_ENC}`),
@@ -56,8 +73,16 @@ Deno.serve(async (req) => {
             rowLimit: 10,
           }),
         }),
+        checkLiveMetaTag(),
       ]);
-      return new Response(JSON.stringify({ site: SITE, verification, sites, sitemap, analytics: inspect }), {
+      return new Response(JSON.stringify({ site: SITE, verification, sites, sitemap, analytics: inspect, metaTag }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (action === 'check-meta') {
+      const metaTag = await checkLiveMetaTag();
+      return new Response(JSON.stringify({ site: SITE, metaTag }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
