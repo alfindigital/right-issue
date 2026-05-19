@@ -2,6 +2,7 @@ import React from 'react';
 import CurrencyInput from './CurrencyInput';
 import RatioInput from './RatioInput';
 import InfoTooltip from './InfoTooltip';
+import PasteParserButton from './PasteParserButton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -23,6 +24,7 @@ interface RightIssueInfoSectionProps {
   onWarrantRatioOldChange: (value: string) => void;
   onWarrantRatioNewChange: (value: string) => void;
   warrantRatioError?: string;
+  onPasteParsed?: (data: { ratioOld?: string; ratioNew?: string; rightPrice?: string }) => void;
 }
 
 const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
@@ -41,16 +43,28 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   warrantRatioNew,
   onWarrantRatioOldChange,
   onWarrantRatioNewChange,
-  warrantRatioError
+  warrantRatioError,
+  onPasteParsed,
 }) => {
   const { t, language } = useLanguage();
   
   return (
     <section className="card-calculator animate-fade-in" data-tour="ri-info">
-      <h2 className="section-title flex items-center">
-        {t('rightIssue.title')}
-        <InfoTooltip text={language === 'id' ? "Informasi tentang right issue yang diterbitkan emiten." : "Information about the right issue issued by the company."} />
-      </h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="section-title mb-0 flex items-center">
+          {t('rightIssue.title')}
+          <InfoTooltip text={language === 'id' ? "Informasi tentang right issue yang diterbitkan emiten." : "Information about the right issue issued by the company."} />
+        </h2>
+        {onPasteParsed && (
+          <PasteParserButton
+            onParsed={(data) => onPasteParsed({
+              ratioOld: data.ratioOld,
+              ratioNew: data.ratioNew,
+              rightPrice: data.rightPrice,
+            })}
+          />
+        )}
+      </div>
       
       <div className="space-y-3">
         <div className="space-y-1.5">
