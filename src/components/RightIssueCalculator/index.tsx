@@ -551,6 +551,11 @@ const RightIssueCalculator: React.FC = () => {
                   ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
                   warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
                   onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+                  onPasteParsed={(data) => {
+                    if (data.ratioOld) setRatioOld(data.ratioOld);
+                    if (data.ratioNew) setRatioNew(data.ratioNew);
+                    if (data.rightPrice) setRightPrice(data.rightPrice);
+                  }}
                 />
               </div>
             )}
@@ -669,6 +674,11 @@ const RightIssueCalculator: React.FC = () => {
           ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
           warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
           onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+          onPasteParsed={(data) => {
+            if (data.ratioOld) setRatioOld(data.ratioOld);
+            if (data.ratioNew) setRatioNew(data.ratioNew);
+            if (data.rightPrice) setRightPrice(data.rightPrice);
+          }}
         />
         <OwnershipSection
           currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
