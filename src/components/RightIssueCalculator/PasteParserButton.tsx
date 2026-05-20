@@ -108,6 +108,9 @@ const PasteParserButton: React.FC<Props> = ({ onParsed }) => {
             {preview.cumDate && (
               <p>• Cum-date: <strong>{preview.cumDate}</strong></p>
             )}
+            {preview.cumPrice && (
+              <p>• {language === 'id' ? 'Harga Cum-Date' : 'Cum-Date Price'}: <strong>Rp {Number(preview.cumPrice).toLocaleString('id-ID')}</strong></p>
+            )}
           </div>
         )}
 
