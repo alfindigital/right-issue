@@ -810,13 +810,26 @@ const RightIssueCalculator: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Floating Summary Bar */}
+      {/* Floating Summary Bar — desktop only; mobile uses SmartResultBar */}
       <FloatingSummary
-        isVisible={resultsOutOfView && isCalculated}
+        isVisible={!isMobile && resultsOutOfView && isCalculated}
         stockCode={stockCode || undefined}
         avgPrice={finalAvgPrice}
         terp={theoreticalPrice}
         recommendation={recommendation}
+      />
+      {/* Mobile sticky result bar — always visible when calculated */}
+      <SmartResultBar
+        isVisible={isMobile && isCalculated}
+        stockCode={stockCode || undefined}
+        finalTotalValue={finalTotalValue}
+        recommendation={recommendation}
+        recommendationLabel={
+          recommendation === 'positive'
+            ? (language === 'id' ? 'Tebus' : 'Exercise')
+            : (language === 'id' ? 'Tahan' : 'Hold')
+        }
+        onTap={() => resultsDashboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
       />
       {/* Header - Gradient with branding (sticky) */}
       <header className="header-gradient relative overflow-hidden sticky top-0 z-50">
