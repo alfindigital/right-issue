@@ -705,16 +705,18 @@ const RightIssueCalculator: React.FC = () => {
     }
 
     // Full mode (non-wizard)
+    const isSimple = viewMode === 'simple';
     return (
       <div className="space-y-3">
         {activeTab === 'calculator' && useWizardMode === false && (
-          <div className="flex justify-end mb-2">
+          <div className="flex items-center justify-between mb-2 gap-2">
+            <ViewModeToggle mode={viewMode} onChange={setViewMode} />
             <button
               onClick={() => { setUseWizardMode(true); setWizardStep(1); }}
               className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
             >
               <Zap className="w-3 h-3" />
-              {language === 'id' ? 'Mode Step-by-Step' : 'Step-by-Step Mode'}
+              {language === 'id' ? 'Step-by-Step' : 'Step-by-Step'}
             </button>
           </div>
         )}
@@ -725,6 +727,7 @@ const RightIssueCalculator: React.FC = () => {
           ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
           warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
           onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+          simpleMode={isSimple}
           onPasteParsed={(data) => {
             if (data.ratioOld) setRatioOld(data.ratioOld);
             if (data.ratioNew) setRatioNew(data.ratioNew);
@@ -742,6 +745,8 @@ const RightIssueCalculator: React.FC = () => {
           hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
         />
+
+        {!isCalculated && <EmptyStateCard onLoadDemo={loadDemo} />}
 
         {isCalculated && (
           <>
@@ -772,14 +777,33 @@ const RightIssueCalculator: React.FC = () => {
         )}
 
         {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
-        <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
-        <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-        <Suspense fallback={<LazyFallback />}>
-          <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-          <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-          <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-          <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
-        </Suspense>
+
+        {/* Advanced sections — only in Pro mode */}
+        {!isSimple && (
+          <>
+            <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
+            <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
+            <Suspense fallback={<LazyFallback />}>
+              <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+              <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
+              <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
+              <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+            </Suspense>
+          </>
+        )}
+
+        {/* Simple mode: nudge to Pro for advanced analysis */}
+        {isSimple && isCalculated && (
+          <button
+            type="button"
+            onClick={() => setViewMode('pro')}
+            className="w-full text-center text-[11px] text-muted-foreground hover:text-primary transition-colors py-2 border border-dashed border-border rounded-xl"
+          >
+            {language === 'id'
+              ? 'Butuh analisis lanjutan? Beralih ke mode Pro →'
+              : 'Need deeper analysis? Switch to Pro mode →'}
+          </button>
+        )}
       </div>
     );
   };
