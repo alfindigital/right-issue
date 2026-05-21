@@ -361,6 +361,45 @@ const RightIssueCalculator: React.FC = () => {
     }
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, calculate]);
 
+  // Simple mode: auto-derive cumDatePrice as a neutral assumption when empty
+  useEffect(() => {
+    if (viewMode !== 'simple') return;
+    if (cumDatePrice) return;
+    const rp = parseInt(rightPrice) || 0;
+    if (rp <= 0) return;
+    setCumDatePrice(String(Math.round(rp * 1.3)));
+  }, [viewMode, rightPrice, cumDatePrice]);
+
+  // Auto-calculate (debounced) — removes friction of pressing "Hitung"
+  useEffect(() => {
+    if (!isCalculateEnabled) return;
+    if (useWizardMode) return; // wizard has its own explicit Next button
+    const handle = setTimeout(() => {
+      calculate();
+    }, 450);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, isCalculateEnabled, useWizardMode]);
+
+  // Load BRIS demo data (empty-state CTA)
+  const loadDemo = useCallback(() => {
+    setStockCode('BRIS');
+    setRatioOld('2');
+    setRatioNew('1');
+    setRightPrice('1500');
+    setCumDatePrice('2000');
+    setCurrentLots('10');
+    setCurrentAvgPrice('1800');
+    setHasWarrant(false);
+    setWarrantRatioOld(''); setWarrantRatioNew('');
+    setNoOwnership(false);
+    toast({
+      title: language === 'id' ? 'Contoh dimuat' : 'Example loaded',
+      description: language === 'id' ? 'Data contoh BRIS dipakai. Edit bebas.' : 'BRIS sample data loaded. Edit freely.',
+      duration: 2500,
+    });
+  }, [language]);
+
   const reset = useCallback(() => {
     setStockCode(''); setRatioOld(''); setRatioNew(''); setRightPrice(''); setCumDatePrice('');
     setCurrentLots(''); setCurrentAvgPrice(''); setHasWarrant(false); setWarrantRatioOld(''); setWarrantRatioNew('');
