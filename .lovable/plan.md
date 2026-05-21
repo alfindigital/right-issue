@@ -1,147 +1,133 @@
-## Plan: 5 Peningkatan Input UX
+# Ide UI/UX Improvement & Simplifikasi — Mobile-First
 
-Semua perubahan murni frontend. Tidak menyentuh logika kalkulasi.
-
----
-
-### 1. Inline Validation Real-time
-
-**Goal:** Border input berubah warna sesuai status: netral (default), hijau (valid), merah (error). Pesan error muncul kecil di bawah input.
-
-**Implementasi:**
-- Tambah varian state ke `input-calculator` di `src/index.css`:
-  - `.input-calculator.is-valid` → `border-success`
-  - `.input-calculator.is-error` → `border-destructive` + `animate-shake`
-- Tambah util `src/lib/validators.ts`:
-  - `validateRatio(val)` → `{state: 'idle'|'valid'|'error', message?}` (kosong=idle, 0=error, >0=valid)
-  - `validatePrice(val)` → idle/valid/error (>0=valid, ada non-digit=error)
-  - `validateLots(val)` → idle/valid/error (integer >0)
-- Edit `CurrencyInput.tsx`, `RatioInput.tsx`, dan input lot inline di `OwnershipSection.tsx`:
-  - Terima prop opsional `validation?: {state, message}`
-  - Tambahkan className kondisional + `<p className="text-[10px] text-destructive">` di bawah saat error
-- Edit `OwnershipSection.tsx` & `RightIssueInfoSection.tsx`: hitung `validation` dengan `useMemo` dan teruskan ke komponen input.
-- Animasi shake: tambah keyframe di `tailwind.config.ts` (`shake: { 0,100%: translateX(0), 25%: -4px, 75%: 4px }`).
-- Pesan validasi i18n: tambah keys `validation.ratioZero`, `validation.priceRequired`, `validation.invalidNumber` di `LanguageContext.tsx`.
+Fokus: bikin kalkulator lebih cepat dipahami pemula, lebih ringan di mobile, dan tetap powerful di desktop. Dibagi per prioritas.
 
 ---
 
-### 2. Currency Mask dengan Prefix "Rp"
+## 🔥 Prioritas Tinggi (Quick Win, dampak besar)
 
-**Goal:** Saat user mengetik di field harga, "Rp" tampil sebagai prefix non-editable di dalam input, dan angka terformat live (2500000 → `2.500.000`).
+### 1. Mode "Simple vs Pro" Toggle
+Saat ini semua field & section tampil sekaligus → overwhelming.
+- **Simple Mode** (default untuk user baru): hanya 4 input — Stock Code, Lots Dimiliki, Rasio, Harga Tebus. Hasil langsung: total tebusan + lot baru.
+- **Pro Mode**: tampilkan warrant, cum-date price, analisis lanjutan, dilution, target price, dll.
+- Toggle di header, persist di localStorage.
 
-**Implementasi:**
-- Refactor `CurrencyInput.tsx`:
-  - Bungkus `<input>` dalam `<div class="relative">` dengan `<span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">Rp</span>`.
-  - Tambah `pl-9` ke input agar teks tidak menabrak prefix.
-  - Format sudah ada (`formatNumber`) — tidak diubah.
-  - Pastikan caret tetap di akhir setelah re-format (gunakan `requestAnimationFrame` + `setSelectionRange(input.value.length)` saat onInput).
-- Hapus prefix "Rp" yang sudah dipakai sebagai label terpisah di komponen lain jika ada (tidak ada saat ini—aman).
+### 2. Sticky "Smart Result Bar" di Mobile
+Replace FloatingSummary dengan bar bawah (di atas BottomNav) yang **selalu menampilkan 2 angka paling penting**: Total Tebusan + Rekomendasi (Tebus/Jual/Skip) dengan warna. User tidak perlu scroll untuk lihat hasil.
 
----
+### 3. Progressive Disclosure pada Form
+- Section "Warrant", "Cum-Date Price", "Kepemilikan Saat Ini" jadi collapsed by default.
+- Hanya expand otomatis kalau ada data terisi.
+- Hemat ~40% scroll di mobile.
 
-### 3. Voice Input (Web Speech API)
+### 4. Auto-Calculate (hapus tombol "Hitung")
+Hasil update real-time saat user mengetik (debounce 300ms). Tombol "Hitung" hanya jadi anchor scroll ke hasil di mobile. Lebih modern, mengurangi friksi.
 
-**Goal:** Tombol mikrofon kecil di pojok kanan input numerik. Klik → mulai listen → angka yang diucapkan ("dua ribu lima ratus") diparse jadi `2500`.
-
-**Implementasi:**
-- Buat hook `src/hooks/useVoiceInput.ts`:
-  - Cek `window.SpeechRecognition || window.webkitSpeechRecognition`.
-  - State `isListening`, `error`.
-  - Method `start(onResult: (digits: string) => void)` & `stop()`.
-  - Set `recognition.lang` sesuai `language` ('id-ID' atau 'en-US').
-  - `onresult` → ambil transcript, panggil util parser.
-- Buat util `src/lib/parseSpokenNumber.ts`:
-  - Map kata-kata ID: "satu"=1, "dua"=2, ..., "puluh"=*10, "ratus"=*100, "ribu"=*1000, "juta"=*1000000.
-  - Fallback: ekstrak digit (`replace(/\D/g, '')`) jika user mengucapkan "2 500 000".
-  - EN: parse dengan library mini atau regex digit + "thousand/million".
-- Komponen `src/components/RightIssueCalculator/VoiceInputButton.tsx`:
-  - Tombol icon `Mic`/`MicOff` dari lucide-react.
-  - Animasi pulse merah saat listening.
-  - Toast error jika browser tidak support.
-- Tambah prop `voiceInput?: boolean` (default `true` pada `CurrencyInput`); render `<VoiceInputButton>` di `absolute right-2`.
-- Pastikan tidak ditampilkan jika `!('SpeechRecognition' in window)`.
+### 5. Empty State yang Edukatif
+Sebelum user isi apapun, hasil card menampilkan ilustrasi + "Isi rasio & harga tebus untuk mulai" + tombol "Pakai contoh BRIS" (auto-fill demo data). Saat ini hasil kosong terasa "rusak".
 
 ---
 
-### 4. Paste Parser Cerdas
+## 📱 Mobile-Specific
 
-**Goal:** Di header section "Info Right Issue", tambah tombol "Paste Pengumuman". User paste teks → app auto-extract `ratioOld`, `ratioNew`, `rightPrice`, dan tanggal cum-date jika ada.
+### 6. One-Hand Reachability
+- Tombol primer (Hitung, Share, Export) pindah ke **bottom action sheet**, bukan di tengah card.
+- Header lebih tipis (logo + settings only), hilangkan title panjang di mobile.
 
-**Implementasi:**
-- Buat util `src/lib/parseAnnouncement.ts`:
-  - Regex ratio: `/(\d+)\s*:\s*(\d+)/` atau `/rasio[^\d]*(\d+)[^\d]+(\d+)/i`.
-  - Regex harga RI: `/harga (?:pelaksanaan|tebus)[^\d]*(?:Rp\.?)?\s*([\d.,]+)/i` (dan EN: "exercise price").
-  - Regex tanggal cum: `/cum[- ]?date[^\d]*(\d{1,2})[\s\-\/](\w+|\d{1,2})[\s\-\/](\d{2,4})/i`.
-  - Return `{ratioOld?, ratioNew?, rightPrice?, cumDate?}`.
-- Komponen `src/components/RightIssueCalculator/PasteParserButton.tsx`:
-  - Tombol kecil `Clipboard` icon + label "Paste Pengumuman".
-  - Klik → buka `<Dialog>` (atau `<Drawer>` di mobile) dengan `<Textarea>` + tombol "Parse".
-  - Atau langsung baca `navigator.clipboard.readText()` jika izin diberi.
-  - Setelah parse, tampilkan preview fields yang terdeteksi + tombol "Terapkan" → callback `onParsed(data)`.
-- Edit `RightIssueInfoSection.tsx` tambahkan tombol di kanan judul section dan handler yang setState semua field.
-- Toast feedback: "3 field terdeteksi: rasio 2:1, harga Rp 500, cum-date 12 Agu".
+### 7. Swipe Between Sections
+Di mobile, ubah panel Calculator/Budget/Education jadi swipeable (sudah ada useSwipeGesture hook — manfaatkan).
 
----
+### 8. Compact Number Display
+Angka besar pakai format "Rp 2,5 jt" / "Rp 1,2 M" di stat card mobile (tap untuk lihat full). Saat ini "Rp 2.500.000.000" pecah di layar kecil.
 
-### 5. Numpad Overlay di Mobile
+### 9. Haptic + Sound Feedback
+Tambah haptic ringan saat: hasil muncul, validasi error, tombol primary ditekan. Sudah ada di numpad — extend ke seluruh app.
 
-**Goal:** Saat user fokus ke input numerik di mobile (`<768px`), buka custom bottom-sheet numpad dengan tombol besar (0-9, koma, backspace, Done).
-
-**Implementasi:**
-- Komponen `src/components/RightIssueCalculator/MobileNumpad.tsx`:
-  - Pakai `Drawer` dari `@/components/ui/drawer`.
-  - Props: `open`, `onOpenChange`, `value`, `onChange(value)`, `onDone()`, `allowDecimal?: boolean`, `label?: string`.
-  - Grid 3×4 dengan tombol angka besar (h-14, text-xl, rounded-2xl, active:scale-95 + haptic via `navigator.vibrate(10)`).
-  - Tombol khusus: `.` (jika `allowDecimal`), `⌫` (backspace), `✓ Done`.
-  - Display value besar di atas grid dengan format thousand-separator live.
-- Hook `src/hooks/useMobileNumpad.ts`:
-  - `useState<{open, field}>` untuk field aktif.
-  - Helper `openFor(fieldId, currentValue, setter)` agar mudah dipakai.
-- Integrasi minimal-invasif: di `CurrencyInput.tsx` dan input lot:
-  - Cek `useIsMobile()` + `localStorage.getItem('numpad-enabled') !== 'false'`.
-  - Pada `onFocus`: `e.target.blur()` lalu open numpad bound ke field tersebut.
-  - Saat numpad close: setter dipanggil dengan nilai final.
-- Tambah toggle di `SettingsDropdown.tsx`: "Numpad Mobile" (on/off) → simpan ke localStorage.
-- Performa: `MobileNumpad` di-lazy import; hanya dimount jika `isMobile`.
+### 10. Pull-to-Refresh untuk Reset
+Pull down di mobile = clear form (dengan confirm). Native feel.
 
 ---
 
-## Urutan Implementasi
+## 🎯 Form Simplification
 
-1. **Currency Mask "Rp" prefix** — paling cepat, dampak visual instan.
-2. **Inline Validation Real-time** — refactor input + util kecil.
-3. **Paste Parser** — komponen + util mandiri, tidak ganggu existing.
-4. **Voice Input** — hook + tombol, fitur additive.
-5. **Mobile Numpad** — paling kompleks (state coordination), kerjakan terakhir.
+### 11. Single Combined Ratio Input
+Ganti dua input "Lama : Baru" jadi **satu input "2:1"** yang auto-parse. Lebih cepat diketik, terutama mobile.
 
-## Verifikasi
-- Build hijau.
-- Manual: di desktop test prefix, validation, paste; di mobile (DevTools 375px) test numpad & voice.
-- Cek tidak ada warning baru di console preview.
-- Pastikan keyboard shortcut Enter/Esc tetap berfungsi (numpad jangan trap).
+### 12. Smart Defaults
+- Cum-date price auto-fill dari rightPrice × 1.2 (estimasi) dengan badge "estimasi, ubah jika tahu"
+- Lots: kalau kosong, asumsikan 0 (mode "Beli dari pasar" otomatis aktif)
 
-## File Baru
-- `src/lib/validators.ts`
-- `src/lib/parseSpokenNumber.ts`
-- `src/lib/parseAnnouncement.ts`
-- `src/hooks/useVoiceInput.ts`
-- `src/hooks/useMobileNumpad.ts`
-- `src/components/RightIssueCalculator/VoiceInputButton.tsx`
-- `src/components/RightIssueCalculator/PasteParserButton.tsx`
-- `src/components/RightIssueCalculator/MobileNumpad.tsx`
+### 13. Inline Examples di Placeholder
+Placeholder bukan "0" tapi "contoh: 100" / "contoh: 500" / "contoh: 2:1". Lebih guiding.
 
-## File yang Diedit
-- `src/index.css` (varian validation + shake)
-- `tailwind.config.ts` (keyframe shake)
-- `src/contexts/LanguageContext.tsx` (i18n keys)
-- `src/components/RightIssueCalculator/CurrencyInput.tsx`
-- `src/components/RightIssueCalculator/RatioInput.tsx`
-- `src/components/RightIssueCalculator/OwnershipSection.tsx`
-- `src/components/RightIssueCalculator/RightIssueInfoSection.tsx`
-- `src/components/RightIssueCalculator/SettingsDropdown.tsx`
+### 14. Stock Code → Auto-suggest
+Dropdown kecil saat ketik (BRIS, BBRI, TLKM, dll dari top 20 IDX). Optional, tapi mengurangi typo.
 
-## Catatan Teknis
-- Web Speech API hanya tersedia di Chrome/Edge/Safari modern; fallback graceful saat tidak ada.
-- `navigator.clipboard.readText()` butuh user gesture + permission; sediakan fallback textarea.
-- `navigator.vibrate` no-op di iOS; tidak masalah.
-- Tidak ada perubahan business logic, kalkulasi, atau storage schema.
+---
+
+## 🎨 Visual & Hierarchy
+
+### 15. Result-First Layout di Desktop
+Desktop saat ini: form kiri, hasil bawah. Ubah jadi **2 kolom**: form kiri (sticky), hasil kanan (live update). User lihat dampak input secara real-time.
+
+### 16. Color-Coded Recommendation Banner
+Hasil utama (Tebus/Skip/Jual Rights) jadi **banner besar full-width** di atas, bukan teks kecil. Hijau/Merah/Kuning + ikon besar. Keputusan langsung jelas dalam 1 detik.
+
+### 17. Reduce Card Nesting
+Banyak card di dalam card. Flatten jadi section dengan separator → less visual noise, lebih cepat di-render.
+
+### 18. Skeleton → Shimmer
+Saat loading PDF/chart, pakai shimmer effect, bukan plain skeleton.
+
+---
+
+## 🚀 Discovery & Onboarding
+
+### 19. Interactive First-Time Tour (Re-design)
+OnboardingTour saat ini ada — perpendek jadi **3 langkah max** dengan animasi pointer. Tambah "Skip & coba sendiri" yang prominent.
+
+### 20. Contextual Tips (bukan tooltip)
+Ganti beberapa InfoTooltip dengan **inline hint card** kecil yang muncul sekali lalu bisa di-dismiss. Tooltip kurang discoverable di mobile (hover ≠ ada).
+
+### 21. "What changed?" Diff Indicator
+Saat user ubah input, highlight angka di hasil yang berubah dengan flash animation kuning sebentar.
+
+---
+
+## ⚡ Performance & Polish
+
+### 22. Tab Persistence di URL
+Tab aktif (calculator/budget/education) masuk URL hash `#calculator`. Bisa di-share & back button works.
+
+### 23. Lazy Load Heavy Sections
+Education, Advanced Analysis, Dilution Simulator → load on visible (IntersectionObserver), bukan saat tab dibuka.
+
+### 24. Reduce Settings Dropdown Items
+SettingsDropdown saat ini terlalu banyak. Group jadi: **Display** (theme, language, numpad) / **Tools** (history, shortcuts, embed) / **About**.
+
+---
+
+## 🧪 Eksperimental (high effort, high delight)
+
+### 25. AI Assistant Sidekick
+Chip kecil "Tanya AI" di bawah hasil → buka mini chat: "Apakah saya harus tebus?" → jawaban kontekstual pakai Lovable AI Gateway dengan input form sebagai context.
+
+### 26. Compare Mode
+Side-by-side bandingkan 2 skenario right issue (misal BRIS vs ANTM) dalam 1 view.
+
+### 27. Watchlist Right Issue
+Simpan beberapa emiten yang lagi RI, dashboard ringkas status masing-masing.
+
+---
+
+## 🎯 Rekomendasi Implementasi (Phased)
+
+**Fase 1 — Quick Wins (1 batch):** #1, #2, #3, #4, #5, #16
+**Fase 2 — Mobile Polish:** #6, #8, #11, #13
+**Fase 3 — Desktop Layout:** #15, #17, #24
+**Fase 4 — Discovery:** #19, #20, #21
+**Fase 5 — Nice-to-have:** #22, #23, #25
+
+---
+
+Pilih fase atau item spesifik yang mau saya kerjakan. Saya rekomendasikan mulai dari **Fase 1** karena dampak UX paling besar dengan effort relatif kecil.

@@ -76,6 +76,43 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
 
   return (
     <div className="space-y-3 animate-fade-in">
+      {/* Prominent Decision Banner — clear go/no-go at a glance */}
+      {recommendation && (
+        <div
+          className={`relative overflow-hidden rounded-2xl p-4 border-2 animate-fade-in ${
+            recommendation === 'positive'
+              ? 'bg-gradient-to-br from-[hsl(142_76%_92%)] to-[hsl(142_76%_96%)] border-[hsl(var(--success))]/40 dark:from-[hsl(142_76%_14%)] dark:to-[hsl(142_76%_10%)]'
+              : 'bg-gradient-to-br from-[hsl(38_92%_92%)] to-[hsl(38_92%_96%)] border-[hsl(var(--warning))]/40 dark:from-[hsl(38_92%_14%)] dark:to-[hsl(38_92%_10%)]'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                recommendation === 'positive'
+                  ? 'bg-[hsl(var(--success))]/20'
+                  : 'bg-[hsl(var(--warning))]/20'
+              }`}
+            >
+              {recommendation === 'positive' ? (
+                <CheckCircle2 className="w-6 h-6 text-[hsl(var(--success))]" />
+              ) : (
+                <AlertTriangle className="w-6 h-6 text-[hsl(var(--warning))]" />
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+                {language === 'id' ? 'Rekomendasi' : 'Recommendation'}
+              </p>
+              <p className="text-base md:text-lg font-black text-foreground leading-tight">
+                {recommendation === 'positive'
+                  ? (language === 'id' ? 'Tebus berpotensi menguntungkan' : 'Exercise potentially profitable')
+                  : (language === 'id' ? 'Pertimbangkan alternatif' : 'Consider alternatives')}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Metric */}
       <div data-tour="terp" className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-primary/5 p-4">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />

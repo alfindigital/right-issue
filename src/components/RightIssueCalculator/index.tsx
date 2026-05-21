@@ -19,6 +19,9 @@ import ProgressRing from './ProgressRing';
 import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import Logo from './Logo';
+import EmptyStateCard from './EmptyStateCard';
+import SmartResultBar from './SmartResultBar';
+import ViewModeToggle, { ViewMode } from './ViewModeToggle';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
@@ -71,6 +74,15 @@ const RightIssueCalculator: React.FC = () => {
   // Wizard step state
   const [wizardStep, setWizardStep] = useState(1);
   const [useWizardMode, setUseWizardMode] = useState(false);
+
+  // View mode (Simple vs Pro) — persists in localStorage
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window === 'undefined') return 'simple';
+    return (localStorage.getItem('ri-view-mode') as ViewMode) || 'simple';
+  });
+  useEffect(() => {
+    try { localStorage.setItem('ri-view-mode', viewMode); } catch { /* noop */ }
+  }, [viewMode]);
   
   // Stock Code
   const [stockCode, setStockCode] = useState('');
@@ -348,6 +360,45 @@ const RightIssueCalculator: React.FC = () => {
       calculate();
     }
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, calculate]);
+
+  // Simple mode: auto-derive cumDatePrice as a neutral assumption when empty
+  useEffect(() => {
+    if (viewMode !== 'simple') return;
+    if (cumDatePrice) return;
+    const rp = parseInt(rightPrice) || 0;
+    if (rp <= 0) return;
+    setCumDatePrice(String(Math.round(rp * 1.3)));
+  }, [viewMode, rightPrice, cumDatePrice]);
+
+  // Auto-calculate (debounced) — removes friction of pressing "Hitung"
+  useEffect(() => {
+    if (!isCalculateEnabled) return;
+    if (useWizardMode) return; // wizard has its own explicit Next button
+    const handle = setTimeout(() => {
+      calculate();
+    }, 450);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, isCalculateEnabled, useWizardMode]);
+
+  // Load BRIS demo data (empty-state CTA)
+  const loadDemo = useCallback(() => {
+    setStockCode('BRIS');
+    setRatioOld('2');
+    setRatioNew('1');
+    setRightPrice('1500');
+    setCumDatePrice('2000');
+    setCurrentLots('10');
+    setCurrentAvgPrice('1800');
+    setHasWarrant(false);
+    setWarrantRatioOld(''); setWarrantRatioNew('');
+    setNoOwnership(false);
+    toast({
+      title: language === 'id' ? 'Contoh dimuat' : 'Example loaded',
+      description: language === 'id' ? 'Data contoh BRIS dipakai. Edit bebas.' : 'BRIS sample data loaded. Edit freely.',
+      duration: 2500,
+    });
+  }, [language]);
 
   const reset = useCallback(() => {
     setStockCode(''); setRatioOld(''); setRatioNew(''); setRightPrice(''); setCumDatePrice('');
@@ -654,16 +705,18 @@ const RightIssueCalculator: React.FC = () => {
     }
 
     // Full mode (non-wizard)
+    const isSimple = viewMode === 'simple';
     return (
       <div className="space-y-3">
         {activeTab === 'calculator' && useWizardMode === false && (
-          <div className="flex justify-end mb-2">
+          <div className="flex items-center justify-between mb-2 gap-2">
+            <ViewModeToggle mode={viewMode} onChange={setViewMode} />
             <button
               onClick={() => { setUseWizardMode(true); setWizardStep(1); }}
               className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
             >
               <Zap className="w-3 h-3" />
-              {language === 'id' ? 'Mode Step-by-Step' : 'Step-by-Step Mode'}
+              {language === 'id' ? 'Step-by-Step' : 'Step-by-Step'}
             </button>
           </div>
         )}
@@ -674,6 +727,7 @@ const RightIssueCalculator: React.FC = () => {
           ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
           warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
           onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
+          simpleMode={isSimple}
           onPasteParsed={(data) => {
             if (data.ratioOld) setRatioOld(data.ratioOld);
             if (data.ratioNew) setRatioNew(data.ratioNew);
@@ -691,6 +745,8 @@ const RightIssueCalculator: React.FC = () => {
           hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
         />
+
+        {!isCalculated && <EmptyStateCard onLoadDemo={loadDemo} />}
 
         {isCalculated && (
           <>
@@ -721,27 +777,59 @@ const RightIssueCalculator: React.FC = () => {
         )}
 
         {hasWarrant && <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />}
-        <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
-        <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-        <Suspense fallback={<LazyFallback />}>
-          <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-          <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-          <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-          <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
-        </Suspense>
+
+        {/* Advanced sections — only in Pro mode */}
+        {!isSimple && (
+          <>
+            <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
+            <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
+            <Suspense fallback={<LazyFallback />}>
+              <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
+              <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
+              <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
+              <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
+            </Suspense>
+          </>
+        )}
+
+        {/* Simple mode: nudge to Pro for advanced analysis */}
+        {isSimple && isCalculated && (
+          <button
+            type="button"
+            onClick={() => setViewMode('pro')}
+            className="w-full text-center text-[11px] text-muted-foreground hover:text-primary transition-colors py-2 border border-dashed border-border rounded-xl"
+          >
+            {language === 'id'
+              ? 'Butuh analisis lanjutan? Beralih ke mode Pro →'
+              : 'Need deeper analysis? Switch to Pro mode →'}
+          </button>
+        )}
       </div>
     );
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Floating Summary Bar */}
+      {/* Floating Summary Bar — desktop only; mobile uses SmartResultBar */}
       <FloatingSummary
-        isVisible={resultsOutOfView && isCalculated}
+        isVisible={!isMobile && resultsOutOfView && isCalculated}
         stockCode={stockCode || undefined}
         avgPrice={finalAvgPrice}
         terp={theoreticalPrice}
         recommendation={recommendation}
+      />
+      {/* Mobile sticky result bar — always visible when calculated */}
+      <SmartResultBar
+        isVisible={isMobile && isCalculated}
+        stockCode={stockCode || undefined}
+        finalTotalValue={finalTotalValue}
+        recommendation={recommendation}
+        recommendationLabel={
+          recommendation === 'positive'
+            ? (language === 'id' ? 'Tebus' : 'Exercise')
+            : (language === 'id' ? 'Tahan' : 'Hold')
+        }
+        onTap={() => resultsDashboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
       />
       {/* Header - Gradient with branding (sticky) */}
       <header className="header-gradient relative overflow-hidden sticky top-0 z-50">
