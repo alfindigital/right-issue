@@ -25,6 +25,8 @@ interface RightIssueInfoSectionProps {
   onWarrantRatioNewChange: (value: string) => void;
   warrantRatioError?: string;
   onPasteParsed?: (data: { ratioOld?: string; ratioNew?: string; rightPrice?: string }) => void;
+  /** Hide advanced fields (cum-date price, warrant) when true */
+  simpleMode?: boolean;
 }
 
 const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
@@ -45,6 +47,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   onWarrantRatioNewChange,
   warrantRatioError,
   onPasteParsed,
+  simpleMode = false,
 }) => {
   const { t, language } = useLanguage();
   
@@ -98,15 +101,18 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           tooltip={t('rightIssue.priceHelp')}
         />
 
-        <CurrencyInput
-          id="cum-date-price"
-          label={t('rightIssue.cumPrice')}
-          value={cumDatePrice}
-          onChange={onCumDatePriceChange}
-          tooltip={t('rightIssue.cumPriceHelp')}
-        />
+        {!simpleMode && (
+          <CurrencyInput
+            id="cum-date-price"
+            label={t('rightIssue.cumPrice')}
+            value={cumDatePrice}
+            onChange={onCumDatePriceChange}
+            tooltip={t('rightIssue.cumPriceHelp')}
+          />
+        )}
 
-        {/* Bonus Warrant Section */}
+        {/* Bonus Warrant Section — hidden in Simple mode */}
+        {!simpleMode && (
         <div className="pt-2 border-t border-border">
           <div className="flex items-center gap-2">
             <Checkbox
@@ -157,6 +163,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             </div>
           )}
         </div>
+        )}
       </div>
     </section>
   );
