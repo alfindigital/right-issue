@@ -74,6 +74,15 @@ const RightIssueCalculator: React.FC = () => {
   // Wizard step state
   const [wizardStep, setWizardStep] = useState(1);
   const [useWizardMode, setUseWizardMode] = useState(false);
+
+  // View mode (Simple vs Pro) — persists in localStorage
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    if (typeof window === 'undefined') return 'simple';
+    return (localStorage.getItem('ri-view-mode') as ViewMode) || 'simple';
+  });
+  useEffect(() => {
+    try { localStorage.setItem('ri-view-mode', viewMode); } catch { /* noop */ }
+  }, [viewMode]);
   
   // Stock Code
   const [stockCode, setStockCode] = useState('');
