@@ -481,7 +481,14 @@ const RightIssueCalculator: React.FC = () => {
     
     setIsCalculated(true);
     setUseWizardMode(false);
-  }, []);
+    toast({
+      title: language === 'id' ? 'Hasil dimuat dari history' : 'Loaded from history',
+      description: item.stockCode
+        ? `${item.stockCode} · ${item.inputs.ratioOld}:${item.inputs.ratioNew}`
+        : `${item.inputs.ratioOld}:${item.inputs.ratioNew}`,
+      duration: 2200,
+    });
+  }, [language]);
 
   // Wizard navigation
   const canGoNext = () => {
