@@ -1,8 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { FileDown, Loader2 } from 'lucide-react';
+import { FileDown, Loader2, FileText, FileBarChart2 } from 'lucide-react';
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ExportPDFData {
   stockCode: string;
@@ -42,7 +50,7 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
   const { language } = useLanguage();
   const [isExporting, setIsExporting] = useState(false);
 
-  const generatePDF = useCallback(async () => {
+  const generatePDF = useCallback(async (variant: 'full' | 'compact' = 'full') => {
     if (!isCalculated) return;
     setIsExporting(true);
 
@@ -74,7 +82,13 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
       doc.text('Right Issue Calculator', margin, 14);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.text(language === 'id' ? 'Laporan Hasil Kalkulasi' : 'Calculation Report', margin, 21);
+      doc.text(
+        variant === 'compact'
+          ? (language === 'id' ? 'Ringkasan Hasil Kalkulasi' : 'Calculation Summary')
+          : (language === 'id' ? 'Laporan Hasil Kalkulasi' : 'Calculation Report'),
+        margin,
+        21
+      );
 
       // Stock code & timestamp
       const now = new Date();
@@ -130,6 +144,90 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
           y = margin;
         }
       };
+
+      // === COMPACT VARIANT: 1-page summary ===
+      if (variant === 'compact') {
+        // Big recommendation badge banner
+        const isPositive = data.recommendation === 'positive';
+        const banner = isPositive ? colors.success : colors.danger;
+        const bannerLabel = !data.recommendation
+          ? (language === 'id' ? 'BELUM ADA REKOMENDASI' : 'NO RECOMMENDATION')
+          : isPositive
+            ? (language === 'id' ? 'POTENSI POSITIF — TEBUS RI' : 'POSITIVE — EXERCISE RI')
+            : (language === 'id' ? 'PERTIMBANGKAN ALTERNATIF' : 'CONSIDER ALTERNATIVES');
+
+        doc.setFillColor(...banner);
+        doc.roundedRect(margin, y, contentWidth, 16, 2, 2, 'F');
+        doc.setTextColor(...colors.white);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text(bannerLabel, margin + 5, y + 10);
+        y += 22;
+
+        // Key inputs
+        drawSectionTitle(language === 'id' ? 'Input Utama' : 'Main Inputs');
+        drawRow(language === 'id' ? 'Rasio RI' : 'RI Ratio', `${data.ratioOld} : ${data.ratioNew}`);
+        drawRow(language === 'id' ? 'Harga Pelaksanaan' : 'Exercise Price', formatCurrency(data.rightPrice));
+        drawRow(language === 'id' ? 'Harga Cum Date' : 'Cum Date Price', formatCurrency(data.cumDatePrice));
+        drawRow(language === 'id' ? 'Lot Dimiliki' : 'Current Lots', `${new Intl.NumberFormat('id-ID').format(parseInt(data.currentLots) || 0)} lot`);
+        drawRow(language === 'id' ? 'Harga Rata-rata' : 'Avg Price', formatCurrency(data.currentAvgPrice), true);
+
+        y += 4;
+        drawDivider();
+
+        // Key results
+        drawSectionTitle(language === 'id' ? 'Hasil Utama' : 'Key Results');
+        drawRow('TERP', data.theoreticalPrice, true);
+        drawRow(language === 'id' ? 'Hak Lot Baru' : 'New Lots', `${data.newLotsCount} lot`);
+        drawRow(language === 'id' ? 'Dana Dibutuhkan' : 'Funds Required', data.newTotalValue);
+        drawRow(language === 'id' ? 'Avg Harga Baru' : 'New Avg Price', data.finalAvgPrice, true);
+        drawRow(language === 'id' ? 'Total Nilai Akhir' : 'Final Total Value', data.finalTotalValue, true);
+
+        y += 4;
+        drawDivider();
+
+        // Recommendation text
+        if (data.recommendation) {
+          drawSectionTitle(language === 'id' ? 'Catatan Rekomendasi' : 'Recommendation Note');
+          doc.setTextColor(...colors.dark);
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'normal');
+          const lines = doc.splitTextToSize(data.recommendationText, contentWidth - 4);
+          doc.text(lines, margin + 2, y);
+          y += lines.length * 4.8 + 4;
+        }
+
+        // Disclaimer (compact)
+        doc.setFillColor(255, 250, 240);
+        doc.roundedRect(margin, y, contentWidth, 16, 2, 2, 'F');
+        doc.setDrawColor(230, 200, 150);
+        doc.roundedRect(margin, y, contentWidth, 16, 2, 2, 'S');
+        doc.setTextColor(180, 130, 50);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.text('⚠ DISCLAIMER', margin + 4, y + 5);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        const dText = language === 'id'
+          ? 'Estimasi, bukan rekomendasi investasi. Selalu DYOR.'
+          : 'For estimation only, not investment advice. Always DYOR.';
+        doc.text(doc.splitTextToSize(dText, contentWidth - 8), margin + 4, y + 10);
+
+        doc.setTextColor(...colors.muted);
+        doc.setFontSize(7);
+        doc.text(`Right Issue Calculator • alfindigital.com • ${timestamp}`, pageWidth / 2, 290, { align: 'center' });
+
+        const filenameC = data.stockCode
+          ? `RI_${data.stockCode}_Ringkas_${now.toISOString().slice(0, 10)}.pdf`
+          : `RI_Ringkas_${now.toISOString().slice(0, 10)}.pdf`;
+        doc.save(filenameC);
+        toast({
+          title: language === 'id' ? 'PDF ringkas diunduh' : 'Compact PDF downloaded',
+          description: filenameC,
+          duration: 2500,
+        });
+        return;
+      }
 
       // --- Section 1: Input Data ---
       drawSectionTitle(language === 'id' ? 'Data Input' : 'Input Data');
@@ -270,19 +368,50 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
   if (!isCalculated) return null;
 
   return (
-    <button
-      onClick={generatePDF}
-      disabled={isExporting}
-      className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-50"
-      aria-label={language === 'id' ? 'Export PDF' : 'Export PDF'}
-      title={language === 'id' ? 'Export ke PDF' : 'Export to PDF'}
-    >
-      {isExporting ? (
-        <Loader2 className="w-4 h-4 animate-spin" />
-      ) : (
-        <FileDown className="w-4 h-4" />
-      )}
-    </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          disabled={isExporting}
+          className="p-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-50"
+          aria-label={language === 'id' ? 'Export PDF' : 'Export PDF'}
+          title={language === 'id' ? 'Export ke PDF' : 'Export to PDF'}
+        >
+          {isExporting ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <FileDown className="w-4 h-4" />
+          )}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="text-xs">
+          {language === 'id' ? 'Pilih format PDF' : 'Choose PDF format'}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => generatePDF('compact')} className="gap-2 cursor-pointer">
+          <FileText className="w-4 h-4 text-primary" />
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">
+              {language === 'id' ? 'Ringkas (1 halaman)' : 'Compact (1 page)'}
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {language === 'id' ? 'Input utama + rekomendasi' : 'Main inputs + recommendation'}
+            </span>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => generatePDF('full')} className="gap-2 cursor-pointer">
+          <FileBarChart2 className="w-4 h-4 text-primary" />
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">
+              {language === 'id' ? 'Lengkap' : 'Full report'}
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {language === 'id' ? 'Semua metrik & dilusi' : 'All metrics & dilution'}
+            </span>
+          </div>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
