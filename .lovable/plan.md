@@ -1,133 +1,49 @@
-# Ide UI/UX Improvement & Simplifikasi — Mobile-First
+# Auto-Suggest Kode Saham (Yahoo Finance)
 
-Fokus: bikin kalkulator lebih cepat dipahami pemula, lebih ringan di mobile, dan tetap powerful di desktop. Dibagi per prioritas.
+Saat user mengetik di field kode saham, muncul dropdown saran emiten IDX (nama + kode) dari Yahoo Finance. Tap/klik untuk auto-fill. Cocok di desktop & mobile.
 
----
+## Kenapa edge function?
 
-## 🔥 Prioritas Tinggi (Quick Win, dampak besar)
+Yahoo Finance API (`query1.finance.yahoo.com/v1/finance/search`) memblokir CORS dari browser. Solusinya: proxy via Supabase Edge Function (`stock-search`) — sekaligus bisa filter hanya IDX (`.JK`), cache, dan rate-limit aman.
 
-### 1. Mode "Simple vs Pro" Toggle
-Saat ini semua field & section tampil sekaligus → overwhelming.
-- **Simple Mode** (default untuk user baru): hanya 4 input — Stock Code, Lots Dimiliki, Rasio, Harga Tebus. Hasil langsung: total tebusan + lot baru.
-- **Pro Mode**: tampilkan warrant, cum-date price, analisis lanjutan, dilution, target price, dll.
-- Toggle di header, persist di localStorage.
+## Yang dibangun
 
-### 2. Sticky "Smart Result Bar" di Mobile
-Replace FloatingSummary dengan bar bawah (di atas BottomNav) yang **selalu menampilkan 2 angka paling penting**: Total Tebusan + Rekomendasi (Tebus/Jual/Skip) dengan warna. User tidak perlu scroll untuk lihat hasil.
+### 1. Edge function `supabase/functions/stock-search/index.ts`
+- GET `?q=BRI` → fetch `https://query1.finance.yahoo.com/v1/finance/search?q=BRI&lang=en-US&region=ID&quotesCount=8`
+- Filter `quotes[]` dengan `exchange === "JKT"` atau `symbol.endsWith(".JK")`
+- Return array ringkas: `[{ code: "BRIS", name: "Bank Syariah Indonesia Tbk", exchange: "JKT" }, ...]`
+- `verify_jwt = false`, CORS headers, in-memory cache 5 menit per query, validasi `q` (1–10 char alfanumerik) dengan Zod.
 
-### 3. Progressive Disclosure pada Form
-- Section "Warrant", "Cum-Date Price", "Kepemilikan Saat Ini" jadi collapsed by default.
-- Hanya expand otomatis kalau ada data terisi.
-- Hemat ~40% scroll di mobile.
+### 2. Update `StockCodeInput.tsx`
+- Tambah state: `suggestions`, `open`, `loading`, `activeIndex`
+- Debounce 250ms saat input ≥ 2 huruf → panggil `supabase.functions.invoke('stock-search', { body: { q } })`
+- Render dropdown di bawah input (absolute, z-50, `rounded-2xl`, glass style konsisten):
+  - Tiap baris: `<kode tebal>` + nama emiten kecil (truncate)
+  - Hover/active highlight, ikon `TrendingUp`
+  - Empty state: "Tidak ada hasil" (ID) / "No results" (EN)
+- Keyboard: ↑/↓ navigate, Enter pilih, Esc close
+- Mobile: dropdown full width input, tap area min 44px
+- Klik pilihan → `onChange(code)` + close dropdown
+- Klik di luar → close (gunakan `useRef` + listener `mousedown`)
+- A11y: `role="combobox"`, `aria-expanded`, `aria-activedescendant`
 
-### 4. Auto-Calculate (hapus tombol "Hitung")
-Hasil update real-time saat user mengetik (debounce 300ms). Tombol "Hitung" hanya jadi anchor scroll ke hasil di mobile. Lebih modern, mengurangi friksi.
+### 3. i18n key baru (`src/contexts/LanguageContext.tsx`)
+- `stockCode.searching` — "Mencari..." / "Searching..."
+- `stockCode.noResults` — "Tidak ada hasil" / "No results"
+- `stockCode.poweredBy` — "Data: Yahoo Finance"
 
-### 5. Empty State yang Edukatif
-Sebelum user isi apapun, hasil card menampilkan ilustrasi + "Isi rasio & harga tebus untuk mulai" + tombol "Pakai contoh BRIS" (auto-fill demo data). Saat ini hasil kosong terasa "rusak".
+### 4. Memory
+Tambah `mem://features/stock-autosuggest` ringkas (sumber Yahoo Finance via edge function, debounce, keyboard nav).
 
----
+## Catatan teknis
 
-## 📱 Mobile-Specific
+- Tidak perlu auth/JWT — endpoint publik read-only.
+- Tidak menyimpan data; Yahoo Finance dipanggil on-demand dengan cache pendek.
+- Tetap manual input diperbolehkan: dropdown hanya saran, user bebas ketik kode apapun (validasi 4 huruf existing tetap berlaku).
+- Tidak mengubah business logic kalkulator — murni UI input.
 
-### 6. One-Hand Reachability
-- Tombol primer (Hitung, Share, Export) pindah ke **bottom action sheet**, bukan di tengah card.
-- Header lebih tipis (logo + settings only), hilangkan title panjang di mobile.
-
-### 7. Swipe Between Sections
-Di mobile, ubah panel Calculator/Budget/Education jadi swipeable (sudah ada useSwipeGesture hook — manfaatkan).
-
-### 8. Compact Number Display
-Angka besar pakai format "Rp 2,5 jt" / "Rp 1,2 M" di stat card mobile (tap untuk lihat full). Saat ini "Rp 2.500.000.000" pecah di layar kecil.
-
-### 9. Haptic + Sound Feedback
-Tambah haptic ringan saat: hasil muncul, validasi error, tombol primary ditekan. Sudah ada di numpad — extend ke seluruh app.
-
-### 10. Pull-to-Refresh untuk Reset
-Pull down di mobile = clear form (dengan confirm). Native feel.
-
----
-
-## 🎯 Form Simplification
-
-### 11. Single Combined Ratio Input
-Ganti dua input "Lama : Baru" jadi **satu input "2:1"** yang auto-parse. Lebih cepat diketik, terutama mobile.
-
-### 12. Smart Defaults
-- Cum-date price auto-fill dari rightPrice × 1.2 (estimasi) dengan badge "estimasi, ubah jika tahu"
-- Lots: kalau kosong, asumsikan 0 (mode "Beli dari pasar" otomatis aktif)
-
-### 13. Inline Examples di Placeholder
-Placeholder bukan "0" tapi "contoh: 100" / "contoh: 500" / "contoh: 2:1". Lebih guiding.
-
-### 14. Stock Code → Auto-suggest
-Dropdown kecil saat ketik (BRIS, BBRI, TLKM, dll dari top 20 IDX). Optional, tapi mengurangi typo.
-
----
-
-## 🎨 Visual & Hierarchy
-
-### 15. Result-First Layout di Desktop
-Desktop saat ini: form kiri, hasil bawah. Ubah jadi **2 kolom**: form kiri (sticky), hasil kanan (live update). User lihat dampak input secara real-time.
-
-### 16. Color-Coded Recommendation Banner
-Hasil utama (Tebus/Skip/Jual Rights) jadi **banner besar full-width** di atas, bukan teks kecil. Hijau/Merah/Kuning + ikon besar. Keputusan langsung jelas dalam 1 detik.
-
-### 17. Reduce Card Nesting
-Banyak card di dalam card. Flatten jadi section dengan separator → less visual noise, lebih cepat di-render.
-
-### 18. Skeleton → Shimmer
-Saat loading PDF/chart, pakai shimmer effect, bukan plain skeleton.
-
----
-
-## 🚀 Discovery & Onboarding
-
-### 19. Interactive First-Time Tour (Re-design)
-OnboardingTour saat ini ada — perpendek jadi **3 langkah max** dengan animasi pointer. Tambah "Skip & coba sendiri" yang prominent.
-
-### 20. Contextual Tips (bukan tooltip)
-Ganti beberapa InfoTooltip dengan **inline hint card** kecil yang muncul sekali lalu bisa di-dismiss. Tooltip kurang discoverable di mobile (hover ≠ ada).
-
-### 21. "What changed?" Diff Indicator
-Saat user ubah input, highlight angka di hasil yang berubah dengan flash animation kuning sebentar.
-
----
-
-## ⚡ Performance & Polish
-
-### 22. Tab Persistence di URL
-Tab aktif (calculator/budget/education) masuk URL hash `#calculator`. Bisa di-share & back button works.
-
-### 23. Lazy Load Heavy Sections
-Education, Advanced Analysis, Dilution Simulator → load on visible (IntersectionObserver), bukan saat tab dibuka.
-
-### 24. Reduce Settings Dropdown Items
-SettingsDropdown saat ini terlalu banyak. Group jadi: **Display** (theme, language, numpad) / **Tools** (history, shortcuts, embed) / **About**.
-
----
-
-## 🧪 Eksperimental (high effort, high delight)
-
-### 25. AI Assistant Sidekick
-Chip kecil "Tanya AI" di bawah hasil → buka mini chat: "Apakah saya harus tebus?" → jawaban kontekstual pakai Lovable AI Gateway dengan input form sebagai context.
-
-### 26. Compare Mode
-Side-by-side bandingkan 2 skenario right issue (misal BRIS vs ANTM) dalam 1 view.
-
-### 27. Watchlist Right Issue
-Simpan beberapa emiten yang lagi RI, dashboard ringkas status masing-masing.
-
----
-
-## 🎯 Rekomendasi Implementasi (Phased)
-
-**Fase 1 — Quick Wins (1 batch):** #1, #2, #3, #4, #5, #16
-**Fase 2 — Mobile Polish:** #6, #8, #11, #13
-**Fase 3 — Desktop Layout:** #15, #17, #24
-**Fase 4 — Discovery:** #19, #20, #21
-**Fase 5 — Nice-to-have:** #22, #23, #25
-
----
-
-Pilih fase atau item spesifik yang mau saya kerjakan. Saya rekomendasikan mulai dari **Fase 1** karena dampak UX paling besar dengan effort relatif kecil.
+## Out of scope (batch lain)
+- Auto-fill harga cum-date dari Yahoo
+- Single-field ratio "2:1"
+- Compact number format
+- Diff flash animation
