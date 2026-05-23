@@ -1,4 +1,5 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
+import { IDX_TICKERS } from './idx-tickers.ts'
 
 interface Suggestion {
   code: string
@@ -46,39 +47,46 @@ Deno.serve(async (req) => {
       })
     }
 
-    const yfUrl = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&lang=en-US&region=ID&quotesCount=10&newsCount=0`
-    const resp = await fetch(yfUrl, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
-        Accept: 'application/json',
-      },
-    })
+    const upper = key
+    const merged = new Map<string, Suggestion>()
 
-    if (!resp.ok) {
-      return new Response(JSON.stringify({ error: `Yahoo Finance error ${resp.status}` }), {
-        status: 502,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
+    // 1) Curated IDX prefix match (fast & reliable for short queries)
+    for (const [code, name] of IDX_TICKERS) {
+      if (code.startsWith(upper)) {
+        merged.set(code, { code, name, exchange: 'IDX' })
+        if (merged.size >= 8) break
+      }
     }
 
-    const json = await resp.json()
-    const quotes: any[] = Array.isArray(json?.quotes) ? json.quotes : []
+    // 2) Yahoo Finance lookup — fills the long tail
+    try {
+      const yfUrl = `https://query2.finance.yahoo.com/v1/finance/lookup?query=${encodeURIComponent(upper)}&type=equity&lang=en-US&region=ID&start=0&count=25`
+      const resp = await fetch(yfUrl, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+          Accept: 'application/json',
+        },
+      })
+      if (resp.ok) {
+        const json = await resp.json()
+        const docs: any[] = json?.finance?.result?.[0]?.documents ?? []
+        for (const it of docs) {
+          const sym: string = it?.symbol ?? ''
+          if (!sym.endsWith('.JK')) continue
+          const code = sym.replace(/\.JK$/, '')
+          if (!/^[A-Z]{1,5}$/.test(code)) continue
+          if (merged.has(code)) continue
+          const name: string = it.shortName || it.longName || code
+          merged.set(code, { code, name, exchange: 'IDX' })
+          if (merged.size >= 12) break
+        }
+      }
+    } catch (_) {
+      // Yahoo failure is non-fatal — curated list still serves results
+    }
 
-    const results: Suggestion[] = quotes
-      .filter((it) => {
-        const sym: string = it?.symbol ?? ''
-        const exch: string = it?.exchange ?? ''
-        return sym.endsWith('.JK') || exch === 'JKT'
-      })
-      .map((it) => {
-        const sym: string = it.symbol ?? ''
-        const code = sym.replace(/\.JK$/, '')
-        const name: string = it.longname || it.shortname || code
-        return { code, name, exchange: 'IDX' }
-      })
-      .filter((it) => /^[A-Z]{1,5}$/.test(it.code))
-      .slice(0, 8)
+    const results: Suggestion[] = Array.from(merged.values()).slice(0, 10)
 
     cache.set(key, { at: Date.now(), data: results })
 
