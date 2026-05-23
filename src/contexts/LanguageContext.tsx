@@ -220,6 +220,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Stock Code
     'stockCode.optional': 'opsional',
+    'stockCode.searching': 'Mencari...',
+    'stockCode.noResults': 'Tidak ada hasil',
+    'stockCode.poweredBy': 'Data: Yahoo Finance',
     
     // Tab Navigation
     'tab.calculator': 'Kalkulator RI',
@@ -434,6 +437,9 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Stock Code
     'stockCode.optional': 'optional',
+    'stockCode.searching': 'Searching...',
+    'stockCode.noResults': 'No results',
+    'stockCode.poweredBy': 'Data: Yahoo Finance',
     
     // Tab Navigation
     'tab.calculator': 'RI Calculator',
