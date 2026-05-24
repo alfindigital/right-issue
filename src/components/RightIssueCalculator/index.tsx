@@ -23,6 +23,8 @@ import EmptyStateCard from './EmptyStateCard';
 import SmartResultBar from './SmartResultBar';
 import ViewModeToggle, { ViewMode } from './ViewModeToggle';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
+import StickyCalculateBar from './StickyCalculateBar';
+import PullToRefreshIndicator from './PullToRefreshIndicator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -32,6 +34,8 @@ import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
+import { haptic, hapticSuccess, hapticTap } from '@/lib/haptics';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy load heavy components (charts, analysis)
@@ -70,6 +74,38 @@ const RightIssueCalculator: React.FC = () => {
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
+
+  // Wrap tab change with haptic feedback
+  const handleTabChange = useCallback((tab: string) => {
+    hapticTap();
+    setActiveTab(tab);
+  }, []);
+
+  // Mobile: track whether any input is focused (for sticky Hitung bar)
+  const [inputFocused, setInputFocused] = useState(false);
+  useEffect(() => {
+    if (!isMobile) return;
+    const onFocusIn = (e: FocusEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) {
+        setInputFocused(true);
+      }
+    };
+    const onFocusOut = () => {
+      // small delay to allow focus to move between fields
+      setTimeout(() => {
+        const a = document.activeElement as HTMLElement | null;
+        const stillInput = !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable);
+        setInputFocused(stillInput);
+      }, 80);
+    };
+    document.addEventListener('focusin', onFocusIn);
+    document.addEventListener('focusout', onFocusOut);
+    return () => {
+      document.removeEventListener('focusin', onFocusIn);
+      document.removeEventListener('focusout', onFocusOut);
+    };
+  }, [isMobile]);
   
   // Wizard step state
   const [wizardStep, setWizardStep] = useState(1);
@@ -308,6 +344,7 @@ const RightIssueCalculator: React.FC = () => {
       setRecommendationText(
         `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
       );
+      hapticSuccess();
       // 🎉 Confetti celebration (dynamic import)
       setTimeout(async () => {
         const { default: confetti } = await import('canvas-confetti');
@@ -325,6 +362,7 @@ const RightIssueCalculator: React.FC = () => {
       setRecommendationText(
         `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(negativeDiff)} (${negativeDiffPercent}%) di atas atau sama dengan TERP (${formatCurrency(terpRounded)}). Pertimbangkan alternatif seperti menjual HMETD.`
       );
+      haptic(15);
     }
 
     // Show skeleton loading briefly before revealing results
@@ -411,6 +449,34 @@ const RightIssueCalculator: React.FC = () => {
     setWizardStep(1);
     clearStorage();
   }, [clearStorage]);
+
+  // Pull-to-refresh (mobile) → reset form with mini confirm
+  const handlePullRefresh = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    haptic(20);
+    const hasAnyData =
+      stockCode || ratioOld || ratioNew || rightPrice || cumDatePrice ||
+      currentLots || currentAvgPrice || isCalculated;
+    if (!hasAnyData) return;
+    const msg = language === 'id'
+      ? 'Reset semua input dan hasil?'
+      : 'Reset all inputs and results?';
+    if (window.confirm(msg)) {
+      reset();
+      hapticSuccess();
+      toast({
+        title: language === 'id' ? 'Form direset' : 'Form reset',
+        description: language === 'id' ? 'Semua input dikosongkan.' : 'All inputs cleared.',
+        duration: 2200,
+      });
+    }
+  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, isCalculated, language, reset]);
+
+  const { pull, progress } = usePullToRefresh({
+    onRefresh: handlePullRefresh,
+    enabled: isMobile,
+    threshold: 80,
+  });
 
   const handleShare = useCallback(() => {
     const params = new URLSearchParams();
@@ -888,7 +954,7 @@ const RightIssueCalculator: React.FC = () => {
         className={`flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 ${isMobile ? 'pb-20' : ''}`}
         {...(enableTabSwipe ? tabSwipeHandlers : {})}
       >
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop tabs */}
           <TabsList className="w-full mb-4 hidden md:flex">
             <TabsTrigger value="calculator" className="flex-1 text-xs">
@@ -932,13 +998,37 @@ const RightIssueCalculator: React.FC = () => {
       </footer>
 
       {/* Mobile Bottom Nav */}
-      {isMobile && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
+      {isMobile && <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />}
 
       <BackToTopButton />
       <OnboardingTour
         key={tourReplayKey}
         forceRun={tourForceRun}
         onFinish={() => setTourForceRun(false)}
+      />
+
+      {/* Pull-to-refresh indicator (mobile) */}
+      <PullToRefreshIndicator
+        pull={pull}
+        progress={progress}
+        label={language === 'id' ? 'Tarik untuk reset' : 'Pull to reset'}
+        readyLabel={language === 'id' ? 'Lepas untuk reset' : 'Release to reset'}
+      />
+
+      {/* Sticky Calculate / Scroll-to-result bar (mobile, while typing) */}
+      <StickyCalculateBar
+        visible={isMobile && inputFocused && activeTab === 'calculator' && (isCalculateEnabled || isCalculated)}
+        isCalculated={isCalculated}
+        isEnabled={isCalculateEnabled}
+        label={
+          isCalculated
+            ? (language === 'id' ? 'Lihat Hasil' : 'View Result')
+            : (language === 'id' ? 'Hitung Sekarang' : 'Calculate Now')
+        }
+        onCalculate={calculate}
+        onScrollToResult={() =>
+          resultsDashboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
       />
     </div>
   );
