@@ -954,7 +954,7 @@ const RightIssueCalculator: React.FC = () => {
         className={`flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 ${isMobile ? 'pb-20' : ''}`}
         {...(enableTabSwipe ? tabSwipeHandlers : {})}
       >
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop tabs */}
           <TabsList className="w-full mb-4 hidden md:flex">
             <TabsTrigger value="calculator" className="flex-1 text-xs">
@@ -998,13 +998,37 @@ const RightIssueCalculator: React.FC = () => {
       </footer>
 
       {/* Mobile Bottom Nav */}
-      {isMobile && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
+      {isMobile && <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />}
 
       <BackToTopButton />
       <OnboardingTour
         key={tourReplayKey}
         forceRun={tourForceRun}
         onFinish={() => setTourForceRun(false)}
+      />
+
+      {/* Pull-to-refresh indicator (mobile) */}
+      <PullToRefreshIndicator
+        pull={pull}
+        progress={progress}
+        label={language === 'id' ? 'Tarik untuk reset' : 'Pull to reset'}
+        readyLabel={language === 'id' ? 'Lepas untuk reset' : 'Release to reset'}
+      />
+
+      {/* Sticky Calculate / Scroll-to-result bar (mobile, while typing) */}
+      <StickyCalculateBar
+        visible={isMobile && inputFocused && activeTab === 'calculator' && (isCalculateEnabled || isCalculated)}
+        isCalculated={isCalculated}
+        isEnabled={isCalculateEnabled}
+        label={
+          isCalculated
+            ? (language === 'id' ? 'Lihat Hasil' : 'View Result')
+            : (language === 'id' ? 'Hitung Sekarang' : 'Calculate Now')
+        }
+        onCalculate={calculate}
+        onScrollToResult={() =>
+          resultsDashboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
       />
     </div>
   );
