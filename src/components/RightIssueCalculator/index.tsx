@@ -23,6 +23,8 @@ import EmptyStateCard from './EmptyStateCard';
 import SmartResultBar from './SmartResultBar';
 import ViewModeToggle, { ViewMode } from './ViewModeToggle';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
+import StickyCalculateBar from './StickyCalculateBar';
+import PullToRefreshIndicator from './PullToRefreshIndicator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -32,6 +34,8 @@ import { toast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
+import { haptic, hapticSuccess, hapticTap } from '@/lib/haptics';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy load heavy components (charts, analysis)
