@@ -450,6 +450,34 @@ const RightIssueCalculator: React.FC = () => {
     clearStorage();
   }, [clearStorage]);
 
+  // Pull-to-refresh (mobile) → reset form with mini confirm
+  const handlePullRefresh = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    haptic(20);
+    const hasAnyData =
+      stockCode || ratioOld || ratioNew || rightPrice || cumDatePrice ||
+      currentLots || currentAvgPrice || isCalculated;
+    if (!hasAnyData) return;
+    const msg = language === 'id'
+      ? 'Reset semua input dan hasil?'
+      : 'Reset all inputs and results?';
+    if (window.confirm(msg)) {
+      reset();
+      hapticSuccess();
+      toast({
+        title: language === 'id' ? 'Form direset' : 'Form reset',
+        description: language === 'id' ? 'Semua input dikosongkan.' : 'All inputs cleared.',
+        duration: 2200,
+      });
+    }
+  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, isCalculated, language, reset]);
+
+  const { pull, progress } = usePullToRefresh({
+    onRefresh: handlePullRefresh,
+    enabled: isMobile,
+    threshold: 80,
+  });
+
   const handleShare = useCallback(() => {
     const params = new URLSearchParams();
     if (stockCode) params.set('sc', stockCode);
