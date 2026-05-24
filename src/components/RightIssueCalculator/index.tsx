@@ -74,6 +74,38 @@ const RightIssueCalculator: React.FC = () => {
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
+
+  // Wrap tab change with haptic feedback
+  const handleTabChange = useCallback((tab: string) => {
+    hapticTap();
+    setActiveTab(tab);
+  }, []);
+
+  // Mobile: track whether any input is focused (for sticky Hitung bar)
+  const [inputFocused, setInputFocused] = useState(false);
+  useEffect(() => {
+    if (!isMobile) return;
+    const onFocusIn = (e: FocusEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) {
+        setInputFocused(true);
+      }
+    };
+    const onFocusOut = () => {
+      // small delay to allow focus to move between fields
+      setTimeout(() => {
+        const a = document.activeElement as HTMLElement | null;
+        const stillInput = !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable);
+        setInputFocused(stillInput);
+      }, 80);
+    };
+    document.addEventListener('focusin', onFocusIn);
+    document.addEventListener('focusout', onFocusOut);
+    return () => {
+      document.removeEventListener('focusin', onFocusIn);
+      document.removeEventListener('focusout', onFocusOut);
+    };
+  }, [isMobile]);
   
   // Wizard step state
   const [wizardStep, setWizardStep] = useState(1);
