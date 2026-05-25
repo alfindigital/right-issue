@@ -145,10 +145,14 @@ const StickyCalculateBar: React.FC<Props> = ({
 
   return (
     <div
-      className="md:hidden fixed left-2 right-2 z-[60] animate-slide-up"
+      className="md:hidden fixed z-[60] animate-slide-up"
       style={{
-        // When the keyboard is up iOS already lifts content above the home
-        // indicator; only add safe-area inset when resting on the bottom nav.
+        // Horizontal: respect notch in landscape with max() so portrait keeps 8px.
+        left: 'max(8px, env(safe-area-inset-left, 0px))',
+        right: 'max(8px, env(safe-area-inset-right, 0px))',
+        // Vertical: keyboard up → iOS already excludes the home indicator area,
+        // so use the measured offset directly. Keyboard down → stack above the
+        // bottom nav AND the home indicator using env(safe-area-inset-bottom).
         bottom: keyboardOpen
           ? bottomOffset
           : `calc(${bottomOffset}px + env(safe-area-inset-bottom, 0px))`,
