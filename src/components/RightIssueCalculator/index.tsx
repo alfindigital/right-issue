@@ -853,6 +853,7 @@ const RightIssueCalculator: React.FC = () => {
                 <RotateCcw className="w-4 h-4" />
               </button>
             </div>
+          </>)}
           </>
         )}
 
