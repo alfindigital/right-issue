@@ -824,17 +824,19 @@ const RightIssueCalculator: React.FC = () => {
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
         />
 
-        {!isCalculated && <EmptyStateCard onLoadDemo={loadDemo} />}
+        {!isCalculated && !isCalculating && <EmptyStateCard onLoadDemo={loadDemo} />}
 
-        {isCalculated && (
+        {(isCalculated || isCalculating) && (
           <>
             <div ref={resultsDashboardRef}>
               <ResultsDashboard
-                isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                isCalculated={isCalculated} isLoading={isCalculating}
+                finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
                 finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
                 recommendation={recommendation} recommendationText={recommendationText}
               />
             </div>
+          {isCalculated && (<>
             {/* Mobile action bar - share/export/reset */}
             <div className="flex md:hidden items-center justify-center gap-2 py-2">
               <ShareButtons
