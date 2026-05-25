@@ -75,7 +75,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
   const diffPercent = avgNum > 0 ? (((terpNum - avgNum) / avgNum) * 100).toFixed(1) : '0';
 
   return (
-    <div className="space-y-3 animate-fade-in">
+    <div className="space-y-3 animate-fade-in motion-reduce:animate-none" aria-live="polite">
       {/* Prominent Decision Banner — clear go/no-go at a glance */}
       {recommendation && (
         <div
