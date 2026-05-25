@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,6 +8,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Switch } from '@/components/ui/switch';
+import { isHapticsEnabled, setHapticsEnabled, haptic } from '@/lib/haptics';
 
 interface SettingsDropdownProps {
   onOpenKeyboardHelp: () => void;
@@ -18,6 +20,8 @@ interface SettingsDropdownProps {
 const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed, onReplayTour }, ref) => {
   const { language, setLanguage, t } = useLanguage();
   const [isDark, setIsDark] = useState(false);
+  const [hapticsOn, setHapticsOn] = useState(true);
+  const hasVibrateApi = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -28,6 +32,7 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
       document.documentElement.classList.remove('dark');
       if (!savedTheme) localStorage.setItem('theme', 'light');
     }
+    setHapticsOn(isHapticsEnabled());
   }, []);
 
   const toggleTheme = () => {
@@ -46,6 +51,12 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
 
   const toggleLanguage = () => {
     setLanguage(language === 'id' ? 'en' : 'id');
+  };
+
+  const toggleHaptics = (next: boolean) => {
+    setHapticsOn(next);
+    setHapticsEnabled(next);
+    if (next) haptic(15); // confirm with a tap when enabling
   };
 
   return (
@@ -69,6 +80,23 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
           <Globe className="w-4 h-4 mr-2" />
           {language === 'id' ? 'English' : 'Bahasa Indonesia'}
         </DropdownMenuItem>
+        {hasVibrateApi && (
+          <DropdownMenuItem
+            onSelect={(e) => { e.preventDefault(); toggleHaptics(!hapticsOn); }}
+            className="cursor-pointer flex items-center justify-between gap-2"
+          >
+            <span className="flex items-center">
+              <Vibrate className="w-4 h-4 mr-2 text-primary" />
+              {language === 'id' ? 'Getaran' : 'Haptics'}
+            </span>
+            <Switch
+              checked={hapticsOn}
+              onCheckedChange={toggleHaptics}
+              onClick={(e) => e.stopPropagation()}
+              aria-label={language === 'id' ? 'Aktifkan getaran' : 'Enable haptics'}
+            />
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onOpenKeyboardHelp} className="cursor-pointer">
           <Keyboard className="w-4 h-4 mr-2" />
