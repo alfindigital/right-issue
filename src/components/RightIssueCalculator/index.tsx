@@ -365,16 +365,21 @@ const RightIssueCalculator: React.FC = () => {
       haptic(15);
     }
 
-    // Show skeleton loading briefly before revealing results
-    if (useWizardMode) {
+    // Show skeleton loading briefly before revealing results (respects reduced motion)
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const skeletonDelay = prefersReducedMotion ? 0 : (useWizardMode ? 600 : 350);
+    if (useWizardMode) setWizardStep(4);
+    if (skeletonDelay === 0) {
+      setIsCalculated(true);
+    } else {
       setIsCalculating(true);
-      setWizardStep(4);
+      setIsCalculated(false);
       setTimeout(() => {
         setIsCalculated(true);
         setIsCalculating(false);
-      }, 600);
-    } else {
-      setIsCalculated(true);
+      }, skeletonDelay);
     }
 
     addToHistory({
@@ -819,17 +824,19 @@ const RightIssueCalculator: React.FC = () => {
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
         />
 
-        {!isCalculated && <EmptyStateCard onLoadDemo={loadDemo} />}
+        {!isCalculated && !isCalculating && <EmptyStateCard onLoadDemo={loadDemo} />}
 
-        {isCalculated && (
+        {(isCalculated || isCalculating) && (
           <>
             <div ref={resultsDashboardRef}>
               <ResultsDashboard
-                isCalculated={isCalculated} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
+                isCalculated={isCalculated} isLoading={isCalculating}
+                finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
                 finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
                 recommendation={recommendation} recommendationText={recommendationText}
               />
             </div>
+          {isCalculated && (<>
             {/* Mobile action bar - share/export/reset */}
             <div className="flex md:hidden items-center justify-center gap-2 py-2">
               <ShareButtons
@@ -846,6 +853,7 @@ const RightIssueCalculator: React.FC = () => {
                 <RotateCcw className="w-4 h-4" />
               </button>
             </div>
+          </>)}
           </>
         )}
 
