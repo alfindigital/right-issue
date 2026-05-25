@@ -365,16 +365,21 @@ const RightIssueCalculator: React.FC = () => {
       haptic(15);
     }
 
-    // Show skeleton loading briefly before revealing results
-    if (useWizardMode) {
+    // Show skeleton loading briefly before revealing results (respects reduced motion)
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const skeletonDelay = prefersReducedMotion ? 0 : (useWizardMode ? 600 : 350);
+    if (useWizardMode) setWizardStep(4);
+    if (skeletonDelay === 0) {
+      setIsCalculated(true);
+    } else {
       setIsCalculating(true);
-      setWizardStep(4);
+      setIsCalculated(false);
       setTimeout(() => {
         setIsCalculated(true);
         setIsCalculating(false);
-      }, 600);
-    } else {
-      setIsCalculated(true);
+      }, skeletonDelay);
     }
 
     addToHistory({
