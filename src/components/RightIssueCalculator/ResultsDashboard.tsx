@@ -18,7 +18,7 @@ interface ResultsDashboardProps {
 }
 
 const ResultsSkeleton: React.FC = () => (
-  <div className="space-y-3 animate-fade-in">
+  <div className="space-y-3 animate-fade-in motion-reduce:animate-none" aria-busy="true" aria-live="polite">
     {/* Hero skeleton */}
     <div className="rounded-2xl border border-border/50 bg-card p-4 space-y-3">
       <Skeleton className="h-3 w-32" />
