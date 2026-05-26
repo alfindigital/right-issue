@@ -119,7 +119,19 @@ const RightIssueCalculator: React.FC = () => {
   useEffect(() => {
     try { localStorage.setItem('ri-view-mode', viewMode); } catch { /* noop */ }
   }, [viewMode]);
-  
+
+  // Unified display mode for Settings menu
+  const displayMode: DisplayMode = useWizardMode ? 'wizard' : viewMode;
+  const handleDisplayModeChange = useCallback((mode: DisplayMode) => {
+    if (mode === 'wizard') {
+      setUseWizardMode(true);
+      setWizardStep(1);
+    } else {
+      setUseWizardMode(false);
+      setViewMode(mode);
+    }
+  }, []);
+
   // Stock Code
   const [stockCode, setStockCode] = useState('');
   
