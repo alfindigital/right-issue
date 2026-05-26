@@ -7,7 +7,7 @@ import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
-import SettingsDropdown from './SettingsDropdown';
+import SettingsDropdown, { DisplayMode } from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import BackToTopButton from './BackToTopButton';
@@ -21,7 +21,7 @@ import BottomNav from './BottomNav';
 import Logo from './Logo';
 import EmptyStateCard from './EmptyStateCard';
 import SmartResultBar from './SmartResultBar';
-import ViewModeToggle, { ViewMode } from './ViewModeToggle';
+import { ViewMode } from './ViewModeToggle';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
@@ -119,7 +119,19 @@ const RightIssueCalculator: React.FC = () => {
   useEffect(() => {
     try { localStorage.setItem('ri-view-mode', viewMode); } catch { /* noop */ }
   }, [viewMode]);
-  
+
+  // Unified display mode for Settings menu
+  const displayMode: DisplayMode = useWizardMode ? 'wizard' : viewMode;
+  const handleDisplayModeChange = useCallback((mode: DisplayMode) => {
+    if (mode === 'wizard') {
+      setUseWizardMode(true);
+      setWizardStep(1);
+    } else {
+      setUseWizardMode(false);
+      setViewMode(mode);
+    }
+  }, []);
+
   // Stock Code
   const [stockCode, setStockCode] = useState('');
   
@@ -645,6 +657,8 @@ const RightIssueCalculator: React.FC = () => {
         onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
         onOpenEmbed={() => setEmbedOpen(true)}
         onReplayTour={replayTour}
+        displayMode={displayMode}
+        onDisplayModeChange={handleDisplayModeChange}
       />
       <KeyboardShortcutsHelp externalOpen={keyboardHelpOpen} onExternalOpenChange={setKeyboardHelpOpen} />
       <EmbedCodeModal externalOpen={embedOpen} onExternalOpenChange={setEmbedOpen} />
@@ -786,18 +800,6 @@ const RightIssueCalculator: React.FC = () => {
     const isSimple = viewMode === 'simple';
     return (
       <div className="space-y-3">
-        {activeTab === 'calculator' && useWizardMode === false && (
-          <div className="flex items-center justify-between mb-2 gap-2">
-            <ViewModeToggle mode={viewMode} onChange={setViewMode} />
-            <button
-              onClick={() => { setUseWizardMode(true); setWizardStep(1); }}
-              className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-            >
-              <Zap className="w-3 h-3" />
-              {language === 'id' ? 'Step-by-Step' : 'Step-by-Step'}
-            </button>
-          </div>
-        )}
         <StockCodeInput value={stockCode} onChange={setStockCode} />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
@@ -950,6 +952,8 @@ const RightIssueCalculator: React.FC = () => {
                 onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
                 onOpenEmbed={() => setEmbedOpen(true)}
                 onReplayTour={replayTour}
+                displayMode={displayMode}
+                onDisplayModeChange={handleDisplayModeChange}
               />
             </div>
           </div>
