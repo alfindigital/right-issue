@@ -7,7 +7,7 @@ import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
-import SettingsDropdown from './SettingsDropdown';
+import SettingsDropdown, { DisplayMode } from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import BackToTopButton from './BackToTopButton';
@@ -21,7 +21,7 @@ import BottomNav from './BottomNav';
 import Logo from './Logo';
 import EmptyStateCard from './EmptyStateCard';
 import SmartResultBar from './SmartResultBar';
-import ViewModeToggle, { ViewMode } from './ViewModeToggle';
+import { ViewMode } from './ViewModeToggle';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
@@ -645,6 +645,8 @@ const RightIssueCalculator: React.FC = () => {
         onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
         onOpenEmbed={() => setEmbedOpen(true)}
         onReplayTour={replayTour}
+        displayMode={displayMode}
+        onDisplayModeChange={handleDisplayModeChange}
       />
       <KeyboardShortcutsHelp externalOpen={keyboardHelpOpen} onExternalOpenChange={setKeyboardHelpOpen} />
       <EmbedCodeModal externalOpen={embedOpen} onExternalOpenChange={setEmbedOpen} />
@@ -950,6 +952,8 @@ const RightIssueCalculator: React.FC = () => {
                 onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
                 onOpenEmbed={() => setEmbedOpen(true)}
                 onReplayTour={replayTour}
+                displayMode={displayMode}
+                onDisplayModeChange={handleDisplayModeChange}
               />
             </div>
           </div>
