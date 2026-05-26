@@ -800,18 +800,6 @@ const RightIssueCalculator: React.FC = () => {
     const isSimple = viewMode === 'simple';
     return (
       <div className="space-y-3">
-        {activeTab === 'calculator' && useWizardMode === false && (
-          <div className="flex items-center justify-between mb-2 gap-2">
-            <ViewModeToggle mode={viewMode} onChange={setViewMode} />
-            <button
-              onClick={() => { setUseWizardMode(true); setWizardStep(1); }}
-              className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-            >
-              <Zap className="w-3 h-3" />
-              {language === 'id' ? 'Step-by-Step' : 'Step-by-Step'}
-            </button>
-          </div>
-        )}
         <StockCodeInput value={stockCode} onChange={setStockCode} />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
