@@ -821,7 +821,7 @@ const RightIssueCalculator: React.FC = () => {
     // Full mode (non-wizard)
     const isSimple = viewMode === 'simple';
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         <StockCodeInput value={stockCode} onChange={setStockCode} />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
@@ -886,14 +886,29 @@ const RightIssueCalculator: React.FC = () => {
         {/* Advanced sections — only in Pro mode */}
         {!isSimple && (
           <>
-            <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
             <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-            <Suspense fallback={<LazyFallback />}>
-              <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-              <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-              <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-              <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
-            </Suspense>
+            {isCalculated && (
+              <AdvancedSectionsAccordion
+                isCalculated={isCalculated}
+                ratioOld={ratioOld}
+                ratioNew={ratioNew}
+                currentLots={currentLots}
+                onCurrentLotsChange={setCurrentLots}
+                hasWarrant={hasWarrant}
+                warrantRatioOld={warrantRatioOld}
+                warrantRatioNew={warrantRatioNew}
+                cumPrice={parseInt(cumDatePrice) || 0}
+                riPrice={parseInt(rightPrice) || 0}
+                currentShares={(parseInt(currentLots) || 0) * 100}
+                newSharesCount={numericValues.newSharesCount}
+                totalShares={numericValues.totalShares}
+                avgBaru={numericValues.avgBaru}
+                terp={numericValues.terp}
+                currentAvgPrice={parseInt(currentAvgPrice) || 0}
+                ratioOldNum={parseDecimalId(ratioOld)}
+                ratioNewNum={parseDecimalId(ratioNew)}
+              />
+            )}
           </>
         )}
 
