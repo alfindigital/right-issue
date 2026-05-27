@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
-import { RotateCcw, Heart, ChevronRight, ChevronLeft, Zap } from 'lucide-react';
+import { RotateCcw, ChevronRight, ChevronLeft, Zap } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
@@ -1035,14 +1035,21 @@ const RightIssueCalculator: React.FC = () => {
         </Tabs>
       </main>
 
-      {/* Footer - same color as header */}
-      <footer className={`header-gradient relative overflow-hidden py-3 px-4 mt-auto ${isMobile ? 'mb-14' : ''}`}>
-        <div className="flex items-center justify-center gap-2 relative z-10">
-          <Logo size={16} color="rgba(255,255,255,0.6)" />
-          <p className="text-[11px] text-primary-foreground/70 flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> by{' '}
-            <a href="https://alfindigital.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-foreground transition-colors text-primary-foreground/80">alfindigital</a>
-          </p>
+      {/* Footer */}
+      <footer className={`border-t border-border/60 mt-auto ${isMobile ? 'mb-14' : ''}`}>
+        <div className="flex items-center justify-between py-3 px-4">
+          <span className="text-[11px] text-muted-foreground">rightissue.lovable.app</span>
+          <span className="text-[11px] text-muted-foreground">
+            by{' '}
+            <a
+              href="https://alfindigital.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground hover:text-primary transition-colors"
+            >
+              @alfindigital
+            </a>
+          </span>
         </div>
       </footer>
 
