@@ -22,6 +22,7 @@ import Logo from './Logo';
 import EmptyStateCard from './EmptyStateCard';
 import SmartResultBar from './SmartResultBar';
 import { ViewMode } from './ViewModeToggle';
+import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
