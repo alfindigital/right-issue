@@ -22,6 +22,7 @@ import Logo from './Logo';
 import EmptyStateCard from './EmptyStateCard';
 import SmartResultBar from './SmartResultBar';
 import { ViewMode } from './ViewModeToggle';
+import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
@@ -668,8 +669,20 @@ const RightIssueCalculator: React.FC = () => {
   // Render calculator content based on wizard/full mode
   const renderCalculatorContent = () => {
     if (useWizardMode && activeTab === 'calculator') {
+      const stepIntro = language === 'id' ? [
+        { title: 'Info Right Issue', desc: 'Masukkan rasio, harga tebus & harga cum-date.' },
+        { title: 'Kepemilikan Anda', desc: 'Berapa lot yang Anda pegang & harga rata-rata.' },
+        { title: 'Bonus Waran', desc: 'Aktifkan jika RI memberi bonus waran.' },
+        { title: 'Hasil & Analisis', desc: 'Ringkasan keputusan & dampak portofolio.' },
+      ] : [
+        { title: 'Right Issue Info', desc: 'Enter ratio, exercise price & cum-date price.' },
+        { title: 'Your Holdings', desc: 'How many lots you own & average price.' },
+        { title: 'Bonus Warrant', desc: 'Enable if this RI grants warrants.' },
+        { title: 'Result & Analysis', desc: 'Decision summary & portfolio impact.' },
+      ];
+      const intro = stepIntro[wizardStep - 1];
       return (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <StepWizard
             currentStep={wizardStep}
             totalSteps={4}
@@ -678,6 +691,15 @@ const RightIssueCalculator: React.FC = () => {
             }}
             stepLabels={stepLabels}
           />
+
+          {/* Step heading */}
+          <div className="px-1">
+            <div className="text-[10px] uppercase tracking-wider text-primary font-bold">
+              {language === 'id' ? `Langkah ${wizardStep}` : `Step ${wizardStep}`}
+            </div>
+            <h2 className="text-lg font-bold text-foreground mt-0.5">{intro.title}</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">{intro.desc}</p>
+          </div>
 
           {/* Step Content with Swipe */}
           <div
@@ -799,7 +821,7 @@ const RightIssueCalculator: React.FC = () => {
     // Full mode (non-wizard)
     const isSimple = viewMode === 'simple';
     return (
-      <div className="space-y-3">
+      <div className="space-y-4">
         <StockCodeInput value={stockCode} onChange={setStockCode} />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
@@ -864,14 +886,29 @@ const RightIssueCalculator: React.FC = () => {
         {/* Advanced sections — only in Pro mode */}
         {!isSimple && (
           <>
-            <LotOptimizationSection ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots} isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew} />
             <ConclusionSection newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'} totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice} recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated} />
-            <Suspense fallback={<LazyFallback />}>
-              <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-              <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-              <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-              <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
-            </Suspense>
+            {isCalculated && (
+              <AdvancedSectionsAccordion
+                isCalculated={isCalculated}
+                ratioOld={ratioOld}
+                ratioNew={ratioNew}
+                currentLots={currentLots}
+                onCurrentLotsChange={setCurrentLots}
+                hasWarrant={hasWarrant}
+                warrantRatioOld={warrantRatioOld}
+                warrantRatioNew={warrantRatioNew}
+                cumPrice={parseInt(cumDatePrice) || 0}
+                riPrice={parseInt(rightPrice) || 0}
+                currentShares={(parseInt(currentLots) || 0) * 100}
+                newSharesCount={numericValues.newSharesCount}
+                totalShares={numericValues.totalShares}
+                avgBaru={numericValues.avgBaru}
+                terp={numericValues.terp}
+                currentAvgPrice={parseInt(currentAvgPrice) || 0}
+                ratioOldNum={parseDecimalId(ratioOld)}
+                ratioNewNum={parseDecimalId(ratioNew)}
+              />
+            )}
           </>
         )}
 

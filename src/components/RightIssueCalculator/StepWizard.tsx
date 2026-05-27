@@ -1,6 +1,5 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface StepWizardProps {
   currentStep: number;
@@ -15,50 +14,65 @@ const StepWizard: React.FC<StepWizardProps> = ({
   onStepClick,
   stepLabels,
 }) => {
-  return (
-    <div className="flex items-center justify-between mb-4 px-1">
-      {Array.from({ length: totalSteps }, (_, i) => {
-        const step = i + 1;
-        const isActive = step === currentStep;
-        const isCompleted = step < currentStep;
+  const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
 
-        return (
-          <React.Fragment key={step}>
-            <button
-              onClick={() => onStepClick(step)}
-              className={`relative flex flex-col items-center group transition-all duration-300`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-110'
-                    : isCompleted
-                    ? 'bg-primary/20 text-primary'
-                    : 'bg-muted text-muted-foreground'
-                }`}
+  return (
+    <div className="card-calculator !p-4 mb-1">
+      {/* Progress bar background */}
+      <div className="relative">
+        <div className="absolute top-4 left-4 right-4 h-1 bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        {/* Step nodes */}
+        <div className="relative flex items-start justify-between">
+          {Array.from({ length: totalSteps }, (_, i) => {
+            const step = i + 1;
+            const isActive = step === currentStep;
+            const isCompleted = step < currentStep;
+            const isReachable = step <= currentStep + 1;
+
+            return (
+              <button
+                key={step}
+                onClick={() => isReachable && onStepClick(step)}
+                disabled={!isReachable}
+                className="flex flex-col items-center gap-1.5 group transition-all duration-300 disabled:cursor-not-allowed"
+                style={{ width: `${100 / totalSteps}%` }}
               >
-                {isCompleted ? <Check className="w-4 h-4" /> : step}
-              </div>
-              <span
-                className={`text-[9px] mt-1 transition-colors duration-300 max-w-[60px] text-center leading-tight ${
-                  isActive ? 'text-primary font-bold' : 'text-muted-foreground'
-                }`}
-              >
-                {stepLabels[i]}
-              </span>
-            </button>
-            {i < totalSteps - 1 && (
-              <div className="flex-1 mx-1 mt-[-12px]">
                 <div
-                  className={`h-0.5 rounded-full transition-all duration-500 ${
-                    step < currentStep ? 'bg-primary/50' : 'bg-border'
+                  className={`relative w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 border-2 ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/40 scale-110'
+                      : isCompleted
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-card text-muted-foreground border-border'
                   }`}
-                />
-              </div>
-            )}
-          </React.Fragment>
-        );
-      })}
+                >
+                  {isCompleted ? <Check className="w-4 h-4" strokeWidth={3} /> : step}
+                  {isActive && (
+                    <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+                  )}
+                </div>
+                <span
+                  className={`text-[10px] leading-tight text-center transition-colors duration-300 ${
+                    isActive
+                      ? 'text-primary font-bold'
+                      : isCompleted
+                      ? 'text-foreground/70 font-medium'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {stepLabels[i]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
