@@ -669,8 +669,20 @@ const RightIssueCalculator: React.FC = () => {
   // Render calculator content based on wizard/full mode
   const renderCalculatorContent = () => {
     if (useWizardMode && activeTab === 'calculator') {
+      const stepIntro = language === 'id' ? [
+        { title: 'Info Right Issue', desc: 'Masukkan rasio, harga tebus & harga cum-date.' },
+        { title: 'Kepemilikan Anda', desc: 'Berapa lot yang Anda pegang & harga rata-rata.' },
+        { title: 'Bonus Waran', desc: 'Aktifkan jika RI memberi bonus waran.' },
+        { title: 'Hasil & Analisis', desc: 'Ringkasan keputusan & dampak portofolio.' },
+      ] : [
+        { title: 'Right Issue Info', desc: 'Enter ratio, exercise price & cum-date price.' },
+        { title: 'Your Holdings', desc: 'How many lots you own & average price.' },
+        { title: 'Bonus Warrant', desc: 'Enable if this RI grants warrants.' },
+        { title: 'Result & Analysis', desc: 'Decision summary & portfolio impact.' },
+      ];
+      const intro = stepIntro[wizardStep - 1];
       return (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <StepWizard
             currentStep={wizardStep}
             totalSteps={4}
@@ -679,6 +691,15 @@ const RightIssueCalculator: React.FC = () => {
             }}
             stepLabels={stepLabels}
           />
+
+          {/* Step heading */}
+          <div className="px-1">
+            <div className="text-[10px] uppercase tracking-wider text-primary font-bold">
+              {language === 'id' ? `Langkah ${wizardStep}` : `Step ${wizardStep}`}
+            </div>
+            <h2 className="text-lg font-bold text-foreground mt-0.5">{intro.title}</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">{intro.desc}</p>
+          </div>
 
           {/* Step Content with Swipe */}
           <div
