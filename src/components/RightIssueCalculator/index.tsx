@@ -81,11 +81,27 @@ const RightIssueCalculator: React.FC = () => {
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
+  // Track which tabs have been visited — keep them mounted to avoid re-loading lazy chunks
+  const [visitedTabs, setVisitedTabs] = useState<Record<string, boolean>>({ calculator: true });
 
   // Wrap tab change with haptic feedback
   const handleTabChange = useCallback((tab: string) => {
     hapticTap();
     setActiveTab(tab);
+    setVisitedTabs((v) => (v[tab] ? v : { ...v, [tab]: true }));
+  }, []);
+
+  // Preload heavy chunks during idle time so tab switches feel instant
+  useEffect(() => {
+    const idle = (cb: () => void) => {
+      const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+      if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(cb);
+      else setTimeout(cb, 1200);
+    };
+    idle(() => {
+      importBudget();
+      importEducation();
+    });
   }, []);
 
   // Mobile: track whether any input is focused (for sticky Hitung bar)
