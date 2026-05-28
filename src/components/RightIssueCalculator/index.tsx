@@ -1039,21 +1039,25 @@ const RightIssueCalculator: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="calculator" className="mt-0">
+          <TabsContent value="calculator" forceMount className="mt-0 data-[state=inactive]:hidden">
             {renderCalculatorContent()}
           </TabsContent>
-          
-          <TabsContent value="budget" className="mt-0">
-            <Suspense fallback={<LazyFallback />}>
-              <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
-            </Suspense>
-          </TabsContent>
-          
-          <TabsContent value="education" className="mt-0">
-            <Suspense fallback={<LazyFallback />}>
-              <EducationSection />
-            </Suspense>
-          </TabsContent>
+
+          {visitedTabs.budget && (
+            <TabsContent value="budget" forceMount className="mt-0 data-[state=inactive]:hidden">
+              <Suspense fallback={<LazyFallback />}>
+                <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
+              </Suspense>
+            </TabsContent>
+          )}
+
+          {visitedTabs.education && (
+            <TabsContent value="education" forceMount className="mt-0 data-[state=inactive]:hidden">
+              <Suspense fallback={<LazyFallback />}>
+                <EducationSection />
+              </Suspense>
+            </TabsContent>
+          )}
         </Tabs>
       </main>
 
