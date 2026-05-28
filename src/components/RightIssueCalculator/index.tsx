@@ -1038,7 +1038,7 @@ const RightIssueCalculator: React.FC = () => {
       {/* Footer */}
       <footer className={`border-t border-border/60 mt-auto ${isMobile ? 'mb-14' : ''}`}>
         <div className="flex flex-col sm:flex-row items-center justify-between py-3 px-4 gap-1 sm:gap-0">
-          <span className="text-[11px] text-muted-foreground order-2 sm:order-1">rightissue.lovable.app</span>
+          <span className="text-[11px] text-muted-foreground order-2 sm:order-1">© {new Date().getFullYear()} rightissue.lovable.app</span>
           <span className="text-[11px] text-muted-foreground order-1 sm:order-2">
             by{' '}
             <a
