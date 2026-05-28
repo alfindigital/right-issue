@@ -40,12 +40,18 @@ import { haptic, hapticSuccess, hapticTap } from '@/lib/haptics';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy load heavy components (charts, analysis)
-const DilutionSimulator = lazy(() => import('./DilutionSimulator'));
-const ScenarioComparison = lazy(() => import('./ScenarioComparison'));
-const AdvancedAnalysisSection = lazy(() => import('./AdvancedAnalysisSection'));
-const WhatIfTargetPrice = lazy(() => import('./WhatIfTargetPrice'));
-const EducationSection = lazy(() => import('./EducationSection'));
-const BudgetLotPlanner = lazy(() => import('./BudgetLotPlanner'));
+const importDilution = () => import('./DilutionSimulator');
+const importScenario = () => import('./ScenarioComparison');
+const importAdvanced = () => import('./AdvancedAnalysisSection');
+const importWhatIf = () => import('./WhatIfTargetPrice');
+const importEducation = () => import('./EducationSection');
+const importBudget = () => import('./BudgetLotPlanner');
+const DilutionSimulator = lazy(importDilution);
+const ScenarioComparison = lazy(importScenario);
+const AdvancedAnalysisSection = lazy(importAdvanced);
+const WhatIfTargetPrice = lazy(importWhatIf);
+const EducationSection = lazy(importEducation);
+const BudgetLotPlanner = lazy(importBudget);
 // Lazy type import for callback
 type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
 
@@ -75,11 +81,27 @@ const RightIssueCalculator: React.FC = () => {
   
   // Tab state
   const [activeTab, setActiveTab] = useState('calculator');
+  // Track which tabs have been visited — keep them mounted to avoid re-loading lazy chunks
+  const [visitedTabs, setVisitedTabs] = useState<Record<string, boolean>>({ calculator: true });
 
   // Wrap tab change with haptic feedback
   const handleTabChange = useCallback((tab: string) => {
     hapticTap();
     setActiveTab(tab);
+    setVisitedTabs((v) => (v[tab] ? v : { ...v, [tab]: true }));
+  }, []);
+
+  // Preload heavy chunks during idle time so tab switches feel instant
+  useEffect(() => {
+    const idle = (cb: () => void) => {
+      const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
+      if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(cb);
+      else setTimeout(cb, 1200);
+    };
+    idle(() => {
+      importBudget();
+      importEducation();
+    });
   }, []);
 
   // Mobile: track whether any input is focused (for sticky Hitung bar)
@@ -1017,21 +1039,25 @@ const RightIssueCalculator: React.FC = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="calculator" className="mt-0">
+          <TabsContent value="calculator" forceMount className="mt-0 data-[state=inactive]:hidden">
             {renderCalculatorContent()}
           </TabsContent>
-          
-          <TabsContent value="budget" className="mt-0">
-            <Suspense fallback={<LazyFallback />}>
-              <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
-            </Suspense>
-          </TabsContent>
-          
-          <TabsContent value="education" className="mt-0">
-            <Suspense fallback={<LazyFallback />}>
-              <EducationSection />
-            </Suspense>
-          </TabsContent>
+
+          {visitedTabs.budget && (
+            <TabsContent value="budget" forceMount className="mt-0 data-[state=inactive]:hidden">
+              <Suspense fallback={<LazyFallback />}>
+                <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
+              </Suspense>
+            </TabsContent>
+          )}
+
+          {visitedTabs.education && (
+            <TabsContent value="education" forceMount className="mt-0 data-[state=inactive]:hidden">
+              <Suspense fallback={<LazyFallback />}>
+                <EducationSection />
+              </Suspense>
+            </TabsContent>
+          )}
         </Tabs>
       </main>
 
