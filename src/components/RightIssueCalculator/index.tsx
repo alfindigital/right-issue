@@ -40,12 +40,18 @@ import { haptic, hapticSuccess, hapticTap } from '@/lib/haptics';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy load heavy components (charts, analysis)
-const DilutionSimulator = lazy(() => import('./DilutionSimulator'));
-const ScenarioComparison = lazy(() => import('./ScenarioComparison'));
-const AdvancedAnalysisSection = lazy(() => import('./AdvancedAnalysisSection'));
-const WhatIfTargetPrice = lazy(() => import('./WhatIfTargetPrice'));
-const EducationSection = lazy(() => import('./EducationSection'));
-const BudgetLotPlanner = lazy(() => import('./BudgetLotPlanner'));
+const importDilution = () => import('./DilutionSimulator');
+const importScenario = () => import('./ScenarioComparison');
+const importAdvanced = () => import('./AdvancedAnalysisSection');
+const importWhatIf = () => import('./WhatIfTargetPrice');
+const importEducation = () => import('./EducationSection');
+const importBudget = () => import('./BudgetLotPlanner');
+const DilutionSimulator = lazy(importDilution);
+const ScenarioComparison = lazy(importScenario);
+const AdvancedAnalysisSection = lazy(importAdvanced);
+const WhatIfTargetPrice = lazy(importWhatIf);
+const EducationSection = lazy(importEducation);
+const BudgetLotPlanner = lazy(importBudget);
 // Lazy type import for callback
 type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
 
