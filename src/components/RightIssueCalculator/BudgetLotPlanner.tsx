@@ -586,4 +586,4 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
 
 BudgetLotPlanner.displayName = 'BudgetLotPlanner';
 
-export default BudgetLotPlanner;
+export default React.memo(BudgetLotPlanner);
