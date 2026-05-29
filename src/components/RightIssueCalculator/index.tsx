@@ -98,9 +98,18 @@ const RightIssueCalculator: React.FC = () => {
       if (typeof w.requestIdleCallback === 'function') w.requestIdleCallback(cb);
       else setTimeout(cb, 1200);
     };
+    // Stagger preloads across idle slots so we don't block first paint
     idle(() => {
       importBudget();
       importEducation();
+    });
+    idle(() => {
+      importDilution();
+      importScenario();
+    });
+    idle(() => {
+      importAdvanced();
+      importWhatIf();
     });
   }, []);
 
