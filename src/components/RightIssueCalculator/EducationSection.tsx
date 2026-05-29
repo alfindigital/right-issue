@@ -485,4 +485,4 @@ const EducationSection = React.forwardRef<HTMLDivElement, {}>((props, ref) => {
 
 EducationSection.displayName = 'EducationSection';
 
-export default EducationSection;
+export default React.memo(EducationSection);
