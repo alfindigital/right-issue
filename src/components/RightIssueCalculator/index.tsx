@@ -1156,6 +1156,7 @@ const RightIssueCalculator: React.FC = () => {
           resultsDashboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
       />
+      <DevPerfOverlay />
     </div>
   );
 };
