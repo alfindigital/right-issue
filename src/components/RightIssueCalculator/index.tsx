@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense, startTransition } from 'react';
 import { RotateCcw, ChevronRight, ChevronLeft, Zap, Globe, Facebook, Youtube, Send } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
@@ -87,8 +87,10 @@ const RightIssueCalculator: React.FC = () => {
   // Wrap tab change with haptic feedback
   const handleTabChange = useCallback((tab: string) => {
     hapticTap();
-    setActiveTab(tab);
-    setVisitedTabs((v) => (v[tab] ? v : { ...v, [tab]: true }));
+    startTransition(() => {
+      setActiveTab(tab);
+      setVisitedTabs((v) => (v[tab] ? v : { ...v, [tab]: true }));
+    });
   }, []);
 
   // Preload heavy chunks during idle time so tab switches feel instant
