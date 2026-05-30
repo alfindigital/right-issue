@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense, startTransition } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense, startTransition, Profiler } from 'react';
 import { RotateCcw, ChevronRight, ChevronLeft, Zap, Globe, Facebook, Youtube, Send } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
@@ -26,6 +26,7 @@ import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
+import DevPerfOverlay, { perfMarkTabSwitchStart, perfMarkTabSwitchEnd, onProfilerRender } from './DevPerfOverlay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -87,11 +88,17 @@ const RightIssueCalculator: React.FC = () => {
   // Wrap tab change with haptic feedback
   const handleTabChange = useCallback((tab: string) => {
     hapticTap();
+    perfMarkTabSwitchStart(tab);
     startTransition(() => {
       setActiveTab(tab);
       setVisitedTabs((v) => (v[tab] ? v : { ...v, [tab]: true }));
     });
   }, []);
+
+  // Mark end of tab switch after React commits the new active tab
+  useEffect(() => {
+    perfMarkTabSwitchEnd();
+  }, [activeTab]);
 
   // Preload heavy chunks during idle time so tab switches feel instant
   useEffect(() => {
@@ -1036,6 +1043,7 @@ const RightIssueCalculator: React.FC = () => {
         className={`flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 ${isMobile ? 'pb-20' : ''}`}
         {...(enableTabSwipe ? tabSwipeHandlers : {})}
       >
+        <Profiler id="RightIssueTabs" onRender={onProfilerRender}>
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop tabs */}
           <TabsList className="w-full mb-4 hidden md:flex">
@@ -1070,6 +1078,7 @@ const RightIssueCalculator: React.FC = () => {
             </TabsContent>
           )}
         </Tabs>
+        </Profiler>
       </main>
 
       {/* Footer */}
@@ -1147,6 +1156,7 @@ const RightIssueCalculator: React.FC = () => {
           resultsDashboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }
       />
+      <DevPerfOverlay />
     </div>
   );
 };
