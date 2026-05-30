@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense, startTransition } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense, startTransition, Profiler } from 'react';
 import { RotateCcw, ChevronRight, ChevronLeft, Zap, Globe, Facebook, Youtube, Send } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
@@ -26,6 +26,7 @@ import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
 import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
+import DevPerfOverlay, { perfMarkTabSwitchStart, perfMarkTabSwitchEnd, onProfilerRender } from './DevPerfOverlay';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -87,11 +88,17 @@ const RightIssueCalculator: React.FC = () => {
   // Wrap tab change with haptic feedback
   const handleTabChange = useCallback((tab: string) => {
     hapticTap();
+    perfMarkTabSwitchStart(tab);
     startTransition(() => {
       setActiveTab(tab);
       setVisitedTabs((v) => (v[tab] ? v : { ...v, [tab]: true }));
     });
   }, []);
+
+  // Mark end of tab switch after React commits the new active tab
+  useEffect(() => {
+    perfMarkTabSwitchEnd();
+  }, [activeTab]);
 
   // Preload heavy chunks during idle time so tab switches feel instant
   useEffect(() => {
