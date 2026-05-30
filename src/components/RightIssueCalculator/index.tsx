@@ -1043,6 +1043,7 @@ const RightIssueCalculator: React.FC = () => {
         className={`flex-1 max-w-2xl mx-auto w-full px-3 py-3 md:px-4 md:py-4 ${isMobile ? 'pb-20' : ''}`}
         {...(enableTabSwipe ? tabSwipeHandlers : {})}
       >
+        <Profiler id="RightIssueTabs" onRender={onProfilerRender}>
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop tabs */}
           <TabsList className="w-full mb-4 hidden md:flex">
@@ -1077,6 +1078,7 @@ const RightIssueCalculator: React.FC = () => {
             </TabsContent>
           )}
         </Tabs>
+        </Profiler>
       </main>
 
       {/* Footer */}
