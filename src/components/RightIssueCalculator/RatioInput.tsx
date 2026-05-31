@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { sanitizeRatioInput } from '@/lib/parseDecimal';
 import { validateRatio, validationClass, ValidationResult } from '@/lib/validators';
+import { registerField, advanceFrom, FieldKey } from '@/lib/autoAdvance';
 
 interface RatioInputProps {
   value: string;
@@ -8,6 +9,7 @@ interface RatioInputProps {
   placeholder?: string;
   className?: string;
   validation?: ValidationResult;
+  fieldKey?: FieldKey;
 }
 
 const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
@@ -16,10 +18,41 @@ const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
   placeholder,
   className = '',
   validation,
+  fieldKey,
 }, ref) => {
+  const innerRef = useRef<HTMLInputElement | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Combine forwarded ref + local ref
+  const setRef = (el: HTMLInputElement | null) => {
+    innerRef.current = el;
+    if (typeof ref === 'function') ref(el);
+    else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = el;
+  };
+
+  useEffect(() => {
+    if (!fieldKey) return;
+    registerField(fieldKey, innerRef.current, () => value);
+    return () => registerField(fieldKey, null);
+  }, [fieldKey, value]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const sanitized = sanitizeRatioInput(e.target.value);
     onChange(sanitized);
+    // Auto-advance after user types a valid value and pauses briefly.
+    if (fieldKey && sanitized) {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        if (document.activeElement === innerRef.current) advanceFrom(fieldKey);
+      }, 700);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && fieldKey) {
+      e.preventDefault();
+      advanceFrom(fieldKey);
+    }
   };
 
   const v = validation ?? validateRatio(value);
@@ -27,10 +60,11 @@ const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
 
   return (
     <input
-      ref={ref}
+      ref={setRef}
       type="text"
       value={value}
       onChange={handleChange}
+      onKeyDown={handleKeyDown}
       placeholder={placeholder}
       className={`input-calculator flex-1 ${stateClass} ${className}`}
       inputMode="decimal"

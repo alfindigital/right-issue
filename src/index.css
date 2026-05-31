@@ -427,3 +427,19 @@
 html.type-sm { font-size: 14px; }
 html.type-md { font-size: 16px; }
 html.type-lg { font-size: 18px; }
+
+/* Hide scrollbars on horizontal chip rows but keep scroll behavior. */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Inline-error shake (validators apply .is-error). Plays once when class
+   becomes present; honors reduced-motion globally via the rules above. */
+@keyframes ri-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
+}
+.input-calculator.is-error {
+  animation: ri-shake 0.35s ease-in-out;
+}

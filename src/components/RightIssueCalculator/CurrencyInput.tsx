@@ -1,8 +1,11 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense, useEffect, useRef } from 'react';
 import InfoTooltip from './InfoTooltip';
 import VoiceInputButton from './VoiceInputButton';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { validatePrice, ValidationResult, validationClass } from '@/lib/validators';
+import { registerField, advanceFrom, FieldKey } from '@/lib/autoAdvance';
+import Stepper from './Stepper';
+import type { QuickChip } from './MobileNumpad';
 
 const MobileNumpad = lazy(() => import('./MobileNumpad'));
 
@@ -19,6 +22,13 @@ interface CurrencyInputProps {
   voiceInput?: boolean;
   /** Disable mobile numpad overlay */
   mobileNumpad?: boolean;
+  /** Auto-advance key — if set, this input is registered and Done jumps to next empty field. */
+  fieldKey?: FieldKey;
+  /** Show a +/- stepper below the field (mobile only). */
+  stepperStep?: number;
+  stepperAccel?: number[];
+  /** Quick chips shown above the numpad. */
+  quickChips?: QuickChip[];
 }
 
 const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
@@ -31,9 +41,21 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   validation,
   voiceInput = true,
   mobileNumpad = true,
+  fieldKey,
+  stepperStep,
+  stepperAccel,
+  quickChips,
 }, ref) => {
   const isMobile = useIsMobile();
   const [numpadOpen, setNumpadOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Register with auto-advance registry.
+  useEffect(() => {
+    if (!fieldKey) return;
+    registerField(fieldKey, inputRef.current, () => value);
+    return () => registerField(fieldKey, null);
+  }, [fieldKey, value]);
 
   const formatNumber = (num: string): string => {
     const cleanNum = num.replace(/\D/g, '');
@@ -59,6 +81,17 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
     }
   };
 
+  const handleNumpadDone = () => {
+    if (fieldKey) advanceFrom(fieldKey);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && fieldKey) {
+      e.preventDefault();
+      advanceFrom(fieldKey);
+    }
+  };
+
   return (
     <div className="space-y-1.5" ref={ref}>
       <label htmlFor={id} className="text-xs font-medium text-foreground flex items-center">
@@ -70,11 +103,13 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
           Rp
         </span>
         <input
+          ref={inputRef}
           type="text"
           id={id}
           value={formatNumber(value)}
           onChange={handleChange}
           onFocus={handleFocus}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={`input-calculator pl-9 ${voiceInput ? 'pr-10' : ''} ${stateClass}`}
           inputMode="numeric"
@@ -89,6 +124,15 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
       {v.state === 'error' && v.message && (
         <p className="text-[10px] text-destructive">{v.message}</p>
       )}
+      {isMobile && stepperStep && (
+        <Stepper
+          value={value}
+          onChange={onChange}
+          step={stepperStep}
+          accelSteps={stepperAccel}
+          ariaLabel={`${label} stepper`}
+        />
+      )}
       {numpadEnabled && (
         <Suspense fallback={null}>
           <MobileNumpad
@@ -96,8 +140,10 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
             onOpenChange={setNumpadOpen}
             value={value}
             onChange={onChange}
+            onDone={handleNumpadDone}
             label={label}
             prefix="Rp"
+            quickChips={quickChips}
           />
         </Suspense>
       )}
