@@ -11,6 +11,9 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Switch } from '@/components/ui/switch';
 import { isHapticsEnabled, setHapticsEnabled, haptic } from '@/lib/haptics';
+import { isAutoAdvanceEnabled, setAutoAdvanceEnabled } from '@/lib/autoAdvance';
+import { isClipWatchEnabled, setClipWatchEnabled } from '@/hooks/useClipboardWatcher';
+import { ArrowRight, Clipboard } from 'lucide-react';
 
 export type DisplayMode = 'wizard' | 'simple' | 'pro';
 
@@ -29,6 +32,8 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
   const [oneHand, setOneHand] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [typeScale, setTypeScale] = useState<'sm' | 'md' | 'lg'>('md');
+  const [autoAdvance, setAutoAdvance] = useState(true);
+  const [clipWatch, setClipWatch] = useState(true);
   const hasVibrateApi = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 
   useEffect(() => {
@@ -57,6 +62,9 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     setTypeScale(ts);
     document.documentElement.classList.remove('type-sm', 'type-md', 'type-lg');
     document.documentElement.classList.add(`type-${ts}`);
+
+    setAutoAdvance(isAutoAdvanceEnabled());
+    setClipWatch(isClipWatchEnabled());
   }, []);
 
   const toggleTheme = () => {
@@ -102,6 +110,18 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     document.documentElement.classList.add(`type-${next}`);
     localStorage.setItem('ri-type-scale', next);
     haptic(10);
+  };
+
+  const toggleAutoAdvance = (next: boolean) => {
+    setAutoAdvance(next);
+    setAutoAdvanceEnabled(next);
+    if (next) haptic(10);
+  };
+
+  const toggleClipWatch = (next: boolean) => {
+    setClipWatch(next);
+    setClipWatchEnabled(next);
+    if (next) haptic(10);
   };
 
   const modeOptions: { value: DisplayMode; label: string; icon: React.ReactNode; desc: string }[] = [
@@ -246,6 +266,36 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
               </button>
             ))}
           </span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={(e) => { e.preventDefault(); toggleAutoAdvance(!autoAdvance); }}
+          className="cursor-pointer flex items-center justify-between gap-2"
+        >
+          <span className="flex items-center">
+            <ArrowRight className="w-4 h-4 mr-2 text-primary" />
+            {language === 'id' ? 'Auto-advance fokus' : 'Auto-advance focus'}
+          </span>
+          <Switch
+            checked={autoAdvance}
+            onCheckedChange={toggleAutoAdvance}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Auto-advance"
+          />
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={(e) => { e.preventDefault(); toggleClipWatch(!clipWatch); }}
+          className="cursor-pointer flex items-center justify-between gap-2"
+        >
+          <span className="flex items-center">
+            <Clipboard className="w-4 h-4 mr-2 text-primary" />
+            {language === 'id' ? 'Deteksi clipboard' : 'Clipboard detector'}
+          </span>
+          <Switch
+            checked={clipWatch}
+            onCheckedChange={toggleClipWatch}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Clipboard watcher"
+          />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onOpenKeyboardHelp} className="cursor-pointer">
