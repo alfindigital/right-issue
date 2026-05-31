@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Delete, Check } from 'lucide-react';
 
+export interface QuickChip {
+  /** Label rendered on the chip (e.g. "+500" or "×2"). */
+  label: string;
+  /** Transform the current draft string into a new draft string. */
+  apply: (currentDraft: string) => string;
+}
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -11,6 +18,8 @@ interface Props {
   allowDecimal?: boolean;
   label?: string;
   prefix?: string;
+  /** Contextual quick-value chips shown above the keypad. */
+  quickChips?: QuickChip[];
 }
 
 const vibrate = (ms = 8) => {
@@ -18,7 +27,7 @@ const vibrate = (ms = 8) => {
 };
 
 const MobileNumpad: React.FC<Props> = ({
-  open, onOpenChange, value, onChange, onDone, allowDecimal = false, label, prefix,
+  open, onOpenChange, value, onChange, onDone, allowDecimal = false, label, prefix, quickChips,
 }) => {
   const [draft, setDraft] = useState(value);
 
@@ -72,6 +81,24 @@ const MobileNumpad: React.FC<Props> = ({
             {display}
           </div>
         </div>
+
+        {quickChips && quickChips.length > 0 && (
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 mb-2 -mx-1 px-1">
+            {quickChips.map((c, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  vibrate(10);
+                  setDraft((d) => c.apply(d).replace(/\D/g, '').replace(/^0+(?=\d)/, ''));
+                }}
+                className="shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all border border-primary/20"
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="grid grid-cols-3 gap-2">
           {keys.map((k, i) => {
