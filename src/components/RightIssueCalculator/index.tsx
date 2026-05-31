@@ -37,6 +37,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
+import { useBackGestureClose } from '@/hooks/useBackGestureClose';
 import { haptic, hapticSuccess, hapticTap } from '@/lib/haptics';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -55,6 +56,34 @@ const EducationSection = lazy(importEducation);
 const BudgetLotPlanner = lazy(importBudget);
 // Lazy type import for callback
 type BudgetPlannerData = import('./BudgetLotPlanner').BudgetPlannerData;
+
+const BudgetSkeleton = () => (
+  <div className="space-y-3 animate-pulse" aria-busy="true" aria-label="Loading">
+    <Skeleton className="h-10 w-2/3" />
+    <div className="rounded-2xl border border-border p-4 space-y-3">
+      <Skeleton className="h-4 w-24" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+    </div>
+    <div className="grid grid-cols-2 gap-3">
+      <Skeleton className="h-24 rounded-2xl" />
+      <Skeleton className="h-24 rounded-2xl" />
+    </div>
+    <Skeleton className="h-32 rounded-2xl" />
+  </div>
+);
+
+const EducationSkeleton = () => (
+  <div className="space-y-3 animate-pulse" aria-busy="true" aria-label="Loading">
+    <Skeleton className="h-8 w-1/2" />
+    <Skeleton className="h-4 w-3/4" />
+    <div className="space-y-2 pt-2">
+      {[0, 1, 2, 3].map((i) => (
+        <Skeleton key={i} className="h-14 w-full rounded-xl" />
+      ))}
+    </div>
+  </div>
+);
 
 const LazyFallback = () => (
   <div className="space-y-3 p-4">
@@ -654,6 +683,10 @@ const RightIssueCalculator: React.FC = () => {
   const [tourReplayKey, setTourReplayKey] = useState(0);
   const [tourForceRun, setTourForceRun] = useState(false);
 
+  // Back-gesture / Android back button closes modal first.
+  useBackGestureClose(keyboardHelpOpen, () => setKeyboardHelpOpen(false));
+  useBackGestureClose(embedOpen, () => setEmbedOpen(false));
+
   const replayTour = useCallback(() => {
     localStorage.removeItem(ONBOARDING_STORAGE_KEY);
     setTourForceRun(true);
@@ -674,6 +707,52 @@ const RightIssueCalculator: React.FC = () => {
     dominanceRatio: 1.8,
   });
   const enableTabSwipe = isMobile && !(useWizardMode && activeTab === 'calculator');
+
+  // Prefetch lazy chunk for a given tab — used on touchstart/hover on bottom nav.
+  const prefetchTab = useCallback((tab: string) => {
+    if (tab === 'budget') importBudget();
+    else if (tab === 'education') importEducation();
+  }, []);
+
+  // Long-press shortcuts for bottom nav tabs.
+  const bottomNavShortcuts = useCallback(
+    (tab: string) => {
+      if (tab === 'calculator') {
+        return [
+          {
+            label: language === 'id' ? 'Hitung ulang' : 'Recalculate',
+            onSelect: () => { setActiveTab('calculator'); if (isCalculateEnabled) calculate(); },
+          },
+          {
+            label: language === 'id' ? 'Reset form' : 'Reset form',
+            onSelect: () => { setActiveTab('calculator'); reset(); },
+          },
+          {
+            label: language === 'id' ? 'Muat contoh (BRIS)' : 'Load example (BRIS)',
+            onSelect: () => { setActiveTab('calculator'); loadDemo(); },
+          },
+        ];
+      }
+      if (tab === 'budget') {
+        return [
+          {
+            label: language === 'id' ? 'Buka Budget Planner' : 'Open Budget Planner',
+            onSelect: () => setActiveTab('budget'),
+          },
+        ];
+      }
+      if (tab === 'education') {
+        return [
+          {
+            label: language === 'id' ? 'Buka Edukasi' : 'Open Education',
+            onSelect: () => setActiveTab('education'),
+          },
+        ];
+      }
+      return [];
+    },
+    [language, isCalculateEnabled, calculate, reset, loadDemo],
+  );
 
   // Toolbar items
   const toolbarItems = (
@@ -1064,7 +1143,7 @@ const RightIssueCalculator: React.FC = () => {
 
           {visitedTabs.budget && (
             <TabsContent value="budget" forceMount className="mt-0 data-[state=inactive]:hidden">
-              <Suspense fallback={<LazyFallback />}>
+              <Suspense fallback={<BudgetSkeleton />}>
                 <BudgetLotPlanner onApplyToCalculator={handleApplyFromBudgetPlanner} />
               </Suspense>
             </TabsContent>
@@ -1072,7 +1151,7 @@ const RightIssueCalculator: React.FC = () => {
 
           {visitedTabs.education && (
             <TabsContent value="education" forceMount className="mt-0 data-[state=inactive]:hidden">
-              <Suspense fallback={<LazyFallback />}>
+              <Suspense fallback={<EducationSkeleton />}>
                 <EducationSection />
               </Suspense>
             </TabsContent>
@@ -1124,7 +1203,14 @@ const RightIssueCalculator: React.FC = () => {
       </footer>
 
       {/* Mobile Bottom Nav */}
-      {isMobile && <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />}
+      {isMobile && (
+        <BottomNav
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onTabPrefetch={prefetchTab}
+          shortcutsFor={bottomNavShortcuts}
+        />
+      )}
 
       <BackToTopButton />
       <OnboardingTour
