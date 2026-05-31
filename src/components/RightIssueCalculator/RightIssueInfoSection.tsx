@@ -5,6 +5,8 @@ import InfoTooltip from './InfoTooltip';
 import PasteParserButton from './PasteParserButton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { haptic } from '@/lib/haptics';
+import type { QuickChip } from './MobileNumpad';
 
 interface RightIssueInfoSectionProps {
   ratioOld: string;
@@ -50,6 +52,18 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   simpleMode = false,
 }) => {
   const { t, language } = useLanguage();
+
+  const priceChips: QuickChip[] = [
+    { label: '+100', apply: (d) => String((parseInt(d || '0', 10) || 0) + 100) },
+    { label: '+500', apply: (d) => String((parseInt(d || '0', 10) || 0) + 500) },
+    { label: '+1.000', apply: (d) => String((parseInt(d || '0', 10) || 0) + 1000) },
+    { label: '×2', apply: (d) => String((parseInt(d || '0', 10) || 0) * 2) },
+    { label: '÷2', apply: (d) => String(Math.floor((parseInt(d || '0', 10) || 0) / 2)) },
+    { label: 'C', apply: () => '' },
+  ];
+
+  const ratioPresetsOld = [1, 2, 4, 10];
+  const ratioPresetsNew = [1, 2, 3];
   
   return (
     <section className="card-calculator animate-fade-in" data-tour="ri-info">
@@ -80,13 +94,50 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               value={ratioOld}
               onChange={onRatioOldChange}
               placeholder={language === 'id' ? "Lama" : "Old"}
+              fieldKey="ratioOld"
             />
             <span className="text-lg font-bold text-muted-foreground">:</span>
             <RatioInput
               value={ratioNew}
               onChange={onRatioNewChange}
               placeholder={language === 'id' ? "Baru" : "New"}
+              fieldKey="ratioNew"
             />
+          </div>
+          {/* Ratio preset chips */}
+          <div className="flex md:hidden items-center gap-1 overflow-x-auto no-scrollbar pt-1.5">
+            <span className="text-[10px] text-muted-foreground shrink-0 mr-1">
+              {language === 'id' ? 'Cepat:' : 'Quick:'}
+            </span>
+            {ratioPresetsOld.map((n) => (
+              <button
+                key={`old-${n}`}
+                type="button"
+                onClick={() => { haptic(6); onRatioOldChange(String(n)); }}
+                className={`shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold border transition-colors ${
+                  ratioOld === String(n)
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-transparent text-muted-foreground border-border hover:bg-muted'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+            <span className="text-[10px] text-muted-foreground shrink-0 mx-0.5">:</span>
+            {ratioPresetsNew.map((n) => (
+              <button
+                key={`new-${n}`}
+                type="button"
+                onClick={() => { haptic(6); onRatioNewChange(String(n)); }}
+                className={`shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold border transition-colors ${
+                  ratioNew === String(n)
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-transparent text-muted-foreground border-border hover:bg-muted'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
           </div>
           {ratioError && (
             <p className="text-xs text-destructive mt-1 animate-fade-in">{ratioError}</p>
@@ -99,6 +150,10 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           value={rightPrice}
           onChange={onRightPriceChange}
           tooltip={t('rightIssue.priceHelp')}
+          fieldKey="rightPrice"
+          stepperStep={50}
+          stepperAccel={[500, 5000]}
+          quickChips={priceChips}
         />
 
         {!simpleMode && (
@@ -108,6 +163,10 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             value={cumDatePrice}
             onChange={onCumDatePriceChange}
             tooltip={t('rightIssue.cumPriceHelp')}
+            fieldKey="cumDatePrice"
+            stepperStep={50}
+            stepperAccel={[500, 5000]}
+            quickChips={priceChips}
           />
         )}
 
@@ -143,6 +202,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     onChange={onWarrantRatioOldChange}
                     placeholder="RI"
                     className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
+                    fieldKey="warrantRatioOld"
                   />
                   <span className="text-lg font-bold text-muted-foreground">:</span>
                   <RatioInput
@@ -150,6 +210,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     onChange={onWarrantRatioNewChange}
                     placeholder={language === 'id' ? "Waran" : "Warrant"}
                     className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
+                    fieldKey="warrantRatioNew"
                   />
                 </div>
                 {warrantRatioError ? (

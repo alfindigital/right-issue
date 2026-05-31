@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Lightbulb } from 'lucide-react';
 import CurrencyInput from './CurrencyInput';
 import ReadOnlyField from './ReadOnlyField';
 import SummaryItem from './SummaryItem';
 import InfoTooltip from './InfoTooltip';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useIsMobile } from '@/hooks/use-mobile';
+import Stepper from './Stepper';
+import { registerField, advanceFrom, FieldKey } from '@/lib/autoAdvance';
+import type { QuickChip } from './MobileNumpad';
 
 interface OwnershipSectionProps {
   currentLots: string;
@@ -54,6 +58,32 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   hmetdTotalCost,
 }) => {
   const { t, language } = useLanguage();
+  const isMobile = useIsMobile();
+
+  const lotsRef = useRef<HTMLInputElement | null>(null);
+  const hmetdLotsRef = useRef<HTMLInputElement | null>(null);
+
+  // Register lot inputs in the auto-advance registry.
+  useEffect(() => {
+    registerField('currentLots', lotsRef.current, () => currentLots);
+    return () => registerField('currentLots', null);
+  }, [currentLots]);
+
+  useEffect(() => {
+    registerField('hmetdLots', hmetdLotsRef.current, () => hmetdLots);
+    return () => registerField('hmetdLots', null);
+  }, [hmetdLots]);
+
+  const priceChips: QuickChip[] = [
+    { label: '+100', apply: (d) => String((parseInt(d || '0', 10) || 0) + 100) },
+    { label: '+500', apply: (d) => String((parseInt(d || '0', 10) || 0) + 500) },
+    { label: '+1.000', apply: (d) => String((parseInt(d || '0', 10) || 0) + 1000) },
+    { label: '×2', apply: (d) => String((parseInt(d || '0', 10) || 0) * 2) },
+    { label: '÷2', apply: (d) => String(Math.floor((parseInt(d || '0', 10) || 0) / 2)) },
+    { label: 'C', apply: () => '' },
+  ];
+
+  const lotPresets = [1, 5, 10, 25, 50, 100];
   
   return (
     <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.1s' }}>
@@ -98,13 +128,25 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   <InfoTooltip text={language === 'id' ? "Jumlah lot HMETD yang ingin dibeli. 1 lot HMETD = hak tebus 100 lembar saham baru." : "Number of HMETD lots to buy. 1 HMETD lot = right to subscribe 100 new shares."} />
                 </label>
                 <input
+                  ref={hmetdLotsRef}
                   type="text"
                   value={hmetdLots ? new Intl.NumberFormat('id-ID').format(parseInt(hmetdLots)) : ''}
                   onChange={(e) => onHmetdLotsChange(e.target.value.replace(/\D/g, ''))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); advanceFrom('hmetdLots'); } }}
                   placeholder="0"
                   className="input-calculator"
                   inputMode="numeric"
               />
+                {isMobile && (
+                  <Stepper
+                    value={hmetdLots}
+                    onChange={onHmetdLotsChange}
+                    step={1}
+                    accelSteps={[5, 25]}
+                    presets={lotPresets}
+                    ariaLabel="HMETD lots stepper"
+                  />
+                )}
               </div>
 
               <CurrencyInput
@@ -113,6 +155,10 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 value={hmetdPrice}
                 onChange={onHmetdPriceChange}
                 tooltip={language === 'id' ? "Harga beli HMETD per lembar di pasar sekunder. Cek harga HMETD-R di broker Anda." : "HMETD purchase price per share in secondary market. Check HMETD-R price at your broker."}
+                fieldKey="hmetdPrice"
+                stepperStep={50}
+                stepperAccel={[500, 5000]}
+                quickChips={priceChips}
               />
 
               {hmetdTotalCost && (
@@ -147,13 +193,25 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   <InfoTooltip text={language === 'id' ? "1 lot = 100 lembar saham." : "1 lot = 100 shares."} />
                 </label>
                 <input
+                  ref={lotsRef}
                   type="text"
                   value={currentLots ? new Intl.NumberFormat('id-ID').format(parseInt(currentLots)) : ''}
                   onChange={(e) => onCurrentLotsChange(e.target.value.replace(/\D/g, ''))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); advanceFrom('currentLots'); } }}
                   placeholder="0"
                   className="input-calculator"
                   inputMode="numeric"
                 />
+                {isMobile && (
+                  <Stepper
+                    value={currentLots}
+                    onChange={onCurrentLotsChange}
+                    step={1}
+                    accelSteps={[5, 25]}
+                    presets={lotPresets}
+                    ariaLabel="Current lots stepper"
+                  />
+                )}
               </div>
 
               <CurrencyInput
@@ -162,6 +220,10 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 value={currentAvgPrice}
                 onChange={onCurrentAvgPriceChange}
                 tooltip={t('ownership.avgPriceHelp')}
+                fieldKey="currentAvgPrice"
+                stepperStep={50}
+                stepperAccel={[500, 5000]}
+                quickChips={priceChips}
               />
 
               <ReadOnlyField
