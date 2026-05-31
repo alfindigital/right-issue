@@ -391,3 +391,39 @@
     box-shadow: 0 4px 20px -4px hsl(270 70% 50% / 0.25);
   }
 }
+
+/* === Comfort & Accessibility === */
+
+/* Reduce motion: honor system preference + opt-in `.reduce-motion` class. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* One-hand mode: push main content down so thumbs can reach the top
+   of the screen on tall phones. Toggleable via Settings. */
+@media (max-width: 767px) {
+  .one-hand-mode main {
+    padding-top: 28vh;
+    transition: padding-top 0.35s ease;
+  }
+}
+
+/* Dynamic type — coarse scale toggles applied on <html>. */
+html.type-sm { font-size: 14px; }
+html.type-md { font-size: 16px; }
+html.type-lg { font-size: 18px; }
