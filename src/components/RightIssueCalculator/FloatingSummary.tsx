@@ -17,15 +17,23 @@ const FloatingSummary: React.FC<FloatingSummaryProps> = ({
   recommendation,
 }) => {
   const [show, setShow] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    if (isVisible) {
+    const onScroll = () => setScrolled(window.scrollY > 140);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (isVisible && scrolled) {
       const timer = setTimeout(() => setShow(true), 100);
       return () => clearTimeout(timer);
     } else {
       setShow(false);
     }
-  }, [isVisible]);
+  }, [isVisible, scrolled]);
 
   if (!show) return null;
 
