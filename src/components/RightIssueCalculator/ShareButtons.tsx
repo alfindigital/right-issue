@@ -272,22 +272,38 @@ ${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositi
           <ChevronDown className="w-3 h-3" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={saveAsImage} className="cursor-pointer">
-          <Download className="w-4 h-4 mr-2" />
-          {language === 'id' ? 'Download Gambar' : 'Download Image'}
+      <DropdownMenuContent align="end" className="flex flex-row gap-1 p-2 w-auto min-w-0">
+        <DropdownMenuItem
+          onClick={saveAsImage}
+          className="cursor-pointer p-2 justify-center"
+          title={language === 'id' ? 'Download Gambar' : 'Download Image'}
+          aria-label={language === 'id' ? 'Download Gambar' : 'Download Image'}
+        >
+          <Download className="w-4 h-4" />
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={copyImageToClipboard} className="cursor-pointer">
-          <Clipboard className="w-4 h-4 mr-2" />
-          {language === 'id' ? 'Salin Gambar' : 'Copy Image'}
+        <DropdownMenuItem
+          onClick={copyImageToClipboard}
+          className="cursor-pointer p-2 justify-center"
+          title={language === 'id' ? 'Salin Gambar' : 'Copy Image'}
+          aria-label={language === 'id' ? 'Salin Gambar' : 'Copy Image'}
+        >
+          <Clipboard className="w-4 h-4" />
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={shareNative} className="cursor-pointer">
-          <Link2 className="w-4 h-4 mr-2" />
-          {language === 'id' ? 'Bagikan Link' : 'Share Link'}
+        <DropdownMenuItem
+          onClick={shareNative}
+          className="cursor-pointer p-2 justify-center"
+          title={language === 'id' ? 'Bagikan Link' : 'Share Link'}
+          aria-label={language === 'id' ? 'Bagikan Link' : 'Share Link'}
+        >
+          <Link2 className="w-4 h-4" />
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={shareToWhatsApp} className="cursor-pointer">
-          <MessageCircle className="w-4 h-4 mr-2" />
-          {language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
+        <DropdownMenuItem
+          onClick={shareToWhatsApp}
+          className="cursor-pointer p-2 justify-center"
+          title={language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
+          aria-label={language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
+        >
+          <MessageCircle className="w-4 h-4" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
