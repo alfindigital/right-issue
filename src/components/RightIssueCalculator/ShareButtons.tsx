@@ -268,7 +268,6 @@ ${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositi
           aria-label="Share"
         >
           <Share2 className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">{t('action.share')}</span>
           <ChevronDown className="w-3 h-3" />
         </button>
       </DropdownMenuTrigger>
