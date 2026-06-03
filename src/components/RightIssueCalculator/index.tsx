@@ -312,12 +312,6 @@ const RightIssueCalculator: React.FC = () => {
         setHasWarrant(saved.hasWarrant);
         setWarrantRatioOld(saved.warrantRatioOld);
         setWarrantRatioNew(saved.warrantRatioNew);
-        
-        toast({
-          title: "Data dipulihkan",
-          description: "Input terakhir Anda telah dipulihkan.",
-          duration: 3000,
-        });
       }
     }
   }, [loadFromStorage]);
