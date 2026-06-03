@@ -39,7 +39,7 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   placeholder = "0",
   tooltip,
   validation,
-  voiceInput = true,
+  voiceInput = false,
   mobileNumpad = true,
   fieldKey,
   stepperStep,

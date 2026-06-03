@@ -177,11 +177,7 @@
   }
 
   .input-calculator.is-valid {
-    border-color: hsl(var(--success) / 0.7);
-  }
-  .input-calculator.is-valid:focus {
-    box-shadow: 0 0 0 3px hsl(var(--success) / 0.15);
-    border-color: hsl(var(--success));
+    /* no green border on valid; keep neutral */
   }
   .input-calculator.is-error {
     border-color: hsl(var(--destructive) / 0.85);
