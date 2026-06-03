@@ -417,16 +417,6 @@ const RightIssueCalculator: React.FC = () => {
         `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
       );
       hapticSuccess();
-      // 🎉 Confetti celebration (dynamic import)
-      setTimeout(async () => {
-        const { default: confetti } = await import('canvas-confetti');
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#4f46e5', '#22c55e', '#f59e0b', '#3b82f6', '#a855f7'],
-        });
-      }, 400);
     } else {
       setRecommendation('negative');
       const negativeDiff = Math.abs(priceDiff);
@@ -624,13 +614,6 @@ const RightIssueCalculator: React.FC = () => {
     
     setIsCalculated(true);
     setUseWizardMode(false);
-    toast({
-      title: language === 'id' ? 'Hasil dimuat dari history' : 'Loaded from history',
-      description: item.stockCode
-        ? `${item.stockCode} · ${item.inputs.ratioOld}:${item.inputs.ratioNew}`
-        : `${item.inputs.ratioOld}:${item.inputs.ratioNew}`,
-      duration: 2200,
-    });
   }, [language]);
 
   // Wizard navigation
