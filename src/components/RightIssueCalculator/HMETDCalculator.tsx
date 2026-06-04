@@ -62,7 +62,7 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
             : 'border-border bg-muted/30'
         }`} style={{ animationDelay: '100ms' }}>
           <div className="flex items-center gap-1.5 mb-2">
-            <Wallet className="w-4 h-4 text-amber-600" />
+            <Wallet className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             <span className="text-xs font-semibold">
               {language === 'id' ? 'Jual HMETD' : 'Sell HMETD'}
             </span>
@@ -72,7 +72,7 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
               <p className="text-[10px] text-muted-foreground">
                 {language === 'id' ? 'Modal' : 'Capital'}
               </p>
-              <p className="text-sm font-bold text-green-600">Rp 0</p>
+              <p className="text-sm font-bold text-green-600 dark:text-green-400">Rp 0</p>
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground">
@@ -82,7 +82,7 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
             </div>
           </div>
           {isSellBetter && (
-            <div className="mt-2 flex items-center gap-1 text-green-600">
+            <div className="mt-2 flex items-center gap-1 text-green-600 dark:text-green-400">
               <TrendingUp className="w-3 h-3" />
               <span className="text-[10px] font-semibold">
                 {language === 'id' ? 'Lebih untung' : 'More profitable'}
@@ -108,17 +108,17 @@ const HMETDCalculator: React.FC<HMETDCalculatorProps> = ({
               <p className="text-[10px] text-muted-foreground">
                 {language === 'id' ? 'Modal' : 'Capital'}
               </p>
-              <p className="text-sm font-bold text-red-600">{formatCurrency(exerciseCost)}</p>
+              <p className="text-sm font-bold text-red-600 dark:text-red-400">{formatCurrency(exerciseCost)}</p>
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground">
                 {language === 'id' ? 'Potensi Gain' : 'Potential Gain'}
               </p>
-              <p className="text-sm font-bold text-green-600">+{formatCurrency(exercisePotentialGain)}</p>
+              <p className="text-sm font-bold text-green-600 dark:text-green-400">+{formatCurrency(exercisePotentialGain)}</p>
             </div>
           </div>
           {!isSellBetter && (
-            <div className="mt-2 flex items-center gap-1 text-green-600">
+            <div className="mt-2 flex items-center gap-1 text-green-600 dark:text-green-400">
               <TrendingUp className="w-3 h-3" />
               <span className="text-[10px] font-semibold">
                 {language === 'id' ? 'Lebih untung' : 'More profitable'}
