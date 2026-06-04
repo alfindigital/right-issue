@@ -85,7 +85,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
         {/* Target +10% */}
         <div className="stagger-item p-3 bg-card rounded-xl border border-border transition-all duration-300 hover:border-green-500/30 hover:shadow-sm" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center gap-1.5 mb-1">
-            <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+            <TrendingUp className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
             <span className="text-[10px] text-muted-foreground">Target +10%</span>
           </div>
           <p className="text-lg font-bold text-green-600 dark:text-green-400">{formatCurrency(targetFor10)}</p>
@@ -94,7 +94,7 @@ const BreakEvenROICalculator: React.FC<BreakEvenROICalculatorProps> = ({
         {/* Target +20% */}
         <div className="stagger-item p-3 bg-card rounded-xl border border-border transition-all duration-300 hover:border-green-500/30 hover:shadow-sm" style={{ animationDelay: '250ms' }}>
           <div className="flex items-center gap-1.5 mb-1">
-            <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+            <TrendingUp className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
             <span className="text-[10px] text-muted-foreground">Target +20%</span>
           </div>
           <p className="text-lg font-bold text-green-600 dark:text-green-400">{formatCurrency(targetFor20)}</p>
