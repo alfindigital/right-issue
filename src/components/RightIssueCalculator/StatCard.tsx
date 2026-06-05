@@ -31,7 +31,7 @@ const glowMap = {
   purple: 'glow-purple',
 };
 
-function useCountUp(target: number, duration = 800, enabled = false) {
+function useCountUp(target: number, duration = 800, enabled = false, decimals = 0) {
   const [display, setDisplay] = useState(0);
   const rafRef = useRef<number>();
 
@@ -46,14 +46,15 @@ function useCountUp(target: number, duration = 800, enabled = false) {
       const progress = Math.min(elapsed / duration, 1);
       // ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplay(Math.round(eased * target));
+      const factor = Math.pow(10, decimals);
+      setDisplay(Math.round(eased * target * factor) / factor);
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(animate);
       }
     };
     rafRef.current = requestAnimationFrame(animate);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [target, duration, enabled]);
+  }, [target, duration, enabled, decimals]);
 
   return display;
 }
@@ -68,14 +69,21 @@ const StatCard: React.FC<StatCardProps> = ({
 }) => {
   const [show, setShow] = useState(!animated);
 
-  // Extract numeric part for count-up
-  const numericMatch = value.match(/([\d,.]+)/);
-  const numericTarget = numericMatch ? parseInt(numericMatch[1].replace(/[.,]/g, '')) : 0;
-  const prefix = numericMatch ? value.slice(0, value.indexOf(numericMatch[1])) : '';
-  const suffix = numericMatch ? value.slice(value.indexOf(numericMatch[1]) + numericMatch[1].length) : value;
+  // Extract numeric part for count-up. Handle Indonesian format where `.` is thousands
+  // and `,` is decimal separator (e.g. "1.250,50" → 1250.5, "2,50" → 2.5).
+  const numericMatch = value.match(/([\d.,]+)/);
+  const rawNum = numericMatch ? numericMatch[1] : '';
+  const normalized = rawNum.replace(/\./g, '').replace(',', '.');
+  const numericTarget = rawNum ? parseFloat(normalized) || 0 : 0;
+  const decimalPart = rawNum.includes(',') ? rawNum.split(',')[1] : '';
+  const decimals = decimalPart.length;
+  const prefix = numericMatch ? value.slice(0, value.indexOf(rawNum)) : '';
+  const suffix = numericMatch ? value.slice(value.indexOf(rawNum) + rawNum.length) : value;
 
-  const countValue = useCountUp(numericTarget, 900, show && animated);
-  const formattedCount = numericTarget > 0 ? countValue.toLocaleString('id-ID') : '';
+  const countValue = useCountUp(numericTarget, 900, show && animated, decimals);
+  const formattedCount = numericTarget > 0
+    ? countValue.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+    : '';
 
   useEffect(() => {
     if (animated) {
