@@ -58,25 +58,30 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Kalkulator Right Issue IDX - Hitung Jatah RI & TERP Saham</title>
+        <title>Rumus Right Issue & Kalkulator TERP Saham IDX | alfin</title>
         <meta
           name="description"
-          content="Hitung jatah Right Issue (HMETD) saham IDX: jumlah lot, biaya tebus, harga teoritis TERP, dilusi, dan rekomendasi tebus. Mendukung warrant & budget planner."
+          content="Hitung rumus right issue otomatis: jatah HMETD, TERP, dilusi & warrant saham IDX. Kalkulator gratis berbahasa Indonesia untuk investor pasar modal."
         />
         <link rel="canonical" href="https://rightissue.lovable.app/" />
-        <meta property="og:title" content="Kalkulator Right Issue IDX - Hitung Jatah RI & TERP Saham" />
+        <meta property="og:title" content="Rumus Right Issue & Kalkulator TERP Saham IDX" />
         <meta
           property="og:description"
-          content="Kalkulator HMETD saham Indonesia: jatah lot, biaya tebus, TERP, dilusi, dan rekomendasi tebus."
+          content="Hitung rumus right issue otomatis: jatah HMETD, TERP, dilusi & warrant. Gratis, berbahasa Indonesia."
         />
         <meta property="og:url" content="https://rightissue.lovable.app/" />
         <meta property="og:type" content="website" />
+        <meta property="og:locale" content="id_ID" />
+        <meta property="og:locale:alternate" content="en_US" />
         <meta property="og:image" content="https://rightissue.lovable.app/og-home.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Kalkulator Right Issue Saham IDX" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Kalkulator Right Issue IDX - Hitung Jatah RI & TERP Saham" />
+        <meta name="twitter:title" content="Rumus Right Issue & Kalkulator TERP Saham IDX" />
         <meta
           name="twitter:description"
-          content="Kalkulator HMETD saham Indonesia: jatah lot, biaya tebus, TERP, dilusi, dan rekomendasi tebus."
+          content="Hitung rumus right issue otomatis: jatah HMETD, TERP, dilusi & warrant. Gratis."
         />
         <meta name="twitter:image" content="https://rightissue.lovable.app/og-home.png" />
         <script type="application/ld+json">{JSON.stringify(webAppJsonLd)}</script>
