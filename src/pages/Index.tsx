@@ -54,6 +54,25 @@ const faqJsonLd = {
   ],
 };
 
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Beranda',
+      item: 'https://rightissue.lovable.app/',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Kalkulator Right Issue',
+      item: 'https://rightissue.lovable.app/',
+    },
+  ],
+};
+
 const Index = () => {
   return (
     <>
@@ -64,6 +83,9 @@ const Index = () => {
           content="Hitung rumus right issue otomatis: jatah HMETD, TERP, dilusi & warrant saham IDX. Kalkulator gratis berbahasa Indonesia untuk investor pasar modal."
         />
         <link rel="canonical" href="https://rightissue.lovable.app/" />
+        <link rel="alternate" hrefLang="id" href="https://rightissue.lovable.app/" />
+        <link rel="alternate" hrefLang="en" href="https://rightissue.lovable.app/" />
+        <link rel="alternate" hrefLang="x-default" href="https://rightissue.lovable.app/" />
         <meta property="og:title" content="Rumus Right Issue & Kalkulator TERP Saham IDX" />
         <meta
           property="og:description"
@@ -86,6 +108,7 @@ const Index = () => {
         <meta name="twitter:image" content="https://rightissue.lovable.app/og-home.png" />
         <script type="application/ld+json">{JSON.stringify(webAppJsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       </Helmet>
       <RightIssueCalculator />
     </>
