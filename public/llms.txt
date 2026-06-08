@@ -1,15 +1,63 @@
-# Kalkulator Right Issue IDX
+# Kalkulator Right Issue IDX (HMETD)
 
-> Kalkulator Right Issue (HMETD) untuk saham Indonesia (IDX). Hitung jatah lembar RI, total biaya tebus, harga teoritis (TERP), dilusi kepemilikan, dan dapatkan rekomendasi tebus berbasis perhitungan matematis.
+> Kalkulator Right Issue (HMETD) saham Bursa Efek Indonesia (IDX/BEI) yang gratis, akurat, dan berbahasa Indonesia. Menghitung jatah lot HMETD, total biaya tebus, harga teoritis ex-rights (TERP), persentase dilusi kepemilikan, nilai warrant bonus, serta memberi rekomendasi tebus berbasis perhitungan matematis. Cocok untuk investor ritel pasar modal Indonesia yang ingin memutuskan apakah menebus, sebagian, atau menjual hak HMETD-nya.
 
-Aplikasi web berbahasa Indonesia/Inggris untuk investor pasar modal Indonesia. Fitur utama: kalkulator TERP, perencana anggaran (budget planner), simulator dilusi, simulator harga target, perbandingan skenario, dan modul edukasi mekanisme Right Issue di IDX.
+## Tentang aplikasi
 
-## Pages
+Aplikasi web (Progressive Web App) yang dapat diakses dari browser desktop maupun mobile, tanpa registrasi, tanpa biaya, dan dapat dipakai offline setelah dibuka sekali. Tersedia dalam Bahasa Indonesia (default) dan Bahasa Inggris.
 
-- [Kalkulator Right Issue](/): Hitung jatah HMETD, TERP, dilusi, dan rekomendasi tebus berdasarkan rasio RI dan harga cum-date.
-- [Embed Widget](/embed): Versi mini kalkulator yang dapat disematkan ke website lain via iframe.
+Pengembang: alfindigital (https://alfindigital.com).
+
+## Cara menghitung Right Issue (rumus utama)
+
+- **Jatah HMETD (lembar)** = (jumlah lot dimiliki × 100) × (rasio saham baru ÷ rasio saham lama)
+- **Total biaya tebus** = jatah HMETD (lembar) × harga tebus per lembar
+- **TERP (Theoretical Ex-Rights Price)** = ((harga cum-rights × saham lama) + (harga tebus × saham baru)) ÷ (saham lama + saham baru)
+- **Nilai HMETD per lembar** = harga cum-rights − TERP
+- **Dilusi (%)** = rasio saham baru ÷ (rasio saham lama + rasio saham baru) × 100%
+
+Satuan input dan output selalu LOT (1 lot = 100 lembar) — tidak ada odd lot.
+
+## Pertanyaan yang dapat dijawab aplikasi
+
+- Apa itu Right Issue / HMETD di saham IDX?
+- Bagaimana cara menghitung TERP saham setelah Right Issue?
+- Berapa biaya tebus Right Issue saya jika punya N lot di harga X?
+- Berapa persen dilusi jika saya tidak menebus Right Issue?
+- Apakah lebih baik tebus penuh, sebagian, atau jual HMETD?
+- Berapa lot tambahan agar tidak terjadi odd lot setelah tebus?
+- Berapa nilai warrant bonus yang saya dapat dari Right Issue?
+- Berapa target harga jual agar break-even setelah tebus Right Issue?
+
+## Fitur
+
+- Kalkulator TERP & HMETD dengan input rasio RI dan harga cum-date
+- Optimasi lot untuk menghindari odd lot
+- Kalkulator warrant bonus terintegrasi
+- Simulator dilusi kepemilikan (PieChart)
+- Simulator harga target (what-if) hingga 5 skenario
+- Perbandingan skenario: tebus penuh, sebagian, atau jual hak
+- Perencana anggaran (budget planner) untuk alokasi pembelian
+- Mode tanpa kepemilikan (beli rights langsung dari pasar)
+- Edukasi mekanisme Right Issue IDX & glosarium
+- Ekspor PDF A4 lengkap dengan parameter, metrik, dan disclaimer
+- Riwayat 10 perhitungan terakhir (localStorage)
+- Berbagi hasil (share card) dengan watermark
+
+## Halaman
+
+- [Kalkulator Right Issue](/): Halaman utama — hitung jatah HMETD, TERP, dilusi, warrant, dan rekomendasi tebus berdasarkan rasio RI dan harga cum-date.
+
+## Disclaimer
+
+Hasil perhitungan bersifat estimasi matematis berdasarkan input pengguna dan rumus standar HMETD/TERP. Aplikasi ini bukan nasihat investasi. Keputusan menebus, menjual, atau menahan HMETD adalah tanggung jawab masing-masing investor.
+
+## Sumber dasar perhitungan
+
+- Peraturan OJK No. 32/POJK.04/2015 tentang Penambahan Modal dengan HMETD
+- Mekanisme HMETD Bursa Efek Indonesia (idx.co.id)
 
 ## Optional
 
-- [Sitemap](/sitemap.xml): Daftar lengkap halaman yang dapat diindeks.
+- [Sitemap](/sitemap.xml): Daftar halaman yang dapat diindeks.
 - [Robots](/robots.txt): Aturan crawler.
