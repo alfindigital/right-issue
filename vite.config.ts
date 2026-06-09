@@ -86,11 +86,38 @@ export default defineConfig(({ mode }) => ({
         name: "Kalkulator Right Issue",
         short_name: "RI Calc",
         description: "Kalkulator Right Issue untuk saham Indonesia (IDX)",
+        lang: "id-ID",
+        dir: "ltr",
+        categories: ["finance", "productivity", "utilities"],
         theme_color: "#0f172a",
         background_color: "#0f172a",
         display: "standalone",
         orientation: "portrait",
         start_url: "/",
+        scope: "/",
+        shortcuts: [
+          {
+            name: "Hitung Right Issue",
+            short_name: "Hitung",
+            description: "Buka kalkulator Right Issue",
+            url: "/?tab=calculator",
+            icons: [{ src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" }],
+          },
+          {
+            name: "Budget Planner",
+            short_name: "Budget",
+            description: "Rencanakan alokasi pembelian saham",
+            url: "/?tab=budget",
+            icons: [{ src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" }],
+          },
+          {
+            name: "Panduan Edukasi",
+            short_name: "Edukasi",
+            description: "Pelajari mekanisme Right Issue IDX",
+            url: "/?tab=education",
+            icons: [{ src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" }],
+          },
+        ],
         icons: [
           {
             src: "/pwa-192x192.png",
