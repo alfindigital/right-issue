@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
+import Footer from "./components/Footer";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AlertTriangle } from "lucide-react";
 
