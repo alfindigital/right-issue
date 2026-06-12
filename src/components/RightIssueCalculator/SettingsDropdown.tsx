@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Zap, Sparkles, Settings2, Check, Hand, Type, Activity } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Zap, Sparkles, Settings2, Check, Hand, Type, Activity, Download, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,15 @@ import { isHapticsEnabled, setHapticsEnabled, haptic } from '@/lib/haptics';
 import { isAutoAdvanceEnabled, setAutoAdvanceEnabled } from '@/lib/autoAdvance';
 import { isClipWatchEnabled, setClipWatchEnabled } from '@/hooks/useClipboardWatcher';
 import { ArrowRight, Clipboard } from 'lucide-react';
+import { toast } from 'sonner';
+import { readRaw, writeRaw } from '@/lib/safeStorage';
+
+// Keys eligible for export/import. Settings are intentionally excluded — only user-generated data.
+const EXPORT_KEYS = [
+  'ri-calculator-history',
+  'ri-budget-planner-history',
+  'ri-calculator-autosave',
+] as const;
 
 export type DisplayMode = 'wizard' | 'simple' | 'pro';
 
@@ -27,6 +36,7 @@ interface SettingsDropdownProps {
 
 const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed, onReplayTour, displayMode, onDisplayModeChange }, ref) => {
   const { language, setLanguage, t } = useLanguage();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDark, setIsDark] = useState(false);
   const [hapticsOn, setHapticsOn] = useState(true);
   const [oneHand, setOneHand] = useState(false);
@@ -122,6 +132,71 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     setClipWatch(next);
     setClipWatchEnabled(next);
     if (next) haptic(10);
+  };
+
+  const handleExportData = () => {
+    try {
+      const payload: Record<string, unknown> = {
+        app: 'ri-calculator',
+        exportedAt: new Date().toISOString(),
+        version: 1,
+        data: {} as Record<string, unknown>,
+      };
+      const data = payload.data as Record<string, unknown>;
+      for (const key of EXPORT_KEYS) {
+        const raw = readRaw(key);
+        if (raw) {
+          try { data[key] = JSON.parse(raw); } catch { data[key] = raw; }
+        }
+      }
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ri-calculator-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success(language === 'id' ? 'Data berhasil diekspor' : 'Data exported');
+    } catch {
+      toast.error(language === 'id' ? 'Gagal mengekspor data' : 'Export failed');
+    }
+  };
+
+  const handleImportClick = () => fileInputRef.current?.click();
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed || parsed.app !== 'ri-calculator' || !parsed.data || typeof parsed.data !== 'object') {
+        throw new Error('invalid');
+      }
+      const confirmMsg = language === 'id'
+        ? 'Impor akan menimpa riwayat & autosave saat ini. Lanjutkan?'
+        : 'Import will overwrite current history & autosave. Continue?';
+      if (!window.confirm(confirmMsg)) return;
+      let count = 0;
+      for (const key of EXPORT_KEYS) {
+        const val = (parsed.data as Record<string, unknown>)[key];
+        if (val !== undefined && val !== null) {
+          const ok = writeRaw(key, typeof val === 'string' ? val : JSON.stringify(val));
+          if (ok) count++;
+        }
+      }
+      toast.success(
+        language === 'id'
+          ? `Impor selesai (${count} bagian). Reload halaman…`
+          : `Imported (${count} sections). Reloading…`,
+      );
+      setTimeout(() => window.location.reload(), 700);
+    } catch {
+      toast.error(language === 'id' ? 'File backup tidak valid' : 'Invalid backup file');
+    }
   };
 
   const modeOptions: { value: DisplayMode; label: string; icon: React.ReactNode; desc: string }[] = [
@@ -312,6 +387,25 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
             {language === 'id' ? 'Tampilkan Tur Lagi' : 'Replay Tour'}
           </DropdownMenuItem>
         )}
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+          {language === 'id' ? 'Data' : 'Data'}
+        </DropdownMenuLabel>
+        <DropdownMenuItem onClick={handleExportData} className="cursor-pointer">
+          <Download className="w-4 h-4 mr-2 text-primary" />
+          {language === 'id' ? 'Ekspor data (backup)' : 'Export data (backup)'}
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleImportClick(); }} className="cursor-pointer">
+          <Upload className="w-4 h-4 mr-2 text-primary" />
+          {language === 'id' ? 'Impor data (restore)' : 'Import data (restore)'}
+        </DropdownMenuItem>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          onChange={handleImportFile}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );
