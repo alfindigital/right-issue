@@ -16,11 +16,10 @@ type StatusResp = {
   metaTag?: { ok: boolean; status?: number; found?: boolean; token?: string | null; expected?: string; matches?: boolean; error?: string };
 };
 
-const PWD_KEY = "gsc_admin_pwd";
-
 export default function Admin() {
-  const [pwd, setPwd] = useState<string>(() => sessionStorage.getItem(PWD_KEY) || "");
-  const [authed, setAuthed] = useState<boolean>(!!sessionStorage.getItem(PWD_KEY));
+  // Password kept in memory only — never persisted to storage (no XSS/extension exposure).
+  const [pwd, setPwd] = useState<string>("");
+  const [authed, setAuthed] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState<StatusResp | null>(null);
@@ -42,13 +41,11 @@ export default function Admin() {
       const res = await call("status");
       if (res?.error) throw new Error(res.error);
       setData(res);
-      sessionStorage.setItem(PWD_KEY, pwd);
       setAuthed(true);
     } catch (e: any) {
       const msg = e?.message || "Failed to load";
       setError(msg);
       if (/unauthorized|401/i.test(msg)) {
-        sessionStorage.removeItem(PWD_KEY);
         setAuthed(false);
       }
     } finally {

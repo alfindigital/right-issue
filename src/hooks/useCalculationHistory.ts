@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { readVersioned, writeVersioned, removeKey } from '@/lib/safeStorage';
 
 export interface CalculationHistoryItem {
   id: string;
@@ -28,29 +29,20 @@ export interface CalculationHistoryItem {
 
 const STORAGE_KEY = 'ri-calculator-history';
 const MAX_HISTORY_ITEMS = 10;
+const SCHEMA_VERSION = 1;
 
 export const useCalculationHistory = () => {
   const [history, setHistory] = useState<CalculationHistoryItem[]>([]);
 
   // Load history from localStorage on mount
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setHistory(JSON.parse(stored));
-      }
-    } catch (error) {
-      console.error('Failed to load history:', error);
-    }
+    const stored = readVersioned<CalculationHistoryItem[]>(STORAGE_KEY, SCHEMA_VERSION);
+    if (Array.isArray(stored)) setHistory(stored);
   }, []);
 
-  // Save history to localStorage
+  // Save history to localStorage (quota-safe, versioned)
   const saveToStorage = useCallback((items: CalculationHistoryItem[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch (error) {
-      console.error('Failed to save history:', error);
-    }
+    writeVersioned(STORAGE_KEY, SCHEMA_VERSION, items);
   }, []);
 
   // Add new calculation to history
@@ -80,7 +72,7 @@ export const useCalculationHistory = () => {
   // Clear all history
   const clearHistory = useCallback(() => {
     setHistory([]);
-    localStorage.removeItem(STORAGE_KEY);
+    removeKey(STORAGE_KEY);
   }, []);
 
   return {
