@@ -90,7 +90,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
       toast.success(language === 'id' ? '✅ Gambar berhasil disimpan!' : '✅ Image saved successfully!');
     } catch (error) {
       toast.error(language === 'id' ? 'Gagal menyimpan gambar' : 'Failed to save image');
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
     }
   };
 
@@ -137,7 +137,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, ex
       document.body.removeChild(container);
     } catch (error) {
       toast.error(language === 'id' ? 'Gagal menyalin gambar' : 'Failed to copy image');
-      console.error(error);
+      if (import.meta.env.DEV) console.error(error);
     }
   };
 
