@@ -17,13 +17,13 @@ export const PWAUpdatePrompt = () => {
             setNeedRefresh(true);
           },
           onOfflineReady() {
-            console.log('App ready for offline use');
+            if (import.meta.env.DEV) console.log('App ready for offline use');
           },
         });
         setUpdateSW(() => update);
       } catch (error) {
         // PWA not available in development
-        console.log('PWA registration not available');
+        if (import.meta.env.DEV) console.log('PWA registration not available');
       }
     };
 

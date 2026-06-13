@@ -3,11 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from "react";
 import Index from "./pages/Index";
 import Embed from "./pages/Embed";
 import NotFound from "./pages/NotFound";
-import Admin from "./pages/Admin";
+const Admin = lazy(() => import("./pages/Admin"));
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
 import Footer from "./components/Footer";
@@ -82,7 +82,14 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/embed" element={<Embed />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route
+                path="/admin"
+                element={
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>}>
+                    <Admin />
+                  </Suspense>
+                }
+              />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
