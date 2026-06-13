@@ -30,6 +30,15 @@ export const useBudgetPlannerHistory = () => {
   useEffect(() => {
     const stored = readVersioned<BudgetPlannerHistoryItem[]>(STORAGE_KEY, SCHEMA_VERSION);
     if (Array.isArray(stored)) setHistory(stored);
+
+    // Multi-tab sync.
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY) return;
+      const fresh = readVersioned<BudgetPlannerHistoryItem[]>(STORAGE_KEY, SCHEMA_VERSION);
+      setHistory(Array.isArray(fresh) ? fresh : []);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   // Save to localStorage (quota-safe, versioned)
