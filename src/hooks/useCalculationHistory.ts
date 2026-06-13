@@ -38,6 +38,15 @@ export const useCalculationHistory = () => {
   useEffect(() => {
     const stored = readVersioned<CalculationHistoryItem[]>(STORAGE_KEY, SCHEMA_VERSION);
     if (Array.isArray(stored)) setHistory(stored);
+
+    // Multi-tab sync: refresh when another tab updates the same key.
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== STORAGE_KEY) return;
+      const fresh = readVersioned<CalculationHistoryItem[]>(STORAGE_KEY, SCHEMA_VERSION);
+      setHistory(Array.isArray(fresh) ? fresh : []);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   // Save history to localStorage (quota-safe, versioned)
