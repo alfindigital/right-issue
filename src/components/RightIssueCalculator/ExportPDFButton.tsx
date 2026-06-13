@@ -353,7 +353,7 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
         duration: 3000,
       });
     } catch (err) {
-      console.error('PDF export error:', err);
+      if (import.meta.env.DEV) console.error('PDF export error:', err);
       toast({
         title: language === 'id' ? 'Gagal export PDF' : 'PDF export failed',
         description: String(err),
