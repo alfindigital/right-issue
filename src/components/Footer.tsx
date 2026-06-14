@@ -63,7 +63,7 @@ export default function Footer() {
 
   return (
     <footer
-      className="afd-foot relative overflow-hidden flex items-center justify-between gap-4 flex-wrap border-t border-border bg-card px-[22px] py-[17px]"
+      className="afd-foot relative overflow-hidden flex items-center justify-between gap-4 flex-wrap border-t border-border bg-card px-[22px] py-[10px]"
       style={{ fontFamily: "inherit" }}
     >
       <style>{`
