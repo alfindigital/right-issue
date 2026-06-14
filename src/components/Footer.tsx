@@ -63,16 +63,16 @@ export default function Footer() {
 
   return (
     <footer
-      className="afd-foot relative overflow-hidden flex items-center justify-between gap-4 flex-wrap border-t border-border bg-card px-[22px] py-[10px]"
+      className="afd-foot border-t border-border bg-card"
       style={{ fontFamily: "inherit" }}
     >
       <style>{`
         @keyframes afd-blink { 50% { opacity: 0 } }
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 hsl(var(--primary) / .5) }
-          100% { box-shadow: 0 0 0 22px hsl(var(--primary) / 0) }
+          100% { box-shadow: 0 0 0 16px hsl(var(--primary) / 0) }
         }
-        .afd-foot > *:not(.afd-glow) { position: relative; z-index: 1 }
+        .afd-inner > *:not(.afd-glow) { position: relative; z-index: 1 }
         .afd-glow {
           position: absolute; top: -40%; bottom: -40%; width: 48%;
           left: -48%; border-radius: 50%; z-index: 0; pointer-events: none;
@@ -81,27 +81,27 @@ export default function Footer() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-caret {
-          display: inline-block; width: 8px; height: 15px;
+          display: inline-block; width: 6px; height: 11px;
           background: hsl(var(--primary)); margin-left: 3px;
           animation: afd-blink 1.1s step-end infinite;
         }
-        .afd-rot { position: relative; height: 36px; min-width: 200px; flex: 0 0 auto }
+        .afd-rot { position: relative; height: 24px; min-width: 170px; flex: 0 0 auto }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 36px;
-          display: flex; align-items: center; gap: 11px;
-          text-decoration: none; color: hsl(var(--foreground)); font-size: 14px;
-          opacity: 0; transform: translateY(9px);
+          position: absolute; right: 0; top: 0; height: 24px;
+          display: flex; align-items: center; gap: 8px;
+          text-decoration: none; color: hsl(var(--muted-foreground)); font-size: 11px;
+          opacity: 0; transform: translateY(6px);
           transition: opacity .5s, transform .5s; pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto }
-        .afd-item b { color: hsl(var(--primary)); font-weight: 600 }
+        .afd-item b { color: hsl(var(--muted-foreground)); font-weight: 500 }
         .afd-ico {
-          position: relative; width: 36px; height: 36px; border-radius: 50%;
+          position: relative; width: 24px; height: 24px; border-radius: 50%;
           flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .11); color: hsl(var(--primary));
           transition: all .25s;
         }
-        .afd-ico svg { width: 19px; height: 19px }
+        .afd-ico svg { width: 13px; height: 13px }
         @media (hover: hover) {
           .afd-rot:hover .afd-item.active .afd-ico {
             background: hsl(var(--primary)); color: hsl(var(--card));
@@ -113,13 +113,14 @@ export default function Footer() {
         }
       `}</style>
 
+      <div className="afd-inner relative overflow-hidden max-w-2xl mx-auto w-full flex items-center justify-between gap-3 flex-wrap px-3 md:px-4 py-2">
       <span ref={glowRef} className="afd-glow" aria-hidden="true" />
 
       <span
-        className="text-[13px] inline-flex items-center pl-[11px]"
+        className="text-[11px] inline-flex items-center pl-2"
         style={{
           color: "hsl(var(--muted-foreground))",
-          borderLeft: "3px solid hsl(var(--primary))",
+          borderLeft: "2px solid hsl(var(--primary))",
         }}
       >
         © {new Date().getFullYear()}
@@ -127,8 +128,8 @@ export default function Footer() {
           href="https://alfindigital.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-1 font-semibold hover:underline"
-          style={{ color: "hsl(var(--primary))" }}
+          className="ml-1 font-medium hover:underline"
+          style={{ color: "hsl(var(--muted-foreground))" }}
         >
           alfindigital
         </a>
@@ -157,6 +158,7 @@ export default function Footer() {
             <b>{s.handle}</b>
           </a>
         ))}
+      </div>
       </div>
     </footer>
   );
