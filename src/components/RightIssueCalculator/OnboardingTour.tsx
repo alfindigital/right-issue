@@ -130,9 +130,9 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
       styles={{
         tooltip: { borderRadius: 16, fontSize: 13 },
         tooltipTitle: { fontSize: 15, fontWeight: 700 },
-        buttonPrimary: { borderRadius: 10, padding: '8px 14px', fontWeight: 600 },
-        buttonBack: { color: 'hsl(var(--muted-foreground))' },
-        buttonSkip: { color: 'hsl(var(--muted-foreground))' },
+        buttonPrimary: { borderRadius: 10, padding: '8px 14px', fontWeight: 600, fontSize: 13 },
+        buttonBack: { color: 'hsl(var(--muted-foreground))', fontSize: 13 },
+        buttonSkip: { color: 'hsl(var(--muted-foreground))', fontSize: 13 },
       }}
     />
   );
