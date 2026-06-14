@@ -48,7 +48,12 @@ Deno.serve(async (req) => {
 
   try {
     const ADMIN_PASSWORD = Deno.env.get('ADMIN_PASSWORD');
-    if (!ADMIN_PASSWORD) throw new Error('ADMIN_PASSWORD not configured');
+    if (!ADMIN_PASSWORD) {
+      console.error('ADMIN_PASSWORD not configured');
+      return new Response(JSON.stringify({ error: 'Service unavailable' }), {
+        status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     const pwd = req.headers.get('x-admin-password') || '';
     if (pwd !== ADMIN_PASSWORD) {
       return new Response(JSON.stringify({ error: 'unauthorized' }), {
@@ -99,7 +104,8 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    return new Response(JSON.stringify({ error: msg }), {
+    console.error('gsc-admin error:', msg);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
