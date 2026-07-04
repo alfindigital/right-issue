@@ -53,6 +53,7 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
   const generatePDF = useCallback(async (variant: 'full' | 'compact' = 'full') => {
     if (!isCalculated) return;
     setIsExporting(true);
+    track('pdf_exported', { variant, hasStockCode: !!data.stockCode });
 
     try {
       const { jsPDF } = await import('jspdf');
