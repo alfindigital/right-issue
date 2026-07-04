@@ -527,6 +527,7 @@ const RightIssueCalculator: React.FC = () => {
     setHasWarrant(false);
     setWarrantRatioOld(''); setWarrantRatioNew('');
     setNoOwnership(false);
+    track('demo_loaded');
     toast({
       title: language === 'id' ? 'Contoh dimuat' : 'Example loaded',
       description: language === 'id' ? 'Data contoh BRIS dipakai. Edit bebas.' : 'BRIS sample data loaded. Edit freely.',
