@@ -42,6 +42,7 @@ import { useBackGestureClose } from '@/hooks/useBackGestureClose';
 import { useClipboardWatcher } from '@/hooks/useClipboardWatcher';
 import { setOrder as setAutoAdvanceOrder, type FieldKey } from '@/lib/autoAdvance';
 import { haptic, hapticSuccess, hapticTap } from '@/lib/haptics';
+import { track } from '@/lib/analytics';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast as sonnerToast } from 'sonner';
 
@@ -479,6 +480,12 @@ const RightIssueCalculator: React.FC = () => {
         recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
+    track('calculate_clicked', {
+      hasWarrant,
+      noOwnership,
+      hasStockCode: !!stockCode,
+      recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
+    });
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice]);
 
   useEffect(() => {
@@ -520,6 +527,7 @@ const RightIssueCalculator: React.FC = () => {
     setHasWarrant(false);
     setWarrantRatioOld(''); setWarrantRatioNew('');
     setNoOwnership(false);
+    track('demo_loaded');
     toast({
       title: language === 'id' ? 'Contoh dimuat' : 'Example loaded',
       description: language === 'id' ? 'Data contoh BRIS dipakai. Edit bebas.' : 'BRIS sample data loaded. Edit freely.',
@@ -553,6 +561,7 @@ const RightIssueCalculator: React.FC = () => {
     }
     setUseWizardMode(false);
     hapticSuccess();
+    track('active_ri_picked', { code: ri.code });
     toast({
       title: language === 'id' ? `${ri.code} dimuat` : `${ri.code} loaded`,
       description: language === 'id'
@@ -617,6 +626,7 @@ const RightIssueCalculator: React.FC = () => {
     const params = buildShareParams();
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     navigator.clipboard.writeText(url);
+    track('share_link_copied');
     toast({ title: t('toast.copied'), description: t('toast.copiedDesc'), duration: 3000 });
   }, [buildShareParams, t]);
 
@@ -1078,6 +1088,21 @@ const RightIssueCalculator: React.FC = () => {
                 recommendation={recommendation} recommendationText={recommendationText}
               />
             </div>
+            {isCalculated && !noOwnership && (
+              <Suspense fallback={<LazyFallback />}>
+                <ScenarioComparison
+                  isCalculated={isCalculated}
+                  cumPrice={parseInt(cumDatePrice) || 0}
+                  riPrice={parseInt(rightPrice) || 0}
+                  terp={numericValues.terp}
+                  ratioOld={parseDecimalId(ratioOld)}
+                  ratioNew={parseDecimalId(ratioNew)}
+                  currentShares={(parseInt(currentLots) || 0) * 100}
+                  newSharesCount={numericValues.newSharesCount}
+                  currentAvgPrice={parseInt(currentAvgPrice) || 0}
+                />
+              </Suspense>
+            )}
           {isCalculated && (<>
             {/* Mobile action bar - share/export/reset */}
             <div className="flex md:hidden items-center justify-center gap-2 py-2">

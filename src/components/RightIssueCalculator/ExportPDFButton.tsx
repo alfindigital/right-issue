@@ -3,6 +3,7 @@ import { FileDown, Loader2, FileText, FileBarChart2 } from 'lucide-react';
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
+import { track } from '@/lib/analytics';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +54,7 @@ const ExportPDFButton: React.FC<ExportPDFButtonProps> = ({ isCalculated, data })
   const generatePDF = useCallback(async (variant: 'full' | 'compact' = 'full') => {
     if (!isCalculated) return;
     setIsExporting(true);
+    track('pdf_exported', { variant, hasStockCode: !!data.stockCode });
 
     try {
       const { jsPDF } = await import('jspdf');

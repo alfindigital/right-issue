@@ -107,27 +107,7 @@ const AdvancedSectionsAccordion: React.FC<Props> = ({
         </Suspense>
       ),
     },
-    {
-      id: 'scenario',
-      title: language === 'id' ? 'Perbandingan Skenario' : 'Scenario Comparison',
-      desc: language === 'id' ? 'Tebus penuh, sebagian, atau jual HMETD' : 'Exercise, partial, or sell HMETD',
-      icon: <Sparkles className="w-4 h-4 text-primary" />,
-      content: (
-        <Suspense fallback={<LazyFallback />}>
-          <ScenarioComparison
-            isCalculated={isCalculated}
-            cumPrice={cumPrice}
-            riPrice={riPrice}
-            terp={terp}
-            ratioOld={ratioOldNum}
-            ratioNew={ratioNewNum}
-            currentShares={currentShares}
-            newSharesCount={newSharesCount}
-            currentAvgPrice={currentAvgPrice}
-          />
-        </Suspense>
-      ),
-    },
+    // ScenarioComparison lifted out of accordion — now shown as a primary output.
     {
       id: 'whatif',
       title: language === 'id' ? 'Simulasi Harga Target' : 'Target Price What-If',
