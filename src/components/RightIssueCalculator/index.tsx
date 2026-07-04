@@ -565,19 +565,48 @@ const RightIssueCalculator: React.FC = () => {
     threshold: 80,
   });
 
-  const handleShare = useCallback(() => {
+  const buildShareParams = useCallback(() => {
     const params = new URLSearchParams();
     if (stockCode) params.set('sc', stockCode);
     if (ratioOld) params.set('ro', ratioOld);
     if (ratioNew) params.set('rn', ratioNew);
     if (rightPrice) params.set('rp', rightPrice);
     if (cumDatePrice) params.set('cp', cumDatePrice);
-    if (currentLots) params.set('cs', currentLots);
-    if (currentAvgPrice) params.set('ca', currentAvgPrice);
+    if (noOwnership) {
+      params.set('no', '1');
+      if (hmetdLots) params.set('hl', hmetdLots);
+      if (hmetdPrice) params.set('hp', hmetdPrice);
+    } else {
+      if (currentLots) params.set('cs', currentLots);
+      if (currentAvgPrice) params.set('ca', currentAvgPrice);
+    }
+    if (hasWarrant && warrantRatioOld && warrantRatioNew) {
+      params.set('hw', '1');
+      params.set('wro', warrantRatioOld);
+      params.set('wrn', warrantRatioNew);
+    }
+    return params;
+  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, noOwnership, hmetdLots, hmetdPrice, hasWarrant, warrantRatioOld, warrantRatioNew]);
+
+  const handleShare = useCallback(() => {
+    const params = buildShareParams();
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     navigator.clipboard.writeText(url);
     toast({ title: t('toast.copied'), description: t('toast.copiedDesc'), duration: 3000 });
-  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, t]);
+  }, [buildShareParams, t]);
+
+  // Sync URL with current inputs after a successful calculation so the address bar
+  // is always a shareable deep-link (no history spam — uses replaceState).
+  useEffect(() => {
+    if (!isCalculated) return;
+    if (typeof window === 'undefined') return;
+    const params = buildShareParams();
+    const qs = params.toString();
+    const target = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+    if (window.location.pathname + window.location.search !== target) {
+      window.history.replaceState(null, '', target);
+    }
+  }, [isCalculated, buildShareParams]);
 
   useKeyboardShortcuts({ onCalculate: calculate, onReset: reset, onShare: handleShare, isCalculateEnabled });
 
