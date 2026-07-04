@@ -624,6 +624,7 @@ const RightIssueCalculator: React.FC = () => {
     const params = buildShareParams();
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
     navigator.clipboard.writeText(url);
+    track('share_link_copied');
     toast({ title: t('toast.copied'), description: t('toast.copiedDesc'), duration: 3000 });
   }, [buildShareParams, t]);
 
