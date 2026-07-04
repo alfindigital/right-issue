@@ -195,6 +195,16 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
     );
   }, [scenarios]);
 
+  // Fire once per calculation session so the funnel counts real views, not re-renders.
+  const trackedRef = useRef(false);
+  useEffect(() => {
+    if (!isCalculated) { trackedRef.current = false; return; }
+    if (trackedRef.current) return;
+    if (scenarios.length === 0) return;
+    trackedRef.current = true;
+    track('scenario_viewed', { best: bestScenario?.id ?? 'none' });
+  }, [isCalculated, scenarios.length, bestScenario]);
+
   if (!isCalculated || scenarios.length === 0) {
     return null;
   }
