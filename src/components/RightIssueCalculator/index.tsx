@@ -539,6 +539,29 @@ const RightIssueCalculator: React.FC = () => {
     clearStorage();
   }, [clearStorage]);
 
+  // Prefill from an active-RI chip.
+  const applyActiveRight = useCallback((ri: ActiveRight) => {
+    setStockCode(ri.code);
+    setRatioOld(ri.ratioOld);
+    setRatioNew(ri.ratioNew);
+    setRightPrice(String(ri.rightPrice));
+    if (ri.cumDatePrice) setCumDatePrice(String(ri.cumDatePrice));
+    if (ri.hasWarrant && ri.warrantRatioOld && ri.warrantRatioNew) {
+      setHasWarrant(true);
+      setWarrantRatioOld(ri.warrantRatioOld);
+      setWarrantRatioNew(ri.warrantRatioNew);
+    }
+    setUseWizardMode(false);
+    hapticSuccess();
+    toast({
+      title: language === 'id' ? `${ri.code} dimuat` : `${ri.code} loaded`,
+      description: language === 'id'
+        ? 'Sisa: isi lot & harga rata-rata Anda.'
+        : 'Next: fill your lots & average price.',
+      duration: 2500,
+    });
+  }, [language]);
+
   // Pull-to-refresh (mobile) → reset form with mini confirm
   const handlePullRefresh = useCallback(() => {
     if (typeof window === 'undefined') return;
