@@ -3,6 +3,7 @@ import { FileDown, Loader2, FileText, FileBarChart2 } from 'lucide-react';
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/hooks/use-toast';
+import { track } from '@/lib/analytics';
 import {
   DropdownMenu,
   DropdownMenuContent,
