@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from "react";
 import Index from "./pages/Index";
 import Embed from "./pages/Embed";
+import RiTicker from "./pages/RiTicker";
 import NotFound from "./pages/NotFound";
 const Admin = lazy(() => import("./pages/Admin"));
 import { OfflineIndicator } from "./components/OfflineIndicator";
@@ -82,6 +83,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/embed" element={<Embed />} />
+              <Route path="/ri/:ticker" element={<RiTicker />} />
               <Route
                 path="/admin"
                 element={
