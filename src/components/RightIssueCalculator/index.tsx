@@ -42,6 +42,7 @@ import { useBackGestureClose } from '@/hooks/useBackGestureClose';
 import { useClipboardWatcher } from '@/hooks/useClipboardWatcher';
 import { setOrder as setAutoAdvanceOrder, type FieldKey } from '@/lib/autoAdvance';
 import { haptic, hapticSuccess, hapticTap } from '@/lib/haptics';
+import { track } from '@/lib/analytics';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast as sonnerToast } from 'sonner';
 
