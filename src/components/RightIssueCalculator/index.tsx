@@ -289,6 +289,12 @@ const RightIssueCalculator: React.FC = () => {
     const cp = params.get('cp');
     const cs = params.get('cs');
     const ca = params.get('ca');
+    const hw = params.get('hw');
+    const wro = params.get('wro');
+    const wrn = params.get('wrn');
+    const no = params.get('no');
+    const hl = params.get('hl');
+    const hp = params.get('hp');
 
     if (sc) setStockCode(sc);
     if (ro && rn && rp && cp && cs && ca) {
@@ -298,6 +304,15 @@ const RightIssueCalculator: React.FC = () => {
       setCumDatePrice(cp);
       setCurrentLots(cs);
       setCurrentAvgPrice(ca);
+      setUseWizardMode(false);
+    } else if (no === '1' && ro && rn && rp && cp && hl) {
+      setRatioOld(ro);
+      setRatioNew(rn);
+      setRightPrice(rp);
+      setCumDatePrice(cp);
+      setNoOwnership(true);
+      setHmetdLots(hl);
+      if (hp) setHmetdPrice(hp);
       setUseWizardMode(false);
     } else {
       const saved = loadFromStorage();
@@ -313,6 +328,11 @@ const RightIssueCalculator: React.FC = () => {
         setWarrantRatioOld(saved.warrantRatioOld);
         setWarrantRatioNew(saved.warrantRatioNew);
       }
+    }
+    if (hw === '1' && wro && wrn) {
+      setHasWarrant(true);
+      setWarrantRatioOld(wro);
+      setWarrantRatioNew(wrn);
     }
   }, [loadFromStorage]);
 
