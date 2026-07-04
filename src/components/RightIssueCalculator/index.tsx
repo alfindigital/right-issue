@@ -560,6 +560,7 @@ const RightIssueCalculator: React.FC = () => {
     }
     setUseWizardMode(false);
     hapticSuccess();
+    track('active_ri_picked', { code: ri.code });
     toast({
       title: language === 'id' ? `${ri.code} dimuat` : `${ri.code} loaded`,
       description: language === 'id'
