@@ -1061,7 +1061,12 @@ const RightIssueCalculator: React.FC = () => {
           hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
         />
 
-        {!isCalculated && !isCalculating && <EmptyStateCard onLoadDemo={loadDemo} />}
+        {!isCalculated && !isCalculating && (
+          <>
+            <ActiveRightsChips onPick={applyActiveRight} />
+            <EmptyStateCard onLoadDemo={loadDemo} />
+          </>
+        )}
 
         {(isCalculated || isCalculating) && (
           <>
