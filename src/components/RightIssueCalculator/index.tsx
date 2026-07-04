@@ -1078,6 +1078,21 @@ const RightIssueCalculator: React.FC = () => {
                 recommendation={recommendation} recommendationText={recommendationText}
               />
             </div>
+            {isCalculated && !noOwnership && (
+              <Suspense fallback={<LazyFallback />}>
+                <ScenarioComparison
+                  isCalculated={isCalculated}
+                  cumPrice={parseInt(cumDatePrice) || 0}
+                  riPrice={parseInt(rightPrice) || 0}
+                  terp={numericValues.terp}
+                  ratioOld={parseDecimalId(ratioOld)}
+                  ratioNew={parseDecimalId(ratioNew)}
+                  currentShares={(parseInt(currentLots) || 0) * 100}
+                  newSharesCount={numericValues.newSharesCount}
+                  currentAvgPrice={parseInt(currentAvgPrice) || 0}
+                />
+              </Suspense>
+            )}
           {isCalculated && (<>
             {/* Mobile action bar - share/export/reset */}
             <div className="flex md:hidden items-center justify-center gap-2 py-2">
