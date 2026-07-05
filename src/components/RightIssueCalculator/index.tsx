@@ -569,6 +569,15 @@ const RightIssueCalculator: React.FC = () => {
         : 'Next: fill your lots & average price.',
       duration: 2500,
     });
+    // Focus the lots input so user sees exactly what to fill next.
+    setTimeout(() => {
+      const ownership = document.querySelector<HTMLElement>('[data-tour="ownership"]');
+      if (ownership) {
+        ownership.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const firstInput = ownership.querySelector<HTMLInputElement>('input:not([type="hidden"])');
+        firstInput?.focus();
+      }
+    }, 250);
   }, [language]);
 
   // Pull-to-refresh (mobile) → reset form with mini confirm
