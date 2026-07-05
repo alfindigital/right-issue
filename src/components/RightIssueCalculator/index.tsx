@@ -29,6 +29,7 @@ import { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 const OnboardingTour = lazy(() => import('./OnboardingTour'));
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
+import FirstCalcDisclaimerModal from './FirstCalcDisclaimerModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -1322,6 +1323,9 @@ const RightIssueCalculator: React.FC = () => {
         label={language === 'id' ? 'Tarik untuk reset' : 'Pull to reset'}
         readyLabel={language === 'id' ? 'Lepas untuk reset' : 'Release to reset'}
       />
+
+      {/* One-time disclaimer after first calculation */}
+      <FirstCalcDisclaimerModal trigger={isCalculated} />
 
       {/* Sticky Calculate / Scroll-to-result bar (mobile, while typing) */}
       <StickyCalculateBar
