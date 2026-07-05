@@ -1,10 +1,16 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { Scale, TrendingUp, DollarSign, Percent } from 'lucide-react';
+import { Scale, TrendingUp, DollarSign, Percent, ChevronDown } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LabelList, ReferenceLine, Tooltip } from 'recharts';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { track } from '@/lib/analytics';
+import { readVersioned, writeVersioned } from '@/lib/safeStorage';
+
+const FEES_KEY = 'ri-scenario-fees';
+const FEES_VERSION = 1;
+interface FeeSettings { buyPct: number; sellPct: number; pphPct: number; enabled: boolean; }
+const DEFAULT_FEES: FeeSettings = { buyPct: 0.15, sellPct: 0.25, pphPct: 0.1, enabled: false };
 
 interface ScenarioComparisonProps {
   isCalculated: boolean;
@@ -65,6 +71,21 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
   const [isSliding, setIsSliding] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
   const slideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [fees, setFees] = useState<FeeSettings>(DEFAULT_FEES);
+  const [feesOpen, setFeesOpen] = useState(false);
+
+  useEffect(() => {
+    const stored = readVersioned<FeeSettings>(FEES_KEY, FEES_VERSION);
+    if (stored) setFees({ ...DEFAULT_FEES, ...stored });
+  }, []);
+
+  const updateFees = (patch: Partial<FeeSettings>) => {
+    setFees((prev) => {
+      const next = { ...prev, ...patch };
+      writeVersioned(FEES_KEY, FEES_VERSION, next);
+      return next;
+    });
+  };
 
   // Trigger chart re-animation when slider stops
   useEffect(() => {
@@ -101,9 +122,14 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
 
     // HMETD theoretical value
     const hmetdValue = Math.max(0, (cumPrice - riPrice) / ((ratioOld / ratioNew) + 1));
-    
-    // Scenario 1: Full Exercise (Tebus Penuh)
-    const fullExerciseCost = newSharesCount * riPrice;
+
+    const buyFee = fees.enabled ? fees.buyPct / 100 : 0;
+    const sellFee = fees.enabled ? fees.sellPct / 100 : 0;
+    const pphSell = fees.enabled ? fees.pphPct / 100 : 0;
+    const sellCostPct = sellFee + pphSell;
+
+    // Scenario 1: Full Exercise (Tebus Penuh) — buy fee on exercise cost
+    const fullExerciseCost = newSharesCount * riPrice * (1 + buyFee);
     const fullExerciseTotalShares = currentShares + newSharesCount;
     const fullExerciseFinalValue = fullExerciseTotalShares * terp;
     const fullExerciseInitialValue = currentShares * cumPrice;
@@ -112,11 +138,11 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
       ? ((fullExerciseProfit / fullExerciseInitialValue) * 100)
       : 0;
 
-    // Scenario 2: Partial Exercise (dynamic percentage)
+    // Scenario 2: Partial Exercise (dynamic percentage) — buy fee on exercised, sell fee+PPh on HMETD sold
     const partialNewShares = Math.floor(newSharesCount * (partialPercent / 100));
     const partialSellShares = newSharesCount - partialNewShares;
-    const partialExerciseCost = partialNewShares * riPrice;
-    const partialHmetdProfit = partialSellShares * hmetdValue;
+    const partialExerciseCost = partialNewShares * riPrice * (1 + buyFee);
+    const partialHmetdProfit = partialSellShares * hmetdValue * (1 - sellCostPct);
     const partialTotalShares = currentShares + partialNewShares;
     const partialFinalValue = partialTotalShares * terp + partialHmetdProfit;
     const partialInitialValue = currentShares * cumPrice;
@@ -125,8 +151,8 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
       ? ((partialProfit / partialInitialValue) * 100)
       : 0;
 
-    // Scenario 3: Sell All HMETD
-    const sellAllHmetdProfit = newSharesCount * hmetdValue;
+    // Scenario 3: Sell All HMETD — sell fee+PPh on all HMETD proceeds
+    const sellAllHmetdProfit = newSharesCount * hmetdValue * (1 - sellCostPct);
     const sellAllFinalValue = currentShares * terp + sellAllHmetdProfit;
     const sellAllInitialValue = currentShares * cumPrice;
     const sellAllNetProfit = sellAllFinalValue - sellAllInitialValue;
@@ -172,7 +198,7 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
         icon: <DollarSign className="w-4 h-4" />,
       },
     ];
-  }, [isCalculated, cumPrice, riPrice, terp, ratioOld, ratioNew, currentShares, newSharesCount, partialPercent, t]);
+  }, [isCalculated, cumPrice, riPrice, terp, ratioOld, ratioNew, currentShares, newSharesCount, partialPercent, t, fees]);
 
   const chartData = useMemo(() => {
     return scenarios.map(s => ({
@@ -218,6 +244,80 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
       <div className="flex items-center gap-2 mb-4">
         <Scale className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-bold">{t('scenario.title')}</h3>
+      </div>
+
+      {/* Fees & Tax collapsible */}
+      <div className="mb-3 border border-border rounded-lg overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setFeesOpen((o) => !o)}
+          className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium hover:bg-muted/40 transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <Percent className="w-3.5 h-3.5 text-primary" />
+            Biaya broker & pajak
+            {fees.enabled && (
+              <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold">
+                aktif
+              </span>
+            )}
+          </span>
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${feesOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {feesOpen && (
+          <div className="px-3 pb-3 pt-1 space-y-2 bg-muted/20">
+            <label className="flex items-center justify-between text-xs">
+              <span>Terapkan biaya ke perhitungan</span>
+              <input
+                type="checkbox"
+                checked={fees.enabled}
+                onChange={(e) => updateFees({ enabled: e.target.checked })}
+                className="w-4 h-4 accent-primary"
+              />
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              <label className="flex flex-col gap-0.5">
+                <span className="text-[10px] text-muted-foreground">Fee beli %</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  value={fees.buyPct}
+                  onChange={(e) => updateFees({ buyPct: Math.max(0, parseFloat(e.target.value) || 0) })}
+                  className="px-2 py-1 rounded border border-border bg-background text-xs"
+                />
+              </label>
+              <label className="flex flex-col gap-0.5">
+                <span className="text-[10px] text-muted-foreground">Fee jual %</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  value={fees.sellPct}
+                  onChange={(e) => updateFees({ sellPct: Math.max(0, parseFloat(e.target.value) || 0) })}
+                  className="px-2 py-1 rounded border border-border bg-background text-xs"
+                />
+              </label>
+              <label className="flex flex-col gap-0.5">
+                <span className="text-[10px] text-muted-foreground">PPh jual %</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  min="0"
+                  value={fees.pphPct}
+                  onChange={(e) => updateFees({ pphPct: Math.max(0, parseFloat(e.target.value) || 0) })}
+                  className="px-2 py-1 rounded border border-border bg-background text-xs"
+                />
+              </label>
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Default IDX: fee beli 0.15%, fee jual 0.25%, PPh final 0.1% (bisa berbeda antar broker).
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Partial Exercise Slider */}
