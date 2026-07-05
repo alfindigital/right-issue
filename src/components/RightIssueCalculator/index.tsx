@@ -25,7 +25,8 @@ import type { ActiveRight } from '@/hooks/useActiveRights';
 import SmartResultBar from './SmartResultBar';
 import { ViewMode } from './ViewModeToggle';
 import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
-import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
+import { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
+const OnboardingTour = lazy(() => import('./OnboardingTour'));
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -1303,11 +1304,13 @@ const RightIssueCalculator: React.FC = () => {
       )}
 
       <BackToTopButton />
-      <OnboardingTour
-        key={tourReplayKey}
-        forceRun={tourForceRun}
-        onFinish={() => setTourForceRun(false)}
-      />
+      <Suspense fallback={null}>
+        <OnboardingTour
+          key={tourReplayKey}
+          forceRun={tourForceRun}
+          onFinish={() => setTourForceRun(false)}
+        />
+      </Suspense>
 
       {/* Pull-to-refresh indicator (mobile) */}
       <PullToRefreshIndicator
