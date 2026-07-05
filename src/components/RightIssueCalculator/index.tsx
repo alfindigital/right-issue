@@ -331,6 +331,9 @@ const RightIssueCalculator: React.FC = () => {
         setHasWarrant(saved.hasWarrant);
         setWarrantRatioOld(saved.warrantRatioOld);
         setWarrantRatioNew(saved.warrantRatioNew);
+        if (saved.noOwnership) setNoOwnership(true);
+        if (saved.hmetdLots) setHmetdLots(saved.hmetdLots);
+        if (saved.hmetdPrice) setHmetdPrice(saved.hmetdPrice);
       }
     }
     if (hw === '1' && wro && wrn) {
