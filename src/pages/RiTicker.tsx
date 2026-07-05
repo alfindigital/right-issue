@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Calculator, TrendingUp, Info } from 'lucide-react';
+import { ArrowLeft, Calculator, TrendingUp, Info, Clock, Database } from 'lucide-react';
 import { useActiveRights, type ActiveRight } from '@/hooks/useActiveRights';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,6 +19,28 @@ const RiTicker: React.FC = () => {
 
   const code = (ticker ?? '').toUpperCase();
   const ri: ActiveRight | undefined = items.find((r) => r.code.toUpperCase() === code);
+  const updatedAt = new Date();
+  const updatedLabel = new Intl.DateTimeFormat(language === 'id' ? 'id-ID' : 'en-US', {
+    day: 'numeric', month: 'short', year: 'numeric'
+  }).format(updatedAt);
+
+  // Compute per-ticker facts for FAQ + JSON-LD
+  const terp = ri
+    ? Math.round(((ri.cumDatePrice ?? ri.rightPrice) * Number(ri.ratioOld) + ri.rightPrice * Number(ri.ratioNew)) / (Number(ri.ratioOld) + Number(ri.ratioNew)))
+    : null;
+  const faqItems = ri
+    ? (language === 'id' ? [
+        { q: `Berapa TERP saham ${ri.code} setelah right issue?`, a: `Perkiraan TERP ${ri.code} adalah ${formatCurrency(terp!)} berdasarkan rasio ${ri.ratioOld}:${ri.ratioNew} dan harga tebus ${formatCurrency(ri.rightPrice)}.` },
+        { q: `Berapa rasio right issue ${ri.code}?`, a: `Rasio HMETD ${ri.code} adalah ${ri.ratioOld}:${ri.ratioNew}, artinya setiap ${ri.ratioOld} lembar saham lama berhak menebus ${ri.ratioNew} lembar saham baru.` },
+        { q: `Berapa harga tebus HMETD ${ri.code}?`, a: `Harga pelaksanaan (tebus) HMETD ${ri.code} adalah ${formatCurrency(ri.rightPrice)} per lembar.` },
+        { q: `Apa yang terjadi jika saya tidak tebus HMETD ${ri.code}?`, a: `Jika HMETD tidak ditebus, persentase kepemilikan Anda akan terdilusi. Anda bisa menjual hak HMETD di pasar selama periode perdagangan untuk memitigasi kerugian.` },
+      ] : [
+        { q: `What is the TERP for ${ri.code} after the right issue?`, a: `Estimated TERP for ${ri.code} is ${formatCurrency(terp!)} based on ratio ${ri.ratioOld}:${ri.ratioNew} and exercise price ${formatCurrency(ri.rightPrice)}.` },
+        { q: `What is the right issue ratio for ${ri.code}?`, a: `${ri.code}'s HMETD ratio is ${ri.ratioOld}:${ri.ratioNew} — every ${ri.ratioOld} old shares entitle you to subscribe ${ri.ratioNew} new shares.` },
+        { q: `What is the ${ri.code} HMETD exercise price?`, a: `The exercise price for ${ri.code} HMETD is ${formatCurrency(ri.rightPrice)} per share.` },
+        { q: `What happens if I don't exercise ${ri.code} HMETD?`, a: `If unexercised, your ownership percentage gets diluted. You can sell your HMETD on the market during the trading period to mitigate losses.` },
+      ])
+    : [];
 
   useEffect(() => {
     if (!loading && !ri) {
@@ -87,6 +109,15 @@ const RiTicker: React.FC = () => {
       provider: { '@type': 'Corporation', name: ri.name, tickerSymbol: ri.code },
       category: 'HMETD',
     });
+    jsonLd.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    });
   }
 
   return (
@@ -141,6 +172,16 @@ const RiTicker: React.FC = () => {
                 <TrendingUp className="w-4 h-4 text-primary" />
                 {language === 'id' ? 'Ringkasan Aksi' : 'Corporate Action Summary'}
               </h2>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3 text-[10px] text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {language === 'id' ? `Diperbarui ${updatedLabel}` : `Updated ${updatedLabel}`}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Database className="w-3 h-3" />
+                  {language === 'id' ? 'Sumber: pengumuman IDX / KSEI' : 'Source: IDX / KSEI filings'}
+                </span>
+              </div>
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <dt className="text-[11px] text-muted-foreground">
@@ -234,6 +275,28 @@ const RiTicker: React.FC = () => {
               : 'Use the calculator to determine TERP (Theoretical Ex-Rights Price), how many lots you can subscribe to, the required cost, your new average price, and dilution impact if you skip the rights.'}
           </p>
         </section>
+
+        {ri && faqItems.length > 0 && (
+          <section className="mt-6">
+            <h2 className="text-sm font-bold text-foreground mb-3">
+              {language === 'id' ? `Pertanyaan Umum ${ri.code}` : `${ri.code} FAQ`}
+            </h2>
+            <div className="space-y-2">
+              {faqItems.map((f, i) => (
+                <details
+                  key={i}
+                  className="group card-calculator !p-3 cursor-pointer"
+                >
+                  <summary className="text-xs font-semibold text-foreground list-none flex items-start justify-between gap-2">
+                    <span>{f.q}</span>
+                    <span className="text-muted-foreground group-open:rotate-45 transition-transform text-base leading-none">+</span>
+                  </summary>
+                  <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </>
   );
