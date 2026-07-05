@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from "react";
 import Index from "./pages/Index";
 import Embed from "./pages/Embed";
@@ -70,6 +70,30 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 }
 
+const RoutedApp = () => {
+  const location = useLocation();
+  return (
+    <ErrorBoundary key={location.pathname}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/embed" element={<Embed />} />
+        <Route path="/ri/:ticker" element={<RiTicker />} />
+        <Route
+          path="/admin"
+          element={
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>}>
+              <Admin />
+            </Suspense>
+          }
+        />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Footer />
+    </ErrorBoundary>
+  );
+};
+
 const App = () => (
   <LanguageProvider>
     <QueryClientProvider client={queryClient}>
@@ -79,24 +103,7 @@ const App = () => (
         <BrowserRouter>
           <OfflineIndicator />
           <PWAUpdatePrompt />
-          <ErrorBoundary>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/embed" element={<Embed />} />
-              <Route path="/ri/:ticker" element={<RiTicker />} />
-              <Route
-                path="/admin"
-                element={
-                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>}>
-                    <Admin />
-                  </Suspense>
-                }
-              />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Footer />
-          </ErrorBoundary>
+          <RoutedApp />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

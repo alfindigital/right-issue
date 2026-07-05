@@ -25,7 +25,8 @@ import type { ActiveRight } from '@/hooks/useActiveRights';
 import SmartResultBar from './SmartResultBar';
 import { ViewMode } from './ViewModeToggle';
 import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
-import OnboardingTour, { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
+import { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
+const OnboardingTour = lazy(() => import('./OnboardingTour'));
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -569,6 +570,15 @@ const RightIssueCalculator: React.FC = () => {
         : 'Next: fill your lots & average price.',
       duration: 2500,
     });
+    // Focus the lots input so user sees exactly what to fill next.
+    setTimeout(() => {
+      const ownership = document.querySelector<HTMLElement>('[data-tour="ownership"]');
+      if (ownership) {
+        ownership.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const firstInput = ownership.querySelector<HTMLInputElement>('input:not([type="hidden"])');
+        firstInput?.focus();
+      }
+    }, 250);
   }, [language]);
 
   // Pull-to-refresh (mobile) → reset form with mini confirm
@@ -1294,11 +1304,13 @@ const RightIssueCalculator: React.FC = () => {
       )}
 
       <BackToTopButton />
-      <OnboardingTour
-        key={tourReplayKey}
-        forceRun={tourForceRun}
-        onFinish={() => setTourForceRun(false)}
-      />
+      <Suspense fallback={null}>
+        <OnboardingTour
+          key={tourReplayKey}
+          forceRun={tourForceRun}
+          onFinish={() => setTourForceRun(false)}
+        />
+      </Suspense>
 
       {/* Pull-to-refresh indicator (mobile) */}
       <PullToRefreshIndicator

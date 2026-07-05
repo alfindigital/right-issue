@@ -105,7 +105,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             />
           </div>
           {/* Ratio preset chips */}
-          <div className="flex md:hidden items-center gap-1 overflow-x-auto no-scrollbar pt-1.5">
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-1.5 flex-wrap">
             <span className="text-[10px] text-muted-foreground shrink-0 mr-1">
               {language === 'id' ? 'Cepat:' : 'Quick:'}
             </span>
