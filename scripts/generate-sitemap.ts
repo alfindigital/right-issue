@@ -63,6 +63,26 @@ async function main() {
   const entries = [...staticEntries, ...dynamicEntries];
   writeFileSync(resolve("public/sitemap.xml"), generateSitemap(entries));
   console.log(`sitemap.xml written (${entries.length} entries, ${dynamicEntries.length} RI)`);
+
+  // Ping search engines so freshly-added RI pages get discovered faster.
+  // Skipped locally unless PING_SEARCH_ENGINES=1 (avoid noisy pings in dev).
+  if (process.env.PING_SEARCH_ENGINES === "1" || process.env.CI) {
+    const sitemapUrl = encodeURIComponent(`${BASE_URL}/sitemap.xml`);
+    const pings = [
+      `https://www.google.com/ping?sitemap=${sitemapUrl}`,
+      `https://www.bing.com/ping?sitemap=${sitemapUrl}`,
+    ];
+    await Promise.all(
+      pings.map(async (url) => {
+        try {
+          const res = await fetch(url);
+          console.log(`ping ${url.split("?")[0]} → ${res.status}`);
+        } catch (e) {
+          console.warn(`ping failed: ${url}`, e);
+        }
+      }),
+    );
+  }
 }
 
 main();
