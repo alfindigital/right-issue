@@ -29,6 +29,7 @@ import { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
 const OnboardingTour = lazy(() => import('./OnboardingTour'));
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
+import FirstCalcDisclaimerModal from './FirstCalcDisclaimerModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCalculationHistory, CalculationHistoryItem } from '@/hooks/useCalculationHistory';
 import { parseDecimalId } from '@/lib/parseDecimal';
@@ -331,6 +332,9 @@ const RightIssueCalculator: React.FC = () => {
         setHasWarrant(saved.hasWarrant);
         setWarrantRatioOld(saved.warrantRatioOld);
         setWarrantRatioNew(saved.warrantRatioNew);
+        if (saved.noOwnership) setNoOwnership(true);
+        if (saved.hmetdLots) setHmetdLots(saved.hmetdLots);
+        if (saved.hmetdPrice) setHmetdPrice(saved.hmetdPrice);
       }
     }
     if (hw === '1' && wro && wrn) {
@@ -344,8 +348,8 @@ const RightIssueCalculator: React.FC = () => {
   useEffect(() => {
     const hasData = stockCode || ratioOld || ratioNew || rightPrice || cumDatePrice || currentLots || currentAvgPrice;
     if (!hasData) return;
-    saveToStorage({ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew });
-  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, saveToStorage]);
+    saveToStorage({ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice });
+  }, [stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, saveToStorage]);
 
   // Validate ratios
   useEffect(() => {
@@ -1319,6 +1323,9 @@ const RightIssueCalculator: React.FC = () => {
         label={language === 'id' ? 'Tarik untuk reset' : 'Pull to reset'}
         readyLabel={language === 'id' ? 'Lepas untuk reset' : 'Release to reset'}
       />
+
+      {/* One-time disclaimer after first calculation */}
+      <FirstCalcDisclaimerModal trigger={isCalculated} />
 
       {/* Sticky Calculate / Scroll-to-result bar (mobile, while typing) */}
       <StickyCalculateBar

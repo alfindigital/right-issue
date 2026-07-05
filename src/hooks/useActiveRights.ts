@@ -24,7 +24,22 @@ interface State {
 }
 
 const CACHE_KEY = 'ri-active-rights-cache-v1';
-const CACHE_TTL_MS = 30 * 60 * 1000; // 30 min
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 min — corporate actions can change quickly
+
+function isExpired(item: ActiveRight): boolean {
+  if (!item.tradingEnd) return false;
+  const end = new Date(item.tradingEnd);
+  if (Number.isNaN(end.getTime())) return false;
+  // Compare on date-only to allow last-day exercise.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  return end < today;
+}
+
+function filterActive(items: ActiveRight[]): ActiveRight[] {
+  return items.filter((i) => !isExpired(i));
+}
 
 function readCache(): ActiveRight[] | null {
   try {
@@ -32,7 +47,7 @@ function readCache(): ActiveRight[] | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as { at: number; items: ActiveRight[] };
     if (Date.now() - parsed.at > CACHE_TTL_MS) return null;
-    return parsed.items;
+    return filterActive(parsed.items);
   } catch {
     return null;
   }
@@ -62,8 +77,9 @@ export function useActiveRights(): State {
         if (cancelled) return;
         if (error) throw error;
         const items = (data?.items ?? []) as ActiveRight[];
+        const fresh = filterActive(items);
         writeCache(items);
-        setState({ items, loading: false, error: null });
+        setState({ items: fresh, loading: false, error: null });
       } catch (e) {
         if (cancelled) return;
         setState((s) => ({

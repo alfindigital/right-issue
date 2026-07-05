@@ -3,7 +3,7 @@ import { readVersioned, writeVersioned, removeKey } from '@/lib/safeStorage';
 
 const STORAGE_KEY = 'ri-calculator-autosave';
 const DEBOUNCE_MS = 500;
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 export interface AutoSaveData {
   stockCode: string;
@@ -16,6 +16,9 @@ export interface AutoSaveData {
   hasWarrant: boolean;
   warrantRatioOld: string;
   warrantRatioNew: string;
+  noOwnership: boolean;
+  hmetdLots: string;
+  hmetdPrice: string;
   savedAt: number;
 }
 
@@ -38,7 +41,14 @@ export const useAutoSave = () => {
   }, []);
 
   const loadFromStorage = useCallback((): AutoSaveData | null => {
-    const data = readVersioned<AutoSaveData>(STORAGE_KEY, SCHEMA_VERSION);
+    // Try current version first, then migrate v1 → v2 (new noOwnership fields).
+    let data = readVersioned<AutoSaveData>(STORAGE_KEY, SCHEMA_VERSION);
+    if (!data) {
+      const v1 = readVersioned<Omit<AutoSaveData, 'noOwnership' | 'hmetdLots' | 'hmetdPrice'>>(STORAGE_KEY, 1);
+      if (v1) {
+        data = { ...v1, noOwnership: false, hmetdLots: '', hmetdPrice: '' } as AutoSaveData;
+      }
+    }
     if (!data) return null;
     // Only restore if saved within last 7 days
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
