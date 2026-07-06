@@ -1052,7 +1052,6 @@ const RightIssueCalculator: React.FC = () => {
 
         {!isCalculated && !isCalculating && (
           <>
-            <ActiveRightsChips onPick={applyActiveRight} />
             <EmptyStateCard onLoadDemo={loadDemo} />
           </>
         )}
