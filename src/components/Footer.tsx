@@ -9,35 +9,35 @@ type Social = {
 
 const SOCIALS: Social[] = [
   {
-    href: "https://x.com/alfindigital",
-    label: "X",
-    handle: "@alfindigital",
-    path: "M18.2 2.2h3.3l-7.2 8.3 8.5 11.3h-6.7l-5.2-6.8-6 6.8H1.7l7.7-8.8L1.2 2.2H8l4.7 6.2zM17 19.8h1.8L7.1 4.1H5.1z",
-  },
-  {
-    href: "https://www.threads.net/@alfindigitalcom",
-    label: "Threads",
-    handle: "@alfindigitalcom",
-    path: "M12.19 24h-.01c-3.58-.02-6.34-1.2-8.18-3.51C2.35 18.44 1.5 15.59 1.47 12.01v-.02c.03-3.58.88-6.43 2.53-8.48C5.84 1.2 8.6.02 12.18 0h.01c2.75.02 5.04.73 6.83 2.1 1.68 1.29 2.86 3.13 3.51 5.47l-2.04.57c-1.1-3.96-3.9-5.99-8.3-6.02-2.91.02-5.11.94-6.54 2.72C4.31 6.5 3.62 8.91 3.59 12c.03 3.09.72 5.5 2.06 7.16 1.43 1.78 3.63 2.7 6.54 2.72 2.62-.02 4.36-.63 5.8-2.05 1.65-1.61 1.62-3.59 1.09-4.8-.31-.71-.87-1.3-1.63-1.75-.19 1.35-.62 2.45-1.28 3.27-.89 1.1-2.14 1.7-3.73 1.79-1.2.07-2.36-.22-3.26-.8-1.06-.69-1.69-1.74-1.75-2.96-.07-1.19.41-2.29 1.33-3.08.88-.76 2.12-1.21 3.58-1.29 1.07-.06 2.08-.01 3.02.14-.13-.74-.38-1.33-.74-1.76-.5-.59-1.27-.89-2.29-.89h-.03c-.82 0-1.93.22-2.54 1.18l-1.74-1.14c.81-1.25 2.12-1.95 3.69-1.95h.03c3.24.02 5.16 2.02 5.35 5.48.1.05.21.09.32.14 1.49.7 2.58 1.76 3.15 3.07.8 1.82.87 4.79-1.55 7.16-1.85 1.81-4.09 2.63-7.28 2.65zm1.4-9.18c-.32 0-.65.01-.98.03-1.46.08-2.37.75-2.32 1.71.05.99 1.14 1.45 2.19 1.39 1.31-.07 2.5-.59 2.69-2.95a8.5 8.5 0 0 0-1.58-.18z",
-  },
-  {
-    href: "https://youtube.com/@alfindigital",
-    label: "YouTube",
-    handle: "@alfindigital",
-    path: "M23 7.5a3 3 0 0 0-2.1-2.1C19 4.9 12 4.9 12 4.9s-7 0-8.9.5A3 3 0 0 0 1 7.5C.5 9.4.5 12 .5 12s0 2.6.5 4.5a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-4.5.5-4.5s0-2.6-.5-4.5zM9.7 15.4V8.6l5.8 3.4z",
-  },
-  {
-    href: "https://t.me/alfidx",
+    href: "https://t.me/lotmetrik",
     label: "Telegram",
-    handle: "@alfidx",
+    handle: "@lotmetrik",
     path: "M9.8 18.7l.3-4.2 7.7-6.9c.3-.3-.1-.5-.5-.2L7.7 13.3 3.6 12c-.9-.3-.9-.9.2-1.3L19.8 4.5c.7-.3 1.4.2 1.1 1.3l-2.7 12.8c-.2.9-.7 1.1-1.5.7L12.6 16.3l-2 1.9c-.2.2-.4.4-.8.4z",
+  },
+  {
+    href: "https://instagram.com/lotmetrik",
+    label: "Instagram",
+    handle: "@lotmetrik",
+    path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z",
+  },
+  {
+    href: "https://www.tiktok.com/@lotmetrik",
+    label: "TikTok",
+    handle: "@lotmetrik",
+    path: "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z",
+  },
+  {
+    href: "https://x.com/lotmetrik",
+    label: "X",
+    handle: "@lotmetrik",
+    path: "M18.2 2.2h3.3l-7.2 8.3 8.5 11.3h-6.7l-5.2-6.8-6 6.8H1.7l7.7-8.8L1.2 2.2H8l4.7 6.2zM17 19.8h1.8L7.1 4.1H5.1z",
   },
 ];
 
 export default function Footer() {
   const [active, setActive] = useState(0);
   const pausedRef = useRef(false);
-  const glowRef = useRef<HTMLSpanElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -62,17 +62,24 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer
-      className="afd-foot border-t border-border bg-card"
-      style={{ fontFamily: "inherit" }}
-    >
+    <footer className="afd-foot">
       <style>{`
         @keyframes afd-blink { 50% { opacity: 0 } }
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 hsl(var(--primary) / .5) }
-          100% { box-shadow: 0 0 0 16px hsl(var(--primary) / 0) }
+          100% { box-shadow: 0 0 0 22px hsl(var(--primary) / 0) }
         }
-        .afd-inner > *:not(.afd-glow) { position: relative; z-index: 1 }
+        .afd-foot {
+          position: relative; overflow: hidden;
+          font-family: inherit;
+          background: hsl(var(--card));
+          border-top: 1px solid hsl(var(--border));
+          border-radius: 0 0 14px 14px;
+          padding: 17px 22px;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 16px; flex-wrap: wrap;
+        }
+        .afd-foot > * { position: relative; z-index: 1 }
         .afd-glow {
           position: absolute; top: -40%; bottom: -40%; width: 48%;
           left: -48%; border-radius: 50%; z-index: 0; pointer-events: none;
@@ -80,28 +87,35 @@ export default function Footer() {
           filter: blur(8px);
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
+        .afd-cr {
+          font-size: 13px; color: hsl(var(--muted-foreground));
+          display: inline-flex; align-items: center;
+          border-left: 3px solid hsl(var(--primary)); padding-left: 11px;
+        }
+        .afd-brand { color: hsl(var(--primary)); font-weight: 600; text-decoration: none; margin-left: 4px }
+        .afd-brand:hover { text-decoration: underline }
         .afd-caret {
-          display: inline-block; width: 6px; height: 11px;
+          display: inline-block; width: 8px; height: 15px;
           background: hsl(var(--primary)); margin-left: 3px;
           animation: afd-blink 1.1s step-end infinite;
         }
-        .afd-rot { position: relative; height: 24px; min-width: 170px; flex: 0 0 auto }
+        .afd-rot { position: relative; height: 36px; min-width: 200px; flex: 0 0 auto }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 24px;
-          display: flex; align-items: center; gap: 8px;
-          text-decoration: none; color: hsl(var(--muted-foreground)); font-size: 11px;
-          opacity: 0; transform: translateY(6px);
+          position: absolute; right: 0; top: 0; height: 36px;
+          display: flex; align-items: center; gap: 11px;
+          text-decoration: none; color: hsl(var(--foreground)); font-size: 14px;
+          opacity: 0; transform: translateY(9px);
           transition: opacity .5s, transform .5s; pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto }
-        .afd-item b { color: hsl(var(--muted-foreground)); font-weight: 500 }
+        .afd-item b { color: hsl(var(--primary)); font-weight: 600 }
         .afd-ico {
-          position: relative; width: 24px; height: 24px; border-radius: 50%;
+          position: relative; width: 36px; height: 36px; border-radius: 50%;
           flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .11); color: hsl(var(--primary));
           transition: all .25s;
         }
-        .afd-ico svg { width: 13px; height: 13px }
+        .afd-ico svg { width: 19px; height: 19px }
         @media (hover: hover) {
           .afd-rot:hover .afd-item.active .afd-ico {
             background: hsl(var(--primary)); color: hsl(var(--card));
@@ -113,25 +127,17 @@ export default function Footer() {
         }
       `}</style>
 
-      <div className="afd-inner relative overflow-hidden max-w-2xl mx-auto w-full flex items-center justify-between gap-3 flex-wrap px-3 md:px-4 py-2">
-      <span ref={glowRef} className="afd-glow" aria-hidden="true" />
+      <div ref={glowRef} className="afd-glow" aria-hidden="true" />
 
-      <span
-        className="text-[11px] inline-flex items-center pl-2"
-        style={{
-          color: "hsl(var(--muted-foreground))",
-          borderLeft: "2px solid hsl(var(--primary))",
-        }}
-      >
+      <span className="afd-cr">
         © {new Date().getFullYear()}
         <a
-          href="https://alfindigital.com"
+          href="https://lotmetrik.my.id"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-1 font-medium hover:underline"
-          style={{ color: "hsl(var(--muted-foreground))" }}
+          className="afd-brand"
         >
-          alfindigital
+          lotmetrik
         </a>
         <span className="afd-caret" aria-hidden="true" />
       </span>
@@ -158,7 +164,6 @@ export default function Footer() {
             <b>{s.handle}</b>
           </a>
         ))}
-      </div>
       </div>
     </footer>
   );
