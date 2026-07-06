@@ -11,7 +11,6 @@ import NotFound from "./pages/NotFound";
 const Admin = lazy(() => import("./pages/Admin"));
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
-import Footer from "./components/Footer";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AlertTriangle } from "lucide-react";
 
@@ -87,9 +86,8 @@ const RoutedApp = () => {
           }
         />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
     </ErrorBoundary>
   );
 };
