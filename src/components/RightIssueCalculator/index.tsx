@@ -20,8 +20,6 @@ import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import Logo from './Logo';
 import EmptyStateCard from './EmptyStateCard';
-import ActiveRightsChips from './ActiveRightsChips';
-import type { ActiveRight } from '@/hooks/useActiveRights';
 import SmartResultBar from './SmartResultBar';
 import { ViewMode } from './ViewModeToggle';
 import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
@@ -552,39 +550,6 @@ const RightIssueCalculator: React.FC = () => {
     clearStorage();
   }, [clearStorage]);
 
-  // Prefill from an active-RI chip.
-  const applyActiveRight = useCallback((ri: ActiveRight) => {
-    setStockCode(ri.code);
-    setRatioOld(ri.ratioOld);
-    setRatioNew(ri.ratioNew);
-    setRightPrice(String(ri.rightPrice));
-    if (ri.cumDatePrice) setCumDatePrice(String(ri.cumDatePrice));
-    if (ri.hasWarrant && ri.warrantRatioOld && ri.warrantRatioNew) {
-      setHasWarrant(true);
-      setWarrantRatioOld(ri.warrantRatioOld);
-      setWarrantRatioNew(ri.warrantRatioNew);
-    }
-    setUseWizardMode(false);
-    hapticSuccess();
-    track('active_ri_picked', { code: ri.code });
-    toast({
-      title: language === 'id' ? `${ri.code} dimuat` : `${ri.code} loaded`,
-      description: language === 'id'
-        ? 'Sisa: isi lot & harga rata-rata Anda.'
-        : 'Next: fill your lots & average price.',
-      duration: 2500,
-    });
-    // Focus the lots input so user sees exactly what to fill next.
-    setTimeout(() => {
-      const ownership = document.querySelector<HTMLElement>('[data-tour="ownership"]');
-      if (ownership) {
-        ownership.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const firstInput = ownership.querySelector<HTMLInputElement>('input:not([type="hidden"])');
-        firstInput?.focus();
-      }
-    }, 250);
-  }, [language]);
-
   // Pull-to-refresh (mobile) → reset form with mini confirm
   const handlePullRefresh = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -1087,7 +1052,6 @@ const RightIssueCalculator: React.FC = () => {
 
         {!isCalculated && !isCalculating && (
           <>
-            <ActiveRightsChips onPick={applyActiveRight} />
             <EmptyStateCard onLoadDemo={loadDemo} />
           </>
         )}
