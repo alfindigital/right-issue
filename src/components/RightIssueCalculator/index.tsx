@@ -20,8 +20,6 @@ import FloatingSummary from './FloatingSummary';
 import BottomNav from './BottomNav';
 import Logo from './Logo';
 import EmptyStateCard from './EmptyStateCard';
-import ActiveRightsChips from './ActiveRightsChips';
-import type { ActiveRight } from '@/hooks/useActiveRights';
 import SmartResultBar from './SmartResultBar';
 import { ViewMode } from './ViewModeToggle';
 import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
