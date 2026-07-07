@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 type Social = {
   href: string;
   label: string;
@@ -29,22 +27,7 @@ const SOCIALS: Social[] = [
   },
 ];
 
-const TAGLINES = [
-  "hitung right issue tanpa drama",
-  "presisi lot, tanpa odd lot",
-  "TERP · dilusi · skenario",
-  "dibangun buat investor ritel",
-];
-
 export default function Footer() {
-  const [tag, setTag] = useState(0);
-  const year = new Date().getFullYear();
-
-  useEffect(() => {
-    const id = setInterval(() => setTag((i) => (i + 1) % TAGLINES.length), 3200);
-    return () => clearInterval(id);
-  }, []);
-
   return (
     <footer className="lm-foot" role="contentinfo">
       <style>{`
@@ -56,7 +39,7 @@ export default function Footer() {
             radial-gradient(900px 180px at 100% 120%, hsl(var(--primary) / .12), transparent 60%),
             hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 28px 22px 20px;
+          padding: 18px 22px;
           color: hsl(var(--foreground));
         }
         .lm-foot::before {
@@ -67,45 +50,23 @@ export default function Footer() {
         }
         .lm-wrap {
           max-width: 960px; margin: 0 auto;
-          display: grid; gap: 20px;
-          grid-template-columns: 1fr auto;
-          align-items: center;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 16px;
         }
-        @media (max-width: 640px) {
-          .lm-wrap { grid-template-columns: 1fr; text-align: center; justify-items: center }
-        }
-        .lm-brand-row {
-          display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        .lm-brand {
+          display: inline-flex; align-items: center; gap: 10px;
+          font-weight: 700; font-size: 16px; letter-spacing: -.01em;
+          color: hsl(var(--foreground)); text-decoration: none;
         }
         .lm-mark {
-          width: 34px; height: 34px; border-radius: 10px;
+          width: 32px; height: 32px; border-radius: 9px;
           display: inline-flex; align-items: center; justify-content: center;
           background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / .65));
           color: hsl(var(--primary-foreground, var(--card)));
-          font-weight: 800; font-size: 15px; letter-spacing: -.02em;
+          font-weight: 800; font-size: 14px; letter-spacing: -.02em;
           box-shadow: 0 8px 24px -8px hsl(var(--primary) / .55);
         }
-        .lm-brand {
-          font-weight: 700; font-size: 15px; letter-spacing: -.01em;
-          color: hsl(var(--foreground)); text-decoration: none;
-        }
         .lm-brand span { color: hsl(var(--primary)) }
-        .lm-dot {
-          width: 4px; height: 4px; border-radius: 50%;
-          background: hsl(var(--muted-foreground) / .5);
-        }
-        .lm-tag {
-          position: relative; height: 20px; min-width: 180px;
-          overflow: hidden; font-size: 13px;
-          color: hsl(var(--muted-foreground));
-        }
-        .lm-tag span {
-          position: absolute; inset: 0;
-          display: flex; align-items: center;
-          opacity: 0; transform: translateY(8px);
-          transition: opacity .5s ease, transform .5s ease;
-        }
-        .lm-tag span.on { opacity: 1; transform: translateY(0) }
         .lm-social { display: inline-flex; gap: 8px }
         .lm-btn {
           width: 36px; height: 36px; border-radius: 10px;
@@ -122,49 +83,22 @@ export default function Footer() {
           background: hsl(var(--primary) / .1);
           transform: translateY(-2px);
         }
-        .lm-meta {
-          margin-top: 18px; padding-top: 14px;
-          border-top: 1px dashed hsl(var(--border));
-          display: flex; align-items: center; justify-content: space-between;
-          gap: 10px; flex-wrap: wrap;
-          font-size: 12px; color: hsl(var(--muted-foreground));
-          max-width: 960px; margin-left: auto; margin-right: auto;
-        }
-        .lm-meta a { color: hsl(var(--foreground)); text-decoration: none }
-        .lm-meta a:hover { color: hsl(var(--primary)) }
-        .lm-pulse {
-          display: inline-flex; align-items: center; gap: 6px;
-        }
-        .lm-pulse i {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: hsl(var(--primary));
-          box-shadow: 0 0 0 0 hsl(var(--primary) / .6);
-          animation: lm-pulse 1.8s ease-out infinite;
-        }
-        @keyframes lm-pulse {
-          70% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0) }
-          100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0) }
+        @media (max-width: 480px) {
+          .lm-wrap { padding: 0 4px }
         }
       `}</style>
 
       <div className="lm-wrap">
-        <div className="lm-brand-row">
+        <a
+          href="https://lotmetrik.my.id"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="lm-brand"
+          aria-label="lotmetrik"
+        >
           <span className="lm-mark" aria-hidden="true">L</span>
-          <a
-            href="https://lotmetrik.my.id"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="lm-brand"
-          >
-            lot<span>metrik</span>
-          </a>
-          <span className="lm-dot" aria-hidden="true" />
-          <div className="lm-tag" aria-live="polite">
-            {TAGLINES.map((t, i) => (
-              <span key={t} className={i === tag ? "on" : ""}>{t}</span>
-            ))}
-          </div>
-        </div>
+          lot<span>metrik</span>
+        </a>
 
         <div className="lm-social" aria-label="Social links">
           {SOCIALS.map((s) => (
@@ -182,11 +116,6 @@ export default function Footer() {
             </a>
           ))}
         </div>
-      </div>
-
-      <div className="lm-meta">
-        <span>© {year} lotmetrik · alat bantu, bukan nasihat investasi.</span>
-        <span className="lm-pulse"><i />live · v1</span>
       </div>
     </footer>
   );
