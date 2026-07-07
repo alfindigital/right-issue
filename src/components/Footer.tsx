@@ -70,9 +70,9 @@ export default function Footer() {
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 17px 22px;
+          padding: 12px 18px;
           display: flex; align-items: center; justify-content: space-between;
-          gap: 16px; flex-wrap: wrap;
+          gap: 14px; flex-wrap: wrap;
         }
         .afd-foot > * { position: relative; z-index: 1 }
         .afd-glow {
@@ -83,41 +83,41 @@ export default function Footer() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-cr {
-          font-size: 13px; color: hsl(var(--muted-foreground));
+          font-size: 12px; color: hsl(var(--muted-foreground));
           display: inline-flex; align-items: center;
           border-left: 3px solid hsl(var(--primary));
-          padding-left: 11px;
+          padding-left: 9px;
         }
         .afd-brand {
           color: hsl(var(--primary)); font-weight: 600;
-          text-decoration: none; margin-left: 4px;
+          text-decoration: none; margin-left: 3px;
         }
         .afd-brand:hover { text-decoration: underline }
         .afd-caret {
-          display: inline-block; width: 8px; height: 15px;
+          display: inline-block; width: 6px; height: 11px;
           background: hsl(var(--primary)); margin-left: 3px;
           animation: afd-blink 1.1s step-end infinite;
         }
         @keyframes afd-blink { 50% { opacity: 0 } }
         .afd-rot {
-          position: relative; height: 36px; min-width: 200px; flex: 0 0 auto;
+          position: relative; height: 28px; min-width: 160px; flex: 0 0 auto;
         }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 36px;
-          display: flex; align-items: center; gap: 11px;
-          text-decoration: none; color: hsl(var(--foreground)); font-size: 14px;
-          opacity: 0; transform: translateY(9px);
+          position: absolute; right: 0; top: 0; height: 28px;
+          display: flex; align-items: center; gap: 9px;
+          text-decoration: none; color: hsl(var(--foreground)); font-size: 12px;
+          opacity: 0; transform: translateY(7px);
           transition: opacity .5s, transform .5s; pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto }
         .afd-item b { color: hsl(var(--primary)); font-weight: 600 }
         .afd-ico {
-          position: relative; width: 36px; height: 36px; border-radius: 50%;
+          position: relative; width: 28px; height: 28px; border-radius: 50%;
           flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .11); color: hsl(var(--primary));
           transition: all .25s;
         }
-        .afd-ico svg { width: 19px; height: 19px }
+        .afd-ico svg { width: 15px; height: 15px }
         .afd-rot:hover .afd-item.active .afd-ico {
           background: hsl(var(--primary)); color: hsl(var(--card));
         }
@@ -127,8 +127,9 @@ export default function Footer() {
         }
         @keyframes afd-ripple {
           0% { box-shadow: 0 0 0 0 hsl(var(--primary) / .5) }
-          100% { box-shadow: 0 0 0 22px hsl(var(--primary) / 0) }
+          100% { box-shadow: 0 0 0 16px hsl(var(--primary) / 0) }
         }
+
       `}</style>
 
       <div className="afd-glow" ref={glowRef} aria-hidden="true" />
