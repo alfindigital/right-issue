@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 type Social = {
   href: string;
   label: string;
