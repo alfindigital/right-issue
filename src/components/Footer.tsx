@@ -55,10 +55,10 @@ export default function Footer() {
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 4px 12px;
+          padding: 7px 14px;
           display: flex; align-items: center; justify-content: space-between;
-          gap: 8px; flex-wrap: wrap;
-          line-height: 1;
+          gap: 10px; flex-wrap: wrap;
+          line-height: 1.1;
         }
         .afd-foot > * { position: relative; z-index: 1 }
         .afd-glow {
@@ -69,11 +69,11 @@ export default function Footer() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-cr {
-          font-size: 10px; color: hsl(var(--muted-foreground));
+          font-size: 11px; color: hsl(var(--muted-foreground));
           display: inline-flex; align-items: center;
           border-left: 2px solid hsl(var(--primary));
-          padding-left: 6px;
-          line-height: 1;
+          padding-left: 7px;
+          line-height: 1.1;
         }
         .afd-brand {
           color: hsl(var(--primary)); font-weight: 600;
@@ -81,30 +81,35 @@ export default function Footer() {
         }
         .afd-brand:hover { text-decoration: underline }
         .afd-caret {
-          display: inline-block; width: 4px; height: 7px;
+          display: inline-block; width: 4px; height: 9px;
           background: hsl(var(--primary)); margin-left: 2px;
+          vertical-align: middle;
           animation: afd-blink 1.1s step-end infinite;
         }
         @keyframes afd-blink { 50% { opacity: 0 } }
         .afd-socials {
-          display: flex; align-items: center; gap: 4px;
+          display: flex; align-items: center; gap: 5px;
           flex: 0 0 auto;
           line-height: 1;
         }
         .afd-social {
           position: relative;
-          width: 20px; height: 20px; border-radius: 50%;
+          width: 24px; height: 24px; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .11); color: hsl(var(--primary));
           text-decoration: none;
           transition: all .25s;
         }
         .afd-social svg {
-          width: 11px; height: 11px;
+          width: 13px; height: 13px;
           flex-shrink: 0;
         }
         .afd-social:hover {
           background: hsl(var(--primary)); color: hsl(var(--card));
+        }
+        .afd-social:focus-visible {
+          outline: 2px solid hsl(var(--primary));
+          outline-offset: 2px;
         }
         .afd-social:hover::after {
           content: ""; position: absolute; inset: 0; border-radius: 50%;
@@ -117,25 +122,25 @@ export default function Footer() {
 
         @media (max-width: 480px) {
           .afd-foot {
-            padding: 4px 8px;
-            gap: 5px;
+            padding: 6px 10px;
+            gap: 7px;
           }
           .afd-cr {
-            font-size: 9px;
+            font-size: 10px;
             border-left-width: 2px;
-            padding-left: 5px;
+            padding-left: 6px;
           }
           .afd-caret {
-            width: 3px; height: 6px;
+            width: 3px; height: 8px;
           }
           .afd-socials {
-            gap: 3px;
+            gap: 4px;
           }
           .afd-social {
-            width: 18px; height: 18px;
+            width: 22px; height: 22px;
           }
           .afd-social svg {
-            width: 10px; height: 10px;
+            width: 12px; height: 12px;
           }
           .afd-brand { margin-left: 2px }
         }
