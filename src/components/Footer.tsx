@@ -68,36 +68,36 @@ export default function Footer() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-cr {
-          font-size: 11px; color: hsl(var(--muted-foreground));
+          font-size: 10px; color: hsl(var(--muted-foreground));
           display: inline-flex; align-items: center;
-          border-left: 3px solid hsl(var(--primary));
-          padding-left: 8px;
+          border-left: 2px solid hsl(var(--primary));
+          padding-left: 6px;
         }
         .afd-brand {
           color: hsl(var(--primary)); font-weight: 600;
-          text-decoration: none; margin-left: 3px;
+          text-decoration: none; margin-left: 2px;
         }
         .afd-brand:hover { text-decoration: underline }
         .afd-caret {
-          display: inline-block; width: 5px; height: 9px;
-          background: hsl(var(--primary)); margin-left: 3px;
+          display: inline-block; width: 4px; height: 7px;
+          background: hsl(var(--primary)); margin-left: 2px;
           animation: afd-blink 1.1s step-end infinite;
         }
         @keyframes afd-blink { 50% { opacity: 0 } }
         .afd-socials {
-          display: flex; align-items: center; gap: 6px;
+          display: flex; align-items: center; gap: 5px;
           flex: 0 0 auto;
         }
         .afd-social {
           position: relative;
-          width: 26px; height: 26px; border-radius: 50%;
+          width: 22px; height: 22px; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .11); color: hsl(var(--primary));
           text-decoration: none;
           transition: all .25s;
         }
         .afd-social svg {
-          width: 14px; height: 14px;
+          width: 12px; height: 12px;
           flex-shrink: 0;
         }
         .afd-social:hover {
@@ -109,7 +109,7 @@ export default function Footer() {
         }
         @keyframes afd-ripple {
           0% { box-shadow: 0 0 0 0 hsl(var(--primary) / .5) }
-          100% { box-shadow: 0 0 0 12px hsl(var(--primary) / 0) }
+          100% { box-shadow: 0 0 0 10px hsl(var(--primary) / 0) }
         }
 
         @media (max-width: 480px) {
