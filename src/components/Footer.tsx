@@ -130,6 +130,31 @@ export default function Footer() {
           100% { box-shadow: 0 0 0 12px hsl(var(--primary) / 0) }
         }
 
+        @media (max-width: 480px) {
+          .afd-foot {
+            padding: 6px 12px;
+            gap: 8px;
+          }
+          .afd-cr {
+            font-size: 10px;
+            border-left-width: 2px;
+            padding-left: 6px;
+          }
+          .afd-caret {
+            width: 4px; height: 7px;
+          }
+          .afd-rot {
+            height: 20px; min-width: 118px;
+          }
+          .afd-item {
+            height: 20px; font-size: 10px; gap: 5px;
+          }
+          .afd-ico {
+            width: 20px; height: 20px;
+          }
+          .afd-ico svg { width: 11px; height: 11px }
+          .afd-brand { margin-left: 2px }
+        }
 
       `}</style>
 
