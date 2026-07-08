@@ -114,25 +114,25 @@ export default function Footer() {
 
         @media (max-width: 480px) {
           .afd-foot {
-            padding: 6px 12px;
-            gap: 8px;
+            padding: 5px 10px;
+            gap: 6px;
           }
           .afd-cr {
-            font-size: 10px;
+            font-size: 9px;
             border-left-width: 2px;
-            padding-left: 6px;
+            padding-left: 5px;
           }
           .afd-caret {
-            width: 4px; height: 7px;
+            width: 3px; height: 6px;
           }
           .afd-socials {
-            gap: 4px;
+            gap: 3px;
           }
           .afd-social {
-            width: 22px; height: 22px;
+            width: 20px; height: 20px;
           }
           .afd-social svg {
-            width: 12px; height: 12px;
+            width: 11px; height: 11px;
           }
           .afd-brand { margin-left: 2px }
         }
