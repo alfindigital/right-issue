@@ -117,8 +117,8 @@ export default function Footer() {
 
         @media (max-width: 480px) {
           .afd-foot {
-            padding: 5px 10px;
-            gap: 6px;
+            padding: 4px 8px;
+            gap: 5px;
           }
           .afd-cr {
             font-size: 9px;
@@ -132,10 +132,10 @@ export default function Footer() {
             gap: 3px;
           }
           .afd-social {
-            width: 20px; height: 20px;
+            width: 18px; height: 18px;
           }
           .afd-social svg {
-            width: 11px; height: 11px;
+            width: 10px; height: 10px;
           }
           .afd-brand { margin-left: 2px }
         }
