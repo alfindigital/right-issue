@@ -55,9 +55,10 @@ export default function Footer() {
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 6px 14px;
+          padding: 4px 12px;
           display: flex; align-items: center; justify-content: space-between;
-          gap: 10px; flex-wrap: wrap;
+          gap: 8px; flex-wrap: wrap;
+          line-height: 1;
         }
         .afd-foot > * { position: relative; z-index: 1 }
         .afd-glow {
