@@ -55,9 +55,10 @@ export default function Footer() {
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 6px 14px;
+          padding: 4px 12px;
           display: flex; align-items: center; justify-content: space-between;
-          gap: 10px; flex-wrap: wrap;
+          gap: 8px; flex-wrap: wrap;
+          line-height: 1;
         }
         .afd-foot > * { position: relative; z-index: 1 }
         .afd-glow {
@@ -72,6 +73,7 @@ export default function Footer() {
           display: inline-flex; align-items: center;
           border-left: 2px solid hsl(var(--primary));
           padding-left: 6px;
+          line-height: 1;
         }
         .afd-brand {
           color: hsl(var(--primary)); font-weight: 600;
@@ -85,19 +87,20 @@ export default function Footer() {
         }
         @keyframes afd-blink { 50% { opacity: 0 } }
         .afd-socials {
-          display: flex; align-items: center; gap: 5px;
+          display: flex; align-items: center; gap: 4px;
           flex: 0 0 auto;
+          line-height: 1;
         }
         .afd-social {
           position: relative;
-          width: 22px; height: 22px; border-radius: 50%;
+          width: 20px; height: 20px; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .11); color: hsl(var(--primary));
           text-decoration: none;
           transition: all .25s;
         }
         .afd-social svg {
-          width: 12px; height: 12px;
+          width: 11px; height: 11px;
           flex-shrink: 0;
         }
         .afd-social:hover {
@@ -109,13 +112,13 @@ export default function Footer() {
         }
         @keyframes afd-ripple {
           0% { box-shadow: 0 0 0 0 hsl(var(--primary) / .5) }
-          100% { box-shadow: 0 0 0 10px hsl(var(--primary) / 0) }
+          100% { box-shadow: 0 0 0 8px hsl(var(--primary) / 0) }
         }
 
         @media (max-width: 480px) {
           .afd-foot {
-            padding: 5px 10px;
-            gap: 6px;
+            padding: 4px 8px;
+            gap: 5px;
           }
           .afd-cr {
             font-size: 9px;
@@ -129,10 +132,10 @@ export default function Footer() {
             gap: 3px;
           }
           .afd-social {
-            width: 20px; height: 20px;
+            width: 18px; height: 18px;
           }
           .afd-social svg {
-            width: 11px; height: 11px;
+            width: 10px; height: 10px;
           }
           .afd-brand { margin-left: 2px }
         }
