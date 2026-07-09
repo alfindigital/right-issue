@@ -69,17 +69,23 @@ export default function Footer() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-cr {
-          font-size: 11px; color: hsl(var(--muted-foreground));
+          font-size: 11px; color: hsl(var(--foreground) / 0.75);
           display: inline-flex; align-items: center;
           border-left: 2px solid hsl(var(--primary));
           padding-left: 7px;
           line-height: 1.1;
         }
+        .dark .afd-cr { color: hsl(var(--foreground) / 0.85); }
         .afd-brand {
           color: hsl(var(--primary)); font-weight: 600;
           text-decoration: none; margin-left: 2px;
         }
         .afd-brand:hover { text-decoration: underline }
+        .afd-brand:focus-visible {
+          outline: 2px solid hsl(var(--primary));
+          outline-offset: 2px;
+          border-radius: 2px;
+        }
         .afd-caret {
           display: inline-block; width: 4px; height: 9px;
           background: hsl(var(--primary)); margin-left: 2px;
@@ -96,9 +102,13 @@ export default function Footer() {
           position: relative;
           width: 24px; height: 24px; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
-          background: hsl(var(--primary) / .11); color: hsl(var(--primary));
+          background: hsl(var(--primary) / .12); color: hsl(var(--primary));
           text-decoration: none;
           transition: all .25s;
+        }
+        .dark .afd-social {
+          background: hsl(var(--primary) / .18);
+          color: hsl(217 91% 78%);
         }
         .afd-social svg {
           width: 13px; height: 13px;
@@ -106,6 +116,10 @@ export default function Footer() {
         }
         .afd-social:hover {
           background: hsl(var(--primary)); color: hsl(var(--card));
+        }
+        .dark .afd-social:hover {
+          background: hsl(var(--primary));
+          color: hsl(var(--background));
         }
         .afd-social:focus-visible {
           outline: 2px solid hsl(var(--primary));
@@ -134,7 +148,7 @@ export default function Footer() {
             width: 3px; height: 8px;
           }
           .afd-socials {
-            gap: 4px;
+            gap: 5px;
           }
           .afd-social {
             width: 22px; height: 22px;
@@ -143,6 +157,17 @@ export default function Footer() {
             width: 12px; height: 12px;
           }
           .afd-brand { margin-left: 2px }
+        }
+
+        @media (max-width: 360px) {
+          .afd-foot {
+            padding: 6px 8px;
+            gap: 6px;
+          }
+          .afd-cr { font-size: 10px; padding-left: 5px; }
+          .afd-socials { gap: 4px; }
+          .afd-social { width: 20px; height: 20px; }
+          .afd-social svg { width: 11px; height: 11px; }
         }
       `}</style>
 
