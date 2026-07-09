@@ -94,38 +94,49 @@ export default function Footer() {
         }
         @keyframes afd-blink { 50% { opacity: 0 } }
         .afd-socials {
-          display: flex; align-items: center; gap: 5px;
+          display: flex; align-items: center; gap: 2px;
           flex: 0 0 auto;
           line-height: 1;
         }
         .afd-social {
-          position: relative;
-          width: 24px; height: 24px; border-radius: 50%;
+          /* WCAG 2.5.5: minimum 44x44 tap target on every breakpoint */
+          min-width: 44px; min-height: 44px;
           display: inline-flex; align-items: center; justify-content: center;
-          background: hsl(var(--primary) / .12); color: hsl(var(--primary));
+          background: transparent;
           text-decoration: none;
-          transition: all .25s;
-        }
-        .dark .afd-social {
-          background: hsl(var(--primary) / .18);
-          color: hsl(217 91% 78%);
-        }
-        .afd-social svg {
-          width: 13px; height: 13px;
-          flex-shrink: 0;
-        }
-        .afd-social:hover {
-          background: hsl(var(--primary)); color: hsl(var(--card));
-        }
-        .dark .afd-social:hover {
-          background: hsl(var(--primary));
-          color: hsl(var(--background));
+          border-radius: 50%;
         }
         .afd-social:focus-visible {
           outline: 2px solid hsl(var(--primary));
           outline-offset: 2px;
         }
-        .afd-social:hover::after {
+        .afd-social:focus-visible .afd-social__badge {
+          box-shadow: 0 0 0 2px hsl(var(--card)), 0 0 0 4px hsl(var(--primary));
+        }
+        .afd-social__badge {
+          position: relative;
+          width: 24px; height: 24px; border-radius: 50%;
+          display: inline-flex; align-items: center; justify-content: center;
+          background: hsl(var(--primary) / .12); color: hsl(var(--primary));
+          transition: all .25s;
+          pointer-events: none;
+        }
+        .dark .afd-social__badge {
+          background: hsl(var(--primary) / .18);
+          color: hsl(217 91% 78%);
+        }
+        .afd-social__badge svg {
+          width: 13px; height: 13px;
+          flex-shrink: 0;
+        }
+        .afd-social:hover .afd-social__badge {
+          background: hsl(var(--primary)); color: hsl(var(--card));
+        }
+        .dark .afd-social:hover .afd-social__badge {
+          background: hsl(var(--primary));
+          color: hsl(var(--background));
+        }
+        .afd-social:hover .afd-social__badge::after {
           content: ""; position: absolute; inset: 0; border-radius: 50%;
           animation: afd-ripple 1.3s ease-out infinite;
         }
@@ -147,15 +158,10 @@ export default function Footer() {
           .afd-caret {
             width: 3px; height: 8px;
           }
-          .afd-socials {
-            gap: 5px;
-          }
-          .afd-social {
-            width: 22px; height: 22px;
-          }
-          .afd-social svg {
-            width: 12px; height: 12px;
-          }
+          .afd-socials { gap: 2px; }
+          .afd-social { min-width: 44px; min-height: 44px; }
+          .afd-social__badge { width: 22px; height: 22px; }
+          .afd-social__badge svg { width: 12px; height: 12px; }
           .afd-brand { margin-left: 2px }
         }
 
@@ -165,9 +171,10 @@ export default function Footer() {
             gap: 6px;
           }
           .afd-cr { font-size: 10px; padding-left: 5px; }
-          .afd-socials { gap: 4px; }
-          .afd-social { width: 20px; height: 20px; }
-          .afd-social svg { width: 11px; height: 11px; }
+          .afd-socials { gap: 0px; }
+          .afd-social { min-width: 44px; min-height: 44px; }
+          .afd-social__badge { width: 20px; height: 20px; }
+          .afd-social__badge svg { width: 11px; height: 11px; }
         }
       `}</style>
 
@@ -185,7 +192,7 @@ export default function Footer() {
         <span className="afd-caret" aria-hidden="true" />
       </span>
 
-      <div className="afd-socials">
+      <nav className="afd-socials" aria-label="Social media">
         {SOCIALS.map((s) => (
           <a
             key={s.label}
@@ -195,12 +202,14 @@ export default function Footer() {
             rel="noopener noreferrer"
             aria-label={s.label}
           >
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d={s.path} />
-            </svg>
+            <span className="afd-social__badge">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d={s.path} />
+              </svg>
+            </span>
           </a>
         ))}
-      </div>
+      </nav>
     </footer>
   );
 }
