@@ -80,6 +80,7 @@ export default function Footer() {
           color: hsl(var(--primary)); font-weight: 600;
           text-decoration: none; margin-left: 2px;
         }
+        .dark .afd-brand { color: hsl(217 91% 70%); }
         .afd-brand:hover { text-decoration: underline }
         .afd-brand:focus-visible {
           outline: 2px solid hsl(var(--primary));
