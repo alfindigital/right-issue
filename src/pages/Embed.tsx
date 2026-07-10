@@ -81,9 +81,9 @@ const Embed: React.FC = () => {
         />
         <meta name="twitter:image" content="https://rightissue.lovable.app/og-embed.png" />
       </Helmet>
-      <div className="min-h-screen flex items-center justify-center p-2">
+      <main className="min-h-screen flex items-center justify-center p-2">
         <MiniCalculator />
-      </div>
+      </main>
     </>
   );
 };
