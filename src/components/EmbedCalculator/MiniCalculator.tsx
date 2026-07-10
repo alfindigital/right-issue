@@ -253,7 +253,7 @@ const MiniCalculator: React.FC<MiniCalculatorProps> = ({ onCalculate }) => {
       </button>
 
       {/* Powered by */}
-      <p className="mt-2 text-center text-[10px] text-muted-foreground/60">
+      <p className="mt-2 text-center text-[11px] text-muted-foreground">
         Powered by{' '}
         <a
           href="https://alfindigital.com"
