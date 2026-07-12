@@ -48,14 +48,14 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="afd-foot" role="contentinfo">
+    <footer className="afd-foot max-w-2xl mx-auto px-3 md:px-4" role="contentinfo">
       <style>{`
         .afd-foot {
           position: relative; overflow: hidden;
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 7px 14px;
+          padding: 4px 0;
           display: flex; align-items: center; justify-content: space-between;
           gap: 10px; flex-wrap: wrap;
           line-height: 1.1;
@@ -116,7 +116,7 @@ export default function Footer() {
         }
         .afd-social__badge {
           position: relative;
-          width: 24px; height: 24px; border-radius: 50%;
+          width: 20px; height: 20px; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .12); color: hsl(var(--primary));
           transition: all .25s;
@@ -127,7 +127,7 @@ export default function Footer() {
           color: hsl(217 91% 78%);
         }
         .afd-social__badge svg {
-          width: 13px; height: 13px;
+          width: 11px; height: 11px;
           flex-shrink: 0;
         }
         .afd-social:hover .afd-social__badge {
@@ -148,7 +148,7 @@ export default function Footer() {
 
         @media (max-width: 480px) {
           .afd-foot {
-            padding: 6px 10px;
+            padding: 3px 0;
             gap: 7px;
           }
           .afd-cr {
@@ -159,23 +159,23 @@ export default function Footer() {
           .afd-caret {
             width: 3px; height: 8px;
           }
-          .afd-socials { gap: 2px; }
-          .afd-social { min-width: 44px; min-height: 44px; }
-          .afd-social__badge { width: 22px; height: 22px; }
-          .afd-social__badge svg { width: 12px; height: 12px; }
+          .afd-socials { gap: 1px; }
+          .afd-social { min-width: 40px; min-height: 40px; }
+          .afd-social__badge { width: 18px; height: 18px; }
+          .afd-social__badge svg { width: 10px; height: 10px; }
           .afd-brand { margin-left: 2px }
         }
 
         @media (max-width: 360px) {
           .afd-foot {
-            padding: 6px 8px;
+            padding: 3px 0;
             gap: 6px;
           }
           .afd-cr { font-size: 10px; padding-left: 5px; }
           .afd-socials { gap: 0px; }
-          .afd-social { min-width: 44px; min-height: 44px; }
-          .afd-social__badge { width: 20px; height: 20px; }
-          .afd-social__badge svg { width: 11px; height: 11px; }
+          .afd-social { min-width: 40px; min-height: 40px; }
+          .afd-social__badge { width: 17px; height: 17px; }
+          .afd-social__badge svg { width: 10px; height: 10px; }
         }
       `}</style>
 
