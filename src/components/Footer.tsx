@@ -150,7 +150,7 @@ export default function Footer() {
         }
 
         @media (max-width: 480px) {
-          .afd-foot {
+          .afd-foot__inner {
             padding: 3px 0;
             gap: 7px;
           }
@@ -170,7 +170,7 @@ export default function Footer() {
         }
 
         @media (max-width: 360px) {
-          .afd-foot {
+          .afd-foot__inner {
             padding: 3px 0;
             gap: 6px;
           }
