@@ -182,38 +182,40 @@ export default function Footer() {
         }
       `}</style>
 
-      <div className="afd-glow" ref={glowRef} aria-hidden="true" />
-      <span className="afd-cr">
-        © {year}
-        <a
-          href="https://lotmetrik.my.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="afd-brand"
-        >
-          lotmetrik
-        </a>
-        <span className="afd-caret" aria-hidden="true" />
-      </span>
-
-      <nav className="afd-socials" aria-label="Social media">
-        {SOCIALS.map((s) => (
+      <div className="afd-foot__inner max-w-2xl mx-auto px-3 md:px-4 w-full">
+        <div className="afd-glow" ref={glowRef} aria-hidden="true" />
+        <span className="afd-cr">
+          © {year}
           <a
-            key={s.label}
-            className="afd-social"
-            href={s.href}
+            href="https://lotmetrik.my.id"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={s.label}
+            className="afd-brand"
           >
-            <span className="afd-social__badge">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d={s.path} />
-              </svg>
-            </span>
+            lotmetrik
           </a>
-        ))}
-      </nav>
+          <span className="afd-caret" aria-hidden="true" />
+        </span>
+
+        <nav className="afd-socials" aria-label="Social media">
+          {SOCIALS.map((s) => (
+            <a
+              key={s.label}
+              className="afd-social"
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={s.label}
+            >
+              <span className="afd-social__badge">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d={s.path} />
+                </svg>
+              </span>
+            </a>
+          ))}
+        </nav>
+      </div>
     </footer>
   );
 }
