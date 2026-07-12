@@ -55,15 +55,12 @@ export default function Footer() {
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-        }
-        .afd-foot__inner {
-          position: relative; overflow: hidden;
+          padding: 7px 14px;
           display: flex; align-items: center; justify-content: space-between;
           gap: 10px; flex-wrap: wrap;
           line-height: 1.1;
-          padding: 4px 0;
         }
-        .afd-foot__inner > * { position: relative; z-index: 1 }
+        .afd-foot > * { position: relative; z-index: 1 }
         .afd-glow {
           position: absolute; top: -40%; bottom: -40%; width: 48%;
           border-radius: 50%; z-index: 0; pointer-events: none; left: -48%;
@@ -119,7 +116,7 @@ export default function Footer() {
         }
         .afd-social__badge {
           position: relative;
-          width: 20px; height: 20px; border-radius: 50%;
+          width: 24px; height: 24px; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .12); color: hsl(var(--primary));
           transition: all .25s;
@@ -130,7 +127,7 @@ export default function Footer() {
           color: hsl(217 91% 78%);
         }
         .afd-social__badge svg {
-          width: 11px; height: 11px;
+          width: 13px; height: 13px;
           flex-shrink: 0;
         }
         .afd-social:hover .afd-social__badge {
@@ -150,8 +147,8 @@ export default function Footer() {
         }
 
         @media (max-width: 480px) {
-          .afd-foot__inner {
-            padding: 3px 0;
+          .afd-foot {
+            padding: 6px 10px;
             gap: 7px;
           }
           .afd-cr {
@@ -162,60 +159,58 @@ export default function Footer() {
           .afd-caret {
             width: 3px; height: 8px;
           }
-          .afd-socials { gap: 1px; }
-          .afd-social { min-width: 40px; min-height: 40px; }
-          .afd-social__badge { width: 18px; height: 18px; }
-          .afd-social__badge svg { width: 10px; height: 10px; }
+          .afd-socials { gap: 2px; }
+          .afd-social { min-width: 44px; min-height: 44px; }
+          .afd-social__badge { width: 22px; height: 22px; }
+          .afd-social__badge svg { width: 12px; height: 12px; }
           .afd-brand { margin-left: 2px }
         }
 
         @media (max-width: 360px) {
-          .afd-foot__inner {
-            padding: 3px 0;
+          .afd-foot {
+            padding: 6px 8px;
             gap: 6px;
           }
           .afd-cr { font-size: 10px; padding-left: 5px; }
           .afd-socials { gap: 0px; }
-          .afd-social { min-width: 40px; min-height: 40px; }
-          .afd-social__badge { width: 17px; height: 17px; }
-          .afd-social__badge svg { width: 10px; height: 10px; }
+          .afd-social { min-width: 44px; min-height: 44px; }
+          .afd-social__badge { width: 20px; height: 20px; }
+          .afd-social__badge svg { width: 11px; height: 11px; }
         }
       `}</style>
 
-      <div className="afd-foot__inner max-w-2xl mx-auto px-3 md:px-4 w-full">
-        <div className="afd-glow" ref={glowRef} aria-hidden="true" />
-        <span className="afd-cr">
-          © {year}
+      <div className="afd-glow" ref={glowRef} aria-hidden="true" />
+      <span className="afd-cr">
+        © {year}
+        <a
+          href="https://lotmetrik.my.id"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="afd-brand"
+        >
+          lotmetrik
+        </a>
+        <span className="afd-caret" aria-hidden="true" />
+      </span>
+
+      <nav className="afd-socials" aria-label="Social media">
+        {SOCIALS.map((s) => (
           <a
-            href="https://lotmetrik.my.id"
+            key={s.label}
+            className="afd-social"
+            href={s.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="afd-brand"
+            aria-label={s.label}
           >
-            lotmetrik
+            <span className="afd-social__badge">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d={s.path} />
+              </svg>
+            </span>
           </a>
-          <span className="afd-caret" aria-hidden="true" />
-        </span>
-
-        <nav className="afd-socials" aria-label="Social media">
-          {SOCIALS.map((s) => (
-            <a
-              key={s.label}
-              className="afd-social"
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={s.label}
-            >
-              <span className="afd-social__badge">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d={s.path} />
-                </svg>
-              </span>
-            </a>
-          ))}
-        </nav>
-      </div>
+        ))}
+      </nav>
     </footer>
   );
 }
