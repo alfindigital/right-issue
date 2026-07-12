@@ -48,19 +48,22 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="afd-foot max-w-2xl mx-auto px-3 md:px-4" role="contentinfo">
+    <footer className="afd-foot" role="contentinfo">
       <style>{`
         .afd-foot {
           position: relative; overflow: hidden;
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 4px 0;
+        }
+        .afd-foot__inner {
+          position: relative; overflow: hidden;
           display: flex; align-items: center; justify-content: space-between;
           gap: 10px; flex-wrap: wrap;
           line-height: 1.1;
+          padding: 4px 0;
         }
-        .afd-foot > * { position: relative; z-index: 1 }
+        .afd-foot__inner > * { position: relative; z-index: 1 }
         .afd-glow {
           position: absolute; top: -40%; bottom: -40%; width: 48%;
           border-radius: 50%; z-index: 0; pointer-events: none; left: -48%;
@@ -147,7 +150,7 @@ export default function Footer() {
         }
 
         @media (max-width: 480px) {
-          .afd-foot {
+          .afd-foot__inner {
             padding: 3px 0;
             gap: 7px;
           }
@@ -167,7 +170,7 @@ export default function Footer() {
         }
 
         @media (max-width: 360px) {
-          .afd-foot {
+          .afd-foot__inner {
             padding: 3px 0;
             gap: 6px;
           }
@@ -179,38 +182,40 @@ export default function Footer() {
         }
       `}</style>
 
-      <div className="afd-glow" ref={glowRef} aria-hidden="true" />
-      <span className="afd-cr">
-        © {year}
-        <a
-          href="https://lotmetrik.my.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="afd-brand"
-        >
-          lotmetrik
-        </a>
-        <span className="afd-caret" aria-hidden="true" />
-      </span>
-
-      <nav className="afd-socials" aria-label="Social media">
-        {SOCIALS.map((s) => (
+      <div className="afd-foot__inner max-w-2xl mx-auto px-3 md:px-4 w-full">
+        <div className="afd-glow" ref={glowRef} aria-hidden="true" />
+        <span className="afd-cr">
+          © {year}
           <a
-            key={s.label}
-            className="afd-social"
-            href={s.href}
+            href="https://lotmetrik.my.id"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={s.label}
+            className="afd-brand"
           >
-            <span className="afd-social__badge">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d={s.path} />
-              </svg>
-            </span>
+            lotmetrik
           </a>
-        ))}
-      </nav>
+          <span className="afd-caret" aria-hidden="true" />
+        </span>
+
+        <nav className="afd-socials" aria-label="Social media">
+          {SOCIALS.map((s) => (
+            <a
+              key={s.label}
+              className="afd-social"
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={s.label}
+            >
+              <span className="afd-social__badge">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d={s.path} />
+                </svg>
+              </span>
+            </a>
+          ))}
+        </nav>
+      </div>
     </footer>
   );
 }
