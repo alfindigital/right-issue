@@ -1307,9 +1307,6 @@ const RightIssueCalculator: React.FC = () => {
         readyLabel={language === 'id' ? 'Lepas untuk reset' : 'Release to reset'}
       />
 
-      {/* One-time disclaimer after first calculation */}
-      <FirstCalcDisclaimerModal trigger={isCalculated} />
-
       {/* Sticky Calculate / Scroll-to-result bar (mobile, while typing) */}
       <StickyCalculateBar
         visible={isMobile && inputFocused && activeTab === 'calculator' && (isCalculateEnabled || isCalculated)}
