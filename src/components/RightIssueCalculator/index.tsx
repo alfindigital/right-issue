@@ -437,10 +437,29 @@ const RightIssueCalculator: React.FC = () => {
     const priceDiff = terpRounded - finalAvg;
     const priceDiffPercent = finalAvg > 0 ? ((priceDiff / finalAvg) * 100).toFixed(2) : '0';
 
-    if (finalAvg < terpRounded) {
-      setRecommendation('positive');
+    // Detect premium vs discount RI: harga pelaksanaan vs harga pasar (cum price).
+    // - Discount (riPrice < cumPrice): HMETD punya nilai teoritis positif → biasanya rasional menebus.
+    // - Premium (riPrice > cumPrice): HMETD tidak menguntungkan; menebus menaikkan avg. Umumnya lebih baik tidak menebus.
+    // - Setara (riPrice ≈ cumPrice): netral.
+    const isPremiumRI = cumPrice > 0 && riPrice > cumPrice;
+    const isDiscountRI = cumPrice > 0 && riPrice < cumPrice;
+    const priceGap = riPrice - cumPrice;
+    const priceGapPct = cumPrice > 0 ? ((priceGap / cumPrice) * 100).toFixed(2) : '0';
+
+    if (isPremiumRI) {
+      // Premium: hampir selalu kurang menguntungkan menebus dari sisi harga.
+      setRecommendation('negative');
       setRecommendationText(
-        `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
+        `Harga pelaksanaan (${formatCurrency(riPrice)}) berada Rp ${formatNumber(priceGap)} (${priceGapPct}%) di ATAS harga pasar (${formatCurrency(cumPrice)}). Rights berpotensi tidak bernilai (HMETD ≈ 0) sehingga menebus akan menaikkan harga rata-rata Anda. Umumnya lebih rasional untuk tidak menebus, atau menjual HMETD selama masih likuid.`
+      );
+      haptic(15);
+    } else if (finalAvg < terpRounded) {
+      setRecommendation('positive');
+      const discountNote = isDiscountRI
+        ? ` Harga pelaksanaan (${formatCurrency(riPrice)}) juga berada di bawah harga pasar (${formatCurrency(cumPrice)}) — HMETD memiliki nilai teoritis positif.`
+        : '';
+      setRecommendationText(
+        `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.${discountNote}`
       );
       hapticSuccess();
     } else {
@@ -480,14 +499,15 @@ const RightIssueCalculator: React.FC = () => {
         finalTotalValue: formatCurrency(totalValue),
         theoreticalPrice: formatCurrency(terpRounded),
         warrantCount: calculatedWarrantCount,
-        recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
+        recommendation: !isPremiumRI && finalAvg < terpRounded ? 'positive' : 'negative',
       },
     });
     track('calculate_clicked', {
       hasWarrant,
       noOwnership,
       hasStockCode: !!stockCode,
-      recommendation: finalAvg < terpRounded ? 'positive' : 'negative',
+      recommendation: !isPremiumRI && finalAvg < terpRounded ? 'positive' : 'negative',
+      riMode: isPremiumRI ? 'premium' : (isDiscountRI ? 'discount' : 'parity'),
     });
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice]);
 
@@ -518,22 +538,22 @@ const RightIssueCalculator: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, isCalculateEnabled, useWizardMode]);
 
-  // Load BRIS demo data (empty-state CTA)
+  // Load ELPI demo data — right issue terbaru IDX 2026 (rasio 200:57 @ Rp350).
   const loadDemo = useCallback(() => {
-    setStockCode('BRIS');
-    setRatioOld('2');
-    setRatioNew('1');
-    setRightPrice('1500');
-    setCumDatePrice('2000');
-    setCurrentLots('10');
-    setCurrentAvgPrice('1800');
+    setStockCode('ELPI');
+    setRatioOld('200');
+    setRatioNew('57');
+    setRightPrice('350');
+    setCumDatePrice('1200');
+    setCurrentLots('20');
+    setCurrentAvgPrice('1000');
     setHasWarrant(false);
     setWarrantRatioOld(''); setWarrantRatioNew('');
     setNoOwnership(false);
     track('demo_loaded');
     toast({
       title: language === 'id' ? 'Contoh dimuat' : 'Example loaded',
-      description: language === 'id' ? 'Data contoh BRIS dipakai. Edit bebas.' : 'BRIS sample data loaded. Edit freely.',
+      description: language === 'id' ? 'Data contoh ELPI (RI 200:57 @ Rp350) dipakai. Edit bebas.' : 'ELPI sample data (RI 200:57 @ Rp350) loaded. Edit freely.',
       duration: 2500,
     });
   }, [language]);
@@ -811,7 +831,7 @@ const RightIssueCalculator: React.FC = () => {
             onSelect: () => { setActiveTab('calculator'); reset(); },
           },
           {
-            label: language === 'id' ? 'Muat contoh (BRIS)' : 'Load example (BRIS)',
+            label: language === 'id' ? 'Muat contoh (ELPI)' : 'Load example (ELPI)',
             onSelect: () => { setActiveTab('calculator'); loadDemo(); },
           },
         ];

@@ -239,7 +239,7 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
               type="text"
               value={stockCode}
               onChange={(e) => setStockCode(e.target.value.toUpperCase().slice(0, 4))}
-              placeholder="BRIS"
+              placeholder="ELPI"
               className="input-calculator w-24"
               maxLength={4}
             />

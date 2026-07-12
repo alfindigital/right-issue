@@ -38,7 +38,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
     {
       target: '[data-tour="stock-code"]',
       title: 'Kode Saham',
-      content: 'Opsional. Masukkan kode emiten (mis. BRIS) untuk memudahkan riwayat dan ekspor.',
+      content: 'Opsional. Masukkan kode emiten (mis. ELPI) untuk memudahkan riwayat dan ekspor.',
     },
     {
       target: '[data-tour="ri-info"]',
@@ -71,7 +71,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
     {
       target: '[data-tour="stock-code"]',
       title: 'Stock Code',
-      content: 'Optional. Enter ticker (e.g. BRIS) to label your history and exports.',
+      content: 'Optional. Enter ticker (e.g. ELPI) to label your history and exports.',
     },
     {
       target: '[data-tour="ri-info"]',
