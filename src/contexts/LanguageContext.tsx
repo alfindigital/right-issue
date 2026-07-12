@@ -236,7 +236,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Stock Code
     'stockCode.label': 'Stock Code',
-    'stockCode.placeholder': 'e.g., BRIS',
+    'stockCode.placeholder': 'e.g., ELPI',
     
     // Right Issue Info
     'rightIssue.title': 'Right Issue Information',
