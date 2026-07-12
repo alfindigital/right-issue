@@ -437,10 +437,29 @@ const RightIssueCalculator: React.FC = () => {
     const priceDiff = terpRounded - finalAvg;
     const priceDiffPercent = finalAvg > 0 ? ((priceDiff / finalAvg) * 100).toFixed(2) : '0';
 
-    if (finalAvg < terpRounded) {
-      setRecommendation('positive');
+    // Detect premium vs discount RI: harga pelaksanaan vs harga pasar (cum price).
+    // - Discount (riPrice < cumPrice): HMETD punya nilai teoritis positif → biasanya rasional menebus.
+    // - Premium (riPrice > cumPrice): HMETD tidak menguntungkan; menebus menaikkan avg. Umumnya lebih baik tidak menebus.
+    // - Setara (riPrice ≈ cumPrice): netral.
+    const isPremiumRI = cumPrice > 0 && riPrice > cumPrice;
+    const isDiscountRI = cumPrice > 0 && riPrice < cumPrice;
+    const priceGap = riPrice - cumPrice;
+    const priceGapPct = cumPrice > 0 ? ((priceGap / cumPrice) * 100).toFixed(2) : '0';
+
+    if (isPremiumRI) {
+      // Premium: hampir selalu kurang menguntungkan menebus dari sisi harga.
+      setRecommendation('negative');
       setRecommendationText(
-        `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.`
+        `Harga pelaksanaan (${formatCurrency(riPrice)}) berada Rp ${formatNumber(priceGap)} (${priceGapPct}%) di ATAS harga pasar (${formatCurrency(cumPrice)}). Rights berpotensi tidak bernilai (HMETD ≈ 0) sehingga menebus akan menaikkan harga rata-rata Anda. Umumnya lebih rasional untuk tidak menebus, atau menjual HMETD selama masih likuid.`
+      );
+      haptic(15);
+    } else if (finalAvg < terpRounded) {
+      setRecommendation('positive');
+      const discountNote = isDiscountRI
+        ? ` Harga pelaksanaan (${formatCurrency(riPrice)}) juga berada di bawah harga pasar (${formatCurrency(cumPrice)}) — HMETD memiliki nilai teoritis positif.`
+        : '';
+      setRecommendationText(
+        `Harga rata-rata baru Anda (${formatCurrency(finalAvg)}) berada Rp ${formatNumber(priceDiff)} (${priceDiffPercent}%) di bawah TERP (${formatCurrency(terpRounded)}). Secara teoritis, menebus RI berpotensi memberikan keuntungan.${discountNote}`
       );
       hapticSuccess();
     } else {
