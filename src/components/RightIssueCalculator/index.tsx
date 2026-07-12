@@ -831,7 +831,7 @@ const RightIssueCalculator: React.FC = () => {
             onSelect: () => { setActiveTab('calculator'); reset(); },
           },
           {
-            label: language === 'id' ? 'Muat contoh (BRIS)' : 'Load example (BRIS)',
+            label: language === 'id' ? 'Muat contoh (ELPI)' : 'Load example (ELPI)',
             onSelect: () => { setActiveTab('calculator'); loadDemo(); },
           },
         ];

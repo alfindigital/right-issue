@@ -28,7 +28,7 @@ const EmptyStateCard: React.FC<Props> = ({ onLoadDemo }) => {
           onClick={onLoadDemo}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 active:scale-95 transition-all shadow-md shadow-primary/20"
         >
-          {language === 'id' ? 'Pakai contoh BRIS' : 'Try BRIS example'}
+          {language === 'id' ? 'Pakai contoh ELPI' : 'Try ELPI example'}
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
