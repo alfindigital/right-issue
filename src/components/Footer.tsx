@@ -48,19 +48,22 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="afd-foot max-w-2xl mx-auto px-3 md:px-4" role="contentinfo">
+    <footer className="afd-foot" role="contentinfo">
       <style>{`
         .afd-foot {
           position: relative; overflow: hidden;
           font-family: inherit;
           background: hsl(var(--card));
           border-top: 1px solid hsl(var(--border));
-          padding: 4px 0;
+        }
+        .afd-foot__inner {
+          position: relative; overflow: hidden;
           display: flex; align-items: center; justify-content: space-between;
           gap: 10px; flex-wrap: wrap;
           line-height: 1.1;
+          padding: 4px 0;
         }
-        .afd-foot > * { position: relative; z-index: 1 }
+        .afd-foot__inner > * { position: relative; z-index: 1 }
         .afd-glow {
           position: absolute; top: -40%; bottom: -40%; width: 48%;
           border-radius: 50%; z-index: 0; pointer-events: none; left: -48%;
