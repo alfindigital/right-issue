@@ -518,22 +518,22 @@ const RightIssueCalculator: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, isCalculateEnabled, useWizardMode]);
 
-  // Load BRIS demo data (empty-state CTA)
+  // Load ELPI demo data — right issue terbaru IDX 2026 (rasio 200:57 @ Rp350).
   const loadDemo = useCallback(() => {
-    setStockCode('BRIS');
-    setRatioOld('2');
-    setRatioNew('1');
-    setRightPrice('1500');
-    setCumDatePrice('2000');
-    setCurrentLots('10');
-    setCurrentAvgPrice('1800');
+    setStockCode('ELPI');
+    setRatioOld('200');
+    setRatioNew('57');
+    setRightPrice('350');
+    setCumDatePrice('1200');
+    setCurrentLots('20');
+    setCurrentAvgPrice('1000');
     setHasWarrant(false);
     setWarrantRatioOld(''); setWarrantRatioNew('');
     setNoOwnership(false);
     track('demo_loaded');
     toast({
       title: language === 'id' ? 'Contoh dimuat' : 'Example loaded',
-      description: language === 'id' ? 'Data contoh BRIS dipakai. Edit bebas.' : 'BRIS sample data loaded. Edit freely.',
+      description: language === 'id' ? 'Data contoh ELPI (RI 200:57 @ Rp350) dipakai. Edit bebas.' : 'ELPI sample data (RI 200:57 @ Rp350) loaded. Edit freely.',
       duration: 2500,
     });
   }, [language]);
