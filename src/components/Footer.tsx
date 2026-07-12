@@ -116,7 +116,7 @@ export default function Footer() {
         }
         .afd-social__badge {
           position: relative;
-          width: 24px; height: 24px; border-radius: 50%;
+          width: 20px; height: 20px; border-radius: 50%;
           display: inline-flex; align-items: center; justify-content: center;
           background: hsl(var(--primary) / .12); color: hsl(var(--primary));
           transition: all .25s;
@@ -127,7 +127,7 @@ export default function Footer() {
           color: hsl(217 91% 78%);
         }
         .afd-social__badge svg {
-          width: 13px; height: 13px;
+          width: 11px; height: 11px;
           flex-shrink: 0;
         }
         .afd-social:hover .afd-social__badge {
