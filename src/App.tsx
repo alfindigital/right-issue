@@ -12,7 +12,6 @@ const Admin = lazy(() => import("./pages/Admin"));
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
 import Footer from "./components/Footer";
-import { LanguageProvider } from "./contexts/LanguageContext";
 import { AlertTriangle } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -95,8 +94,7 @@ const RoutedApp = () => {
 };
 
 const App = () => (
-  <LanguageProvider>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -106,8 +104,7 @@ const App = () => (
           <RoutedApp />
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
-  </LanguageProvider>
+  </QueryClientProvider>
 );
 
 export default App;
