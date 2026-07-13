@@ -16,8 +16,8 @@ beforeAll(() => {
     rootMargin = "";
     thresholds = [];
   };
-  // @ts-expect-error jsdom missing API
-  window.ResizeObserver = class {
+  // jsdom missing API
+  (window as unknown as { ResizeObserver: unknown }).ResizeObserver = class {
     observe() {}
     unobserve() {}
     disconnect() {}
