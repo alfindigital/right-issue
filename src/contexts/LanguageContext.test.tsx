@@ -32,4 +32,39 @@ describe("useLanguage", () => {
     expect(screen.getByTestId("lang").textContent).toMatch(/^(id|en)$/);
     expect(screen.getByTestId("title").textContent).not.toBe("app.title");
   });
+
+  it("falls back to the key itself for unknown translation keys (inside provider)", () => {
+    const Probe = () => {
+      const { t } = useLanguage();
+      return <span data-testid="missing">{t("this.key.does.not.exist")}</span>;
+    };
+    render(
+      <LanguageProvider>
+        <Probe />
+      </LanguageProvider>,
+    );
+    expect(screen.getByTestId("missing").textContent).toBe("this.key.does.not.exist");
+  });
+
+  it("defaults language to 'id' when localStorage has no saved language", () => {
+    window.localStorage.removeItem("language");
+    const { result } = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    expect(result.current.language).toBe("id");
+    expect(typeof result.current.t).toBe("function");
+  });
+
+  it("ignores invalid saved language values and keeps default", () => {
+    window.localStorage.setItem("language", "fr-not-supported");
+    const { result } = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    expect(result.current.language).toBe("id");
+    window.localStorage.removeItem("language");
+  });
+
+  it("does not silently return undefined outside a provider (guards blank screen)", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    // The hook must throw a descriptive error rather than return an undefined
+    // context — a silent undefined would blank the screen at call sites.
+    expect(() => renderHook(() => useLanguage())).toThrow(/LanguageProvider/);
+    spy.mockRestore();
+  });
 });
