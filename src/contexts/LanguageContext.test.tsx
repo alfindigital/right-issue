@@ -60,6 +60,21 @@ describe("useLanguage", () => {
     window.localStorage.removeItem("language");
   });
 
+  it("reads fallback from localStorage when a valid language is saved", () => {
+    window.localStorage.setItem("language", "en");
+    const { result } = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    expect(result.current.language).toBe("en");
+    expect(result.current.t("app.title")).toBe("Right Issue Calculator");
+    window.localStorage.removeItem("language");
+  });
+
+  it("falls back to default 'id' when localStorage value is empty string", () => {
+    window.localStorage.setItem("language", "");
+    const { result } = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    expect(result.current.language).toBe("id");
+    window.localStorage.removeItem("language");
+  });
+
   it("does not silently return undefined outside a provider (guards blank screen)", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
     // The hook must throw a descriptive error rather than return an undefined
