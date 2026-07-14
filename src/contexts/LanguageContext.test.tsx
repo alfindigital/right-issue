@@ -112,3 +112,51 @@ describe("useLanguage", () => {
     window.localStorage.removeItem("language");
   });
 });
+
+describe("useLanguage localStorage fallback safety", () => {
+  const mount = () => renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+
+  it("falls back to 'id' when localStorage has no 'language' key at all", () => {
+    window.localStorage.clear();
+    const { result } = mount();
+    expect(result.current.language).toBe("id");
+    expect(result.current.t("app.title")).not.toBe("app.title");
+  });
+
+  it.each([
+    ["whitespace only", "   "],
+    ["json object", '{"lang":"en"}'],
+    ["number as string", "42"],
+    ["null literal", "null"],
+    ["undefined literal", "undefined"],
+    ["mixed case invalid", "EN-US"],
+  ])("falls back to 'id' when localStorage value is corrupt (%s)", (_label, value) => {
+    window.localStorage.setItem("language", value);
+    const { result } = mount();
+    expect(result.current.language).toBe("id");
+    window.localStorage.removeItem("language");
+  });
+
+  it.each([
+    ["german", "de"],
+    ["chinese", "zh"],
+    ["japanese", "ja"],
+    ["indonesian regional", "id-ID"],
+    ["english regional", "en-US"],
+  ])("falls back to 'id' for unknown language key (%s)", (_label, code) => {
+    window.localStorage.setItem("language", code);
+    const { result } = mount();
+    expect(result.current.language).toBe("id");
+    // Translations must still work for the default language.
+    expect(result.current.t("app.title")).toBe("Kalkulator Right Issue");
+    window.localStorage.removeItem("language");
+  });
+
+  it("only accepts the exact supported codes 'id' and 'en'", () => {
+    window.localStorage.setItem("language", "id");
+    expect(mount().result.current.language).toBe("id");
+    window.localStorage.setItem("language", "en");
+    expect(mount().result.current.language).toBe("en");
+    window.localStorage.removeItem("language");
+  });
+});
