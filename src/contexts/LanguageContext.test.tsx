@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, act } from "vitest";
 import { render, renderHook, screen } from "@testing-library/react";
 import { LanguageProvider, useLanguage } from "./LanguageContext";
 
@@ -81,5 +81,34 @@ describe("useLanguage", () => {
     // context — a silent undefined would blank the screen at call sites.
     expect(() => renderHook(() => useLanguage())).toThrow(/LanguageProvider/);
     spy.mockRestore();
+  });
+
+  it("persists selected language to localStorage and restores it on reload", () => {
+    window.localStorage.removeItem("language");
+
+    // First mount: user switches language to 'en'.
+    const first = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    expect(first.result.current.language).toBe("id");
+
+    act(() => first.result.current.setLanguage("en"));
+
+    expect(first.result.current.language).toBe("en");
+    expect(window.localStorage.getItem("language")).toBe("en");
+
+    // Simulate a reload by unmounting and mounting a fresh provider tree.
+    first.unmount();
+    const second = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    expect(second.result.current.language).toBe("en");
+    expect(second.result.current.t("app.title")).toBe("Right Issue Calculator");
+
+    // And switching back to 'id' persists too.
+    act(() => second.result.current.setLanguage("id"));
+    expect(window.localStorage.getItem("language")).toBe("id");
+    second.unmount();
+
+    const third = renderHook(() => useLanguage(), { wrapper: LanguageProvider });
+    expect(third.result.current.language).toBe("id");
+
+    window.localStorage.removeItem("language");
   });
 });
