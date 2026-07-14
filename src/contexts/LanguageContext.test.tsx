@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, act } from "vitest";
-import { render, renderHook, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { act, render, renderHook, screen } from "@testing-library/react";
 import { LanguageProvider, useLanguage } from "./LanguageContext";
 
 describe("useLanguage", () => {
