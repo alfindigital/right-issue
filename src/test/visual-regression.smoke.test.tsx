@@ -135,7 +135,7 @@ describe("Visual regression smoke — main page light & dark", () => {
         return `${el.tagName}${role ? `[role=${role}]` : ""}${aria ? `[aria-label]` : ""}`;
       })
       .join("|");
-    expect(shape).toMatchInlineSnapshot(`""`);
+    expect(shape).toMatchInlineSnapshot(`"HEADER|H1|MAIN|SECTION|H2|SECTION|H2"`);
     unmount();
   });
 });
