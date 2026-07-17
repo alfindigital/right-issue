@@ -335,6 +335,7 @@ const ScenarioComparison = React.forwardRef<HTMLDivElement, ScenarioComparisonPr
           max={100}
           step={5}
           className="w-full"
+          thumbLabel={t('scenario.partialPercent')}
         />
         <div className="flex justify-between mt-1">
           <span className="text-[10px] text-muted-foreground">0%</span>
