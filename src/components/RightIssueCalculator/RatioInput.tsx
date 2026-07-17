@@ -10,6 +10,9 @@ interface RatioInputProps {
   className?: string;
   validation?: ValidationResult;
   fieldKey?: FieldKey;
+  'aria-label'?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: boolean;
 }
 
 const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
@@ -19,6 +22,9 @@ const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
   className = '',
   validation,
   fieldKey,
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedBy,
+  'aria-invalid': ariaInvalid,
 }, ref) => {
   const innerRef = useRef<HTMLInputElement | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -68,6 +74,9 @@ const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
       placeholder={placeholder}
       className={`input-calculator flex-1 ${stateClass} ${className}`}
       inputMode="decimal"
+      aria-label={ariaLabel ?? placeholder}
+      aria-describedby={ariaDescribedBy}
+      aria-invalid={ariaInvalid ?? v.state === 'error'}
     />
   );
 });
