@@ -631,7 +631,6 @@ const RightIssueCalculator: React.FC = () => {
     setCumDatePrice(data.cumDatePrice); setCurrentLots(String(data.lots)); setCurrentAvgPrice(data.currentAvgPrice);
     setHasWarrant(data.hasWarrant); setWarrantRatioOld(data.warrantRatioOld); setWarrantRatioNew(data.warrantRatioNew);
     setActiveTab('calculator');
-    setUseWizardMode(false);
     pendingAutoCalculateRef.current = true;
     toast({ title: t('budgetPlanner.applied'), description: `${data.lots} lot ${t('budgetPlanner.appliedDesc')}`, duration: 3000 });
   }, [t]);
@@ -678,42 +677,7 @@ const RightIssueCalculator: React.FC = () => {
     }
     
     setIsCalculated(true);
-    setUseWizardMode(false);
   }, [language]);
-
-  // Wizard navigation
-  const canGoNext = () => {
-    if (wizardStep === 1) return !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError);
-    if (wizardStep === 2) return noOwnership ? !!hmetdLots : !!(currentLots && currentAvgPrice);
-    if (wizardStep === 3) return isWarrantRatioValid;
-    return false;
-  };
-
-  const [swipeDir, setSwipeDir] = useState<'left' | 'right'>('left');
-
-  const handleNext = () => {
-    setSwipeDir('left');
-    if (wizardStep === 3) {
-      calculate();
-    } else {
-      setWizardStep(prev => Math.min(prev + 1, 4));
-    }
-  };
-
-  const handlePrev = () => {
-    setSwipeDir('right');
-    setWizardStep(prev => Math.max(prev - 1, 1));
-  };
-
-  const swipeHandlers = useSwipeGesture({
-    onSwipeLeft: () => {
-      if (wizardStep < 4 && canGoNext()) handleNext();
-    },
-    onSwipeRight: () => {
-      if (wizardStep > 1) handlePrev();
-    },
-    threshold: 50,
-  });
 
   // Settings modal states
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
