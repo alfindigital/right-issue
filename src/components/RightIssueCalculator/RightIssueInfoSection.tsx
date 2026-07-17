@@ -95,6 +95,9 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               onChange={onRatioOldChange}
               placeholder={language === 'id' ? "Lama" : "Old"}
               fieldKey="ratioOld"
+              aria-label={language === 'id' ? 'Rasio lama' : 'Old ratio'}
+              aria-describedby={ratioError ? 'ratio-error' : undefined}
+              aria-invalid={!!ratioError}
             />
             <span className="text-lg font-bold text-muted-foreground">:</span>
             <RatioInput
@@ -102,6 +105,9 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               onChange={onRatioNewChange}
               placeholder={language === 'id' ? "Baru" : "New"}
               fieldKey="ratioNew"
+              aria-label={language === 'id' ? 'Rasio baru' : 'New ratio'}
+              aria-describedby={ratioError ? 'ratio-error' : undefined}
+              aria-invalid={!!ratioError}
             />
           </div>
           {/* Ratio preset chips */}
@@ -140,7 +146,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             ))}
           </div>
           {ratioError && (
-            <p className="text-xs text-destructive mt-1 animate-fade-in">{ratioError}</p>
+            <p id="ratio-error" role="alert" className="text-xs text-destructive mt-1 animate-fade-in">{ratioError}</p>
           )}
         </div>
 
@@ -203,6 +209,9 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     placeholder="RI"
                     className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
                     fieldKey="warrantRatioOld"
+                    aria-label={language === 'id' ? 'Rasio RI waran' : 'Warrant RI ratio'}
+                    aria-describedby={warrantRatioError ? 'warrant-ratio-error' : undefined}
+                    aria-invalid={!!warrantRatioError}
                   />
                   <span className="text-lg font-bold text-muted-foreground">:</span>
                   <RatioInput
@@ -211,10 +220,13 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     placeholder={language === 'id' ? "Waran" : "Warrant"}
                     className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
                     fieldKey="warrantRatioNew"
+                    aria-label={language === 'id' ? 'Rasio waran' : 'Warrant ratio'}
+                    aria-describedby={warrantRatioError ? 'warrant-ratio-error' : undefined}
+                    aria-invalid={!!warrantRatioError}
                   />
                 </div>
                 {warrantRatioError ? (
-                  <p className="text-xs text-destructive mt-1 animate-fade-in">{warrantRatioError}</p>
+                  <p id="warrant-ratio-error" role="alert" className="text-xs text-destructive mt-1 animate-fade-in">{warrantRatioError}</p>
                 ) : (!warrantRatioOld || !warrantRatioNew) && (
                   <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">
                     {t('rightIssue.warrantRatioRequired')}
