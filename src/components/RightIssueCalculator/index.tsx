@@ -294,7 +294,6 @@ const RightIssueCalculator: React.FC = () => {
       setCumDatePrice(cp);
       setCurrentLots(cs);
       setCurrentAvgPrice(ca);
-      setUseWizardMode(false);
     } else if (no === '1' && ro && rn && rp && cp && hl) {
       setRatioOld(ro);
       setRatioNew(rn);
@@ -303,7 +302,6 @@ const RightIssueCalculator: React.FC = () => {
       setNoOwnership(true);
       setHmetdLots(hl);
       if (hp) setHmetdPrice(hp);
-      setUseWizardMode(false);
     } else {
       const saved = loadFromStorage();
       if (saved) {
@@ -463,8 +461,7 @@ const RightIssueCalculator: React.FC = () => {
     const prefersReducedMotion =
       typeof window !== 'undefined' &&
       window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const skeletonDelay = prefersReducedMotion ? 0 : (useWizardMode ? 600 : 350);
-    if (useWizardMode) setWizardStep(4);
+    const skeletonDelay = prefersReducedMotion ? 0 : 350;
     if (skeletonDelay === 0) {
       setIsCalculated(true);
     } else {
@@ -496,7 +493,7 @@ const RightIssueCalculator: React.FC = () => {
       recommendation: !isPremiumRI && finalAvg < terpRounded ? 'positive' : 'negative',
       riMode: isPremiumRI ? 'premium' : (isDiscountRI ? 'discount' : 'parity'),
     });
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, useWizardMode, noOwnership, hmetdLots, hmetdPrice]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, noOwnership, hmetdLots, hmetdPrice]);
 
   useEffect(() => {
     if (pendingAutoCalculateRef.current) {
@@ -517,13 +514,12 @@ const RightIssueCalculator: React.FC = () => {
   // Auto-calculate (debounced) — removes friction of pressing "Hitung"
   useEffect(() => {
     if (!isCalculateEnabled) return;
-    if (useWizardMode) return; // wizard has its own explicit Next button
     const handle = setTimeout(() => {
       calculate();
     }, 450);
     return () => clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, isCalculateEnabled, useWizardMode]);
+  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, isCalculateEnabled]);
 
   // Load ELPI demo data — right issue terbaru IDX 2026 (rasio 200:57 @ Rp350).
   const loadDemo = useCallback(() => {
@@ -553,7 +549,6 @@ const RightIssueCalculator: React.FC = () => {
     setFinalLots('0'); setFinalAvgPrice('Rp 0'); setFinalTotalValue('Rp 0'); setTheoreticalPrice('-');
     setWarrantCount('0'); setRecommendation(null); setRecommendationText(''); setIsCalculated(false); setIsCalculating(false);
     setNumericValues({ newSharesCount: 0, totalShares: 0, totalModal: 0, avgBaru: 0, terp: 0 });
-    setWizardStep(1);
     clearStorage();
   }, [clearStorage]);
 
