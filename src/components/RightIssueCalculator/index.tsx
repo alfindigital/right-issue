@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense, startTransition } from 'react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense, startTransition } from 'react';
 import { RotateCcw } from 'lucide-react';
 import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
