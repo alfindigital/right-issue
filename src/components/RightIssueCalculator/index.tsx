@@ -693,7 +693,7 @@ const RightIssueCalculator: React.FC = () => {
   useEffect(() => {
     const base: FieldKey[] = ['ratioOld', 'ratioNew', 'rightPrice'];
     const order: FieldKey[] = [...base];
-    if (viewMode !== 'simple' || useWizardMode) order.push('cumDatePrice');
+    if (viewMode !== 'simple') order.push('cumDatePrice');
     if (noOwnership) {
       order.push('hmetdLots', 'hmetdPrice');
     } else {
@@ -701,7 +701,7 @@ const RightIssueCalculator: React.FC = () => {
     }
     if (hasWarrant) order.push('warrantRatioOld', 'warrantRatioNew');
     setAutoAdvanceOrder(order);
-  }, [viewMode, useWizardMode, noOwnership, hasWarrant]);
+  }, [viewMode, noOwnership, hasWarrant]);
 
   // Smart paste detector — propose to fill the form from clipboard text
   // when calculator is empty and the announcement parser detects fields.
@@ -755,7 +755,7 @@ const RightIssueCalculator: React.FC = () => {
     threshold: 80,
     dominanceRatio: 1.8,
   });
-  const enableTabSwipe = isMobile && !(useWizardMode && activeTab === 'calculator');
+  const enableTabSwipe = isMobile;
 
   // Prefetch lazy chunk for a given tab — used on touchstart/hover on bottom nav.
   const prefetchTab = useCallback((tab: string) => {
@@ -834,159 +834,8 @@ const RightIssueCalculator: React.FC = () => {
     </>
   );
 
-  // Render calculator content based on wizard/full mode
+  // Render calculator content
   const renderCalculatorContent = () => {
-    if (useWizardMode && activeTab === 'calculator') {
-      const stepIntro = language === 'id' ? [
-        { title: 'Info Right Issue', desc: 'Masukkan rasio, harga tebus & harga cum-date.' },
-        { title: 'Kepemilikan Anda', desc: 'Berapa lot yang Anda pegang & harga rata-rata.' },
-        { title: 'Bonus Waran', desc: 'Aktifkan jika RI memberi bonus waran.' },
-        { title: 'Hasil & Analisis', desc: 'Ringkasan keputusan & dampak portofolio.' },
-      ] : [
-        { title: 'Right Issue Info', desc: 'Enter ratio, exercise price & cum-date price.' },
-        { title: 'Your Holdings', desc: 'How many lots you own & average price.' },
-        { title: 'Bonus Warrant', desc: 'Enable if this RI grants warrants.' },
-        { title: 'Result & Analysis', desc: 'Decision summary & portfolio impact.' },
-      ];
-      const intro = stepIntro[wizardStep - 1];
-      return (
-        <div className="space-y-4">
-          <StepWizard
-            currentStep={wizardStep}
-            totalSteps={4}
-            onStepClick={(s) => {
-              if (s < wizardStep || (s === wizardStep + 1 && canGoNext())) setWizardStep(s);
-            }}
-            stepLabels={stepLabels}
-          />
-
-          {/* Step heading */}
-          <div className="px-1">
-            <div className="text-[10px] uppercase tracking-wider text-primary font-bold">
-              {language === 'id' ? `Langkah ${wizardStep}` : `Step ${wizardStep}`}
-            </div>
-            <h2 className="text-lg font-bold text-foreground mt-0.5">{intro.title}</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">{intro.desc}</p>
-          </div>
-
-          {/* Step Content with Swipe */}
-          <div
-            className="min-h-[280px] overflow-hidden"
-            {...swipeHandlers}
-          >
-            <div key={wizardStep} className={swipeDir === 'left' ? 'animate-slide-in-left' : 'animate-slide-in-right'}>
-            {wizardStep === 1 && (
-              <div className="space-y-3">
-                <StockCodeInput value={stockCode} onChange={setStockCode} />
-                <RightIssueInfoSection
-                  ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
-                  onRatioOldChange={setRatioOld} onRatioNewChange={setRatioNew} onRightPriceChange={setRightPrice} onCumDatePriceChange={setCumDatePrice}
-                  ratioError={ratioError} hasWarrant={hasWarrant} onHasWarrantChange={setHasWarrant}
-                  warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-                  onWarrantRatioOldChange={setWarrantRatioOld} onWarrantRatioNewChange={setWarrantRatioNew} warrantRatioError={warrantRatioError}
-                  onPasteParsed={(data) => {
-                    if (data.ratioOld) setRatioOld(data.ratioOld);
-                    if (data.ratioNew) setRatioNew(data.ratioNew);
-                    if (data.rightPrice) setRightPrice(data.rightPrice);
-                  }}
-                />
-              </div>
-            )}
-
-            {wizardStep === 2 && (
-              <div>
-                <OwnershipSection
-                  currentLots={currentLots} currentAvgPrice={currentAvgPrice} currentTotalValue={currentTotalValue}
-                  newLotsCount={newLotsCount} newAvgPrice={newAvgPrice} newTotalValue={newTotalValue}
-                  finalLots={finalLots} finalAvgPrice={finalAvgPrice} finalTotalValue={finalTotalValue}
-                  onCurrentLotsChange={setCurrentLots} onCurrentAvgPriceChange={setCurrentAvgPrice}
-                  onCalculate={calculate} isCalculateEnabled={isCalculateEnabled} isCalculated={isCalculated}
-                  noOwnership={noOwnership} onNoOwnershipChange={setNoOwnership}
-                  hmetdLots={hmetdLots} onHmetdLotsChange={setHmetdLots}
-                  hmetdPrice={hmetdPrice} onHmetdPriceChange={setHmetdPrice}
-                  hmetdTotalCost={noOwnership && isCalculated ? formatCurrency(((parseInt(hmetdPrice) || 0) + (parseInt(rightPrice) || 0)) * ((parseInt(hmetdLots) || 0) * 100)) : undefined}
-                />
-              </div>
-            )}
-
-            {wizardStep === 3 && (
-              <div className="space-y-3">
-                {hasWarrant && (
-                  <WarrantResultSection warrantCount={warrantCount} isCalculated={isCalculated} />
-                )}
-                <LotOptimizationSection
-                  ratioOld={ratioOld} ratioNew={ratioNew} currentLots={currentLots} onCurrentLotsChange={setCurrentLots}
-                  isCalculated={isCalculated} hasWarrant={hasWarrant} warrantRatioOld={warrantRatioOld} warrantRatioNew={warrantRatioNew}
-                />
-              </div>
-            )}
-
-            {wizardStep === 4 && (isCalculated || isCalculating) && (
-              <div className="space-y-3">
-                <div ref={resultsDashboardRef}>
-                  <ResultsDashboard
-                    isCalculated={isCalculated} isLoading={isCalculating} finalAvgPrice={finalAvgPrice} theoreticalPrice={theoreticalPrice}
-                    finalLots={finalLots} finalTotalValue={finalTotalValue} newLotsCount={newLotsCount} newTotalValue={newTotalValue}
-                    recommendation={recommendation} recommendationText={recommendationText}
-                  />
-                </div>
-                <ConclusionSection
-                  newLots={newLotsCount} exercisePrice={rightPrice ? formatCurrency(parseInt(rightPrice)) : 'Rp 0'}
-                  totalCost={newTotalValue} newAvgPrice={isCalculated ? finalAvgPrice : '-'} theoreticalPrice={theoreticalPrice}
-                  recommendation={recommendation} recommendationText={recommendationText} isCalculated={isCalculated}
-                />
-                <Suspense fallback={<LazyFallback />}>
-                  <DilutionSimulator isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesEntitled={numericValues.newSharesCount} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} />
-                  <ScenarioComparison isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} terp={numericValues.terp} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} />
-                  <WhatIfTargetPrice isCalculated={isCalculated} currentShares={(parseInt(currentLots) || 0) * 100} newSharesCount={numericValues.newSharesCount} currentAvgPrice={parseInt(currentAvgPrice) || 0} riPrice={parseInt(rightPrice) || 0} cumPrice={parseInt(cumDatePrice) || 0} terp={numericValues.terp} />
-                  <AdvancedAnalysisSection isCalculated={isCalculated} cumPrice={parseInt(cumDatePrice) || 0} riPrice={parseInt(rightPrice) || 0} ratioOld={parseDecimalId(ratioOld)} ratioNew={parseDecimalId(ratioNew)} newSharesCount={numericValues.newSharesCount} totalShares={numericValues.totalShares} avgBaru={numericValues.avgBaru} terp={numericValues.terp} />
-                </Suspense>
-              </div>
-            )}
-            </div>
-          </div>
-
-          {/* Wizard Navigation Buttons */}
-          {wizardStep < 4 && (
-            <div className="flex items-center justify-between pt-2">
-              <button
-                onClick={handlePrev}
-                disabled={wizardStep === 1}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                {language === 'id' ? 'Kembali' : 'Back'}
-              </button>
-              
-              <span className="text-[10px] text-muted-foreground">
-                {wizardStep} / 4
-              </span>
-              
-              <button
-                onClick={handleNext}
-                disabled={!canGoNext()}
-                className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-primary/20"
-              >
-                {wizardStep === 3 ? (language === 'id' ? 'Hitung' : 'Calculate') : (language === 'id' ? 'Lanjut' : 'Next')}
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          {/* View mode toggle */}
-          <div className="flex justify-center pt-2">
-            <button
-              onClick={() => setUseWizardMode(false)}
-              className="text-[10px] text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
-            >
-              {language === 'id' ? 'Tampilkan semua field sekaligus' : 'Show all fields at once'}
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    // Full mode (non-wizard)
     const isSimple = viewMode === 'simple';
     return (
       <div className="space-y-4">
@@ -1159,11 +1008,6 @@ const RightIssueCalculator: React.FC = () => {
               </div>
             </div>
 
-            {/* Progress Ring - wizard mode, not yet calculated */}
-            {useWizardMode && !isCalculated && activeTab === 'calculator' && (
-              <ProgressRing percent={completionPercent} />
-            )}
-            
             {/* Desktop toolbar */}
             <div className="hidden md:flex items-center gap-1.5">
               {toolbarItems}
