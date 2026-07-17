@@ -173,10 +173,6 @@ const RightIssueCalculator: React.FC = () => {
     };
   }, [isMobile]);
   
-  // Wizard step state
-  const [wizardStep, setWizardStep] = useState(1);
-  const [useWizardMode, setUseWizardMode] = useState(false);
-
   // View mode (Simple vs Pro) — persists in localStorage
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window === 'undefined') return 'simple';
@@ -187,15 +183,9 @@ const RightIssueCalculator: React.FC = () => {
   }, [viewMode]);
 
   // Unified display mode for Settings menu
-  const displayMode: DisplayMode = useWizardMode ? 'wizard' : viewMode;
+  const displayMode: DisplayMode = viewMode;
   const handleDisplayModeChange = useCallback((mode: DisplayMode) => {
-    if (mode === 'wizard') {
-      setUseWizardMode(true);
-      setWizardStep(1);
-    } else {
-      setUseWizardMode(false);
-      setViewMode(mode);
-    }
+    setViewMode(mode);
   }, []);
 
   // Stock Code
