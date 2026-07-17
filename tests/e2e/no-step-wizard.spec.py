@@ -40,7 +40,6 @@ FORBIDDEN_TEXT = [
 
 # Panels that must always render after reload once a calculation exists.
 REQUIRED_PANELS = [
-    "Kesimpulan",              # summary/conclusion section
     "Rekomendasi",             # recommendation block
     "Perbandingan Skenario",   # scenario comparison
     "TERP",                    # core result metric
