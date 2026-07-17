@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Zap, Sparkles, Settings2, Check, Hand, Type, Activity, Download, Upload } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Sparkles, Settings2, Check, Hand, Type, Activity, Download, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ const EXPORT_KEYS = [
   'ri-calculator-autosave',
 ] as const;
 
-export type DisplayMode = 'wizard' | 'simple' | 'pro';
+export type DisplayMode = 'simple' | 'pro';
 
 interface SettingsDropdownProps {
   onOpenKeyboardHelp: () => void;
@@ -200,12 +200,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
   };
 
   const modeOptions: { value: DisplayMode; label: string; icon: React.ReactNode; desc: string }[] = [
-    {
-      value: 'wizard',
-      label: language === 'id' ? 'Step-by-Step' : 'Step-by-Step',
-      icon: <Zap className="w-4 h-4 mr-2 text-amber-500" />,
-      desc: language === 'id' ? 'Pandu satu per satu' : 'Guided one by one',
-    },
     {
       value: 'simple',
       label: language === 'id' ? 'Semua Field — Simple' : 'All Fields — Simple',
