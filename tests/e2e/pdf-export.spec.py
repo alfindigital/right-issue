@@ -31,9 +31,11 @@ STOCK_CODE = "BRIS"
 RATIO_OLD = "5"
 RATIO_NEW = "2"
 RIGHT_PRICE = "2500"
-CUM_DATE_PRICE = "3000"
 CURRENT_LOT = "10"
 AVG_PRICE = "3000"
+# The app defaults to "simple" view mode; cum-date-price is hidden and
+# auto-derived as rightPrice * 1.3 → 2500 * 1.3 = 3250.
+# TERP = (3250*5 + 2500*2) / 7 = 21250 / 7 = 3035.7... → rounded to 3036.
 
 # Expected substrings in the extracted compact-PDF text.
 # Derived from the inputs above:
@@ -45,11 +47,12 @@ EXPECTED_PDF_SUBSTRINGS = [
     STOCK_CODE,                # Stock code in header
     "Rasio RI",                # Input label
     "5:2",                     # Rendered ratio
-    "4 lot",                   # Hak Lot Baru
-    "Rp 2.857",                # TERP formatted in id-ID
+    "4 lot",                   # Hak Lot Baru (RI allocation)
+    "Rp 3.036",                # TERP, id-ID formatted
     "Rp 2.500",                # Harga Pelaksanaan
-    "Rp 3.000",                # Harga Cum Date / Harga Rata-rata
-    "Rp 1.000.000",            # Dana Dibutuhkan
+    "Rp 3.250",                # Harga Cum Date (auto-derived in simple mode)
+    "Rp 3.000",                # Harga Rata-rata (currentAvgPrice)
+    "Rp 1.000.000",            # Dana Dibutuhkan = 400 shares * 2500
 ]
 
 
@@ -73,7 +76,6 @@ async def fill_form(page):
     await text_inputs.nth(1).fill(RATIO_OLD)
     await text_inputs.nth(2).fill(RATIO_NEW)
     await page.locator("#right-price").fill(RIGHT_PRICE)
-    await page.locator("#cum-date-price").fill(CUM_DATE_PRICE)
     await text_inputs.nth(4).fill(CURRENT_LOT)
     await page.locator("#current-avg-price").fill(AVG_PRICE)
 
