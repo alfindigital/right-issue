@@ -31,21 +31,25 @@ STOCK_CODE = "BRIS"
 RATIO_OLD = "5"
 RATIO_NEW = "2"
 RIGHT_PRICE = "2500"
+CUM_DATE_PRICE = "3000"
 CURRENT_LOT = "10"
 AVG_PRICE = "3000"
 
-# Expected substrings in the extracted PDF text.
+# Expected substrings in the extracted compact-PDF text.
 # Derived from the inputs above:
-#   Jatah RI = 10 * 2/5 = 4 lot   → 400 shares
-#   Total lot akhir = 14 lot
-#   TERP     = (3000*5 + 2500*2) / 7 = 2857
+#   Hak Lot Baru = 10 * 2/5 = 4 lot   → 400 shares
+#   TERP         = (3000*5 + 2500*2) / 7 = 2857
+#   Dana Dibutuhkan = 400 * 2500 = 1.000.000
 EXPECTED_PDF_SUBSTRINGS = [
-    STOCK_CODE,       # Stock code appears in header / filename metadata
-    "4",              # Jatah RI lot count
-    "14",             # Total lot akhir
-    "2.857",          # TERP formatted in id-ID
-    "2.500",          # Harga pelaksanaan (RI price)
-    "Right Issue",    # Report title
+    "Right Issue Calculator",  # Report title
+    STOCK_CODE,                # Stock code in header
+    "Rasio RI",                # Input label
+    "5:2",                     # Rendered ratio
+    "4 lot",                   # Hak Lot Baru
+    "Rp 2.857",                # TERP formatted in id-ID
+    "Rp 2.500",                # Harga Pelaksanaan
+    "Rp 3.000",                # Harga Cum Date / Harga Rata-rata
+    "Rp 1.000.000",            # Dana Dibutuhkan
 ]
 
 
@@ -69,6 +73,7 @@ async def fill_form(page):
     await text_inputs.nth(1).fill(RATIO_OLD)
     await text_inputs.nth(2).fill(RATIO_NEW)
     await page.locator("#right-price").fill(RIGHT_PRICE)
+    await page.locator("#cum-date-price").fill(CUM_DATE_PRICE)
     await text_inputs.nth(4).fill(CURRENT_LOT)
     await page.locator("#current-avg-price").fill(AVG_PRICE)
 
@@ -127,6 +132,10 @@ async def main():
 
         # ---- Step 1: initial load + calculate ----
         await page.goto(BASE_URL, wait_until="domcontentloaded")
+        # Clear localStorage so leftover state from previous test runs cannot
+        # bleed into this scenario (form persistence, history, etc.).
+        await page.evaluate("() => { try { window.localStorage.clear(); } catch (_) {} }")
+        await page.reload(wait_until="domcontentloaded")
         await page.wait_for_timeout(1500)
         await dismiss_onboarding(page)
         await fill_form(page)
