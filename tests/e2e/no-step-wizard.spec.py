@@ -162,6 +162,14 @@ async def main():
         await page.wait_for_timeout(1800)
         await dismiss_onboarding(page)
         await page.wait_for_timeout(500)
+        # Results dashboard is gated behind an explicit "Hitung" click; form
+        # values are restored from localStorage, so trigger recalc.
+        try:
+            hitung_r = page.get_by_role("button", name="Hitung").first
+            await hitung_r.click(timeout=3000)
+            await page.wait_for_timeout(1200)
+        except Exception:
+            pass
         # Scroll through the page to force lazy sections to mount.
         await page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
         await page.wait_for_timeout(800)
