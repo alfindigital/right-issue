@@ -148,9 +148,12 @@ async def main():
         ok(AVG_PRICE in norm_post, "Average price persisted")
 
         # --- 4. Results also persist: recompute (button remains 'Hitung', not 'Lanjut'/'Kembali') ---
+        # Exact-match to avoid catching "Analisis Lanjutan" copy.
         step_nav_count = 0
-        for label in ("Lanjut", "Kembali"):
-            step_nav_count += await page.get_by_role("button", name=label).count()
+        for label in ("Lanjut", "Kembali", "Next", "Back", "Previous"):
+            step_nav_count += await page.get_by_role(
+                "button", name=re.compile(rf"^{label}$")
+            ).count()
         ok(step_nav_count == 0, "No step-nav buttons rendered after reload")
 
         hitung2 = page.get_by_role("button", name="Hitung").first
