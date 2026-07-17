@@ -83,7 +83,7 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         # Use a mobile-ish width so any lingering swipe handler would fire.
-        context = await browser.new_context(viewport={"width": 420, "height": 1600})
+        context = await browser.new_context(viewport={"width": 1280, "height": 1800})
         page = await context.new_page()
 
         # ---- 1. Load & assert no wizard chrome ----
