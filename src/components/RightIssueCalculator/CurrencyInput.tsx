@@ -114,6 +114,8 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
           className={`input-calculator pl-9 ${voiceInput ? 'pr-10' : ''} ${stateClass}`}
           inputMode="numeric"
           readOnly={numpadEnabled}
+          aria-invalid={v.state === 'error'}
+          aria-describedby={v.state === 'error' && v.message ? `${id}-error` : undefined}
         />
         {voiceInput && (
           <div className="absolute right-2 top-1/2 -translate-y-1/2">
@@ -122,7 +124,7 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
         )}
       </div>
       {v.state === 'error' && v.message && (
-        <p className="text-[10px] text-destructive">{v.message}</p>
+        <p id={`${id}-error`} role="alert" className="text-[10px] text-destructive">{v.message}</p>
       )}
       {isMobile && stepperStep && (
         <Stepper
