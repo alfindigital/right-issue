@@ -239,15 +239,6 @@ const RightIssueCalculator: React.FC = () => {
   const [resultsOutOfView, setResultsOutOfView] = useState(false);
   const resultsDashboardRef = useRef<HTMLDivElement>(null);
 
-  // Completion percentage for progress ring
-  const completionPercent = useMemo(() => {
-    const fields = noOwnership 
-      ? [ratioOld, ratioNew, rightPrice, cumDatePrice, hmetdLots, hmetdPrice]
-      : [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice];
-    const filled = fields.filter(f => f.trim() !== '').length;
-    return Math.round((filled / fields.length) * 100);
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, noOwnership, hmetdLots, hmetdPrice]);
-
   // IntersectionObserver for floating summary
   useEffect(() => {
     if (!isCalculated) { setResultsOutOfView(false); return; }
@@ -260,11 +251,6 @@ const RightIssueCalculator: React.FC = () => {
     observer.observe(el);
     return () => observer.disconnect();
   }, [isCalculated]);
-
-  // Wizard step labels
-  const stepLabels = language === 'id'
-    ? ['Info RI', 'Kepemilikan', 'Waran', 'Hasil']
-    : ['RI Info', 'Holdings', 'Warrants', 'Results'];
 
   // Parse URL params or restore from auto-save on mount
   useEffect(() => {
@@ -742,7 +728,7 @@ const RightIssueCalculator: React.FC = () => {
     setTourReplayKey((k) => k + 1);
   }, []);
 
-  // Swipe between main tabs (mobile only, not when in wizard mode on calculator)
+  // Swipe between main tabs (mobile only)
   const TAB_ORDER = ['calculator', 'budget', 'education'];
   const goToAdjacentTab = useCallback((dir: 1 | -1) => {
     const i = TAB_ORDER.indexOf(activeTab);
