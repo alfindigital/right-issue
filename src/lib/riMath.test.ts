@@ -67,8 +67,9 @@ describe('calcTerp', () => {
     expect(calcTerp(2000, 1000, 1, 4)).toBe(1200);
   });
 
-  it('equals cum-price when the RI has no new shares', () => {
-    expect(calcTerp(2500, 1000, 1, 0)).toBe(0); // guard: denom-only path
+  it('equals cum-price when the RI has no new-shares weight', () => {
+    // ratioNew = 0 collapses the weighted average to cum-price
+    expect(calcTerp(2500, 1000, 1, 0)).toBe(2500);
     expect(calcTerp(2500, 2500, 1, 1)).toBe(2500);
   });
 
