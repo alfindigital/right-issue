@@ -53,6 +53,10 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
 }) => {
   const { t, language } = useLanguage();
 
+  const warrantValidation: ValidationResult | undefined = warrantRatioError
+    ? { state: 'error', message: warrantRatioError }
+    : undefined;
+
   const priceChips: QuickChip[] = [
     { label: '+100', apply: (d) => String((parseInt(d || '0', 10) || 0) + 100) },
     { label: '+500', apply: (d) => String((parseInt(d || '0', 10) || 0) + 500) },
