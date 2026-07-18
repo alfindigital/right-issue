@@ -255,12 +255,20 @@ const RightIssueCalculator: React.FC = () => {
 
   useEffect(() => {
     if (!hasWarrant) { setWarrantRatioError(''); return; }
+    const wOldRaw = warrantRatioOld.trim();
+    const wNewRaw = warrantRatioNew.trim();
     const wOld = parseDecimalId(warrantRatioOld);
     const wNew = parseDecimalId(warrantRatioNew);
-    if (warrantRatioOld && wOld === 0) setWarrantRatioError('Rasio RI tidak boleh 0');
-    else if (warrantRatioNew && wNew === 0) setWarrantRatioError('Rasio waran tidak boleh 0');
-    else setWarrantRatioError('');
-  }, [hasWarrant, warrantRatioOld, warrantRatioNew]);
+    if (!wOldRaw || !wNewRaw) {
+      setWarrantRatioError(language === 'id' ? 'Rasio waran harus diisi' : 'Warrant ratio is required');
+    } else if (wOld === 0) {
+      setWarrantRatioError('Rasio RI tidak boleh 0');
+    } else if (wNew === 0) {
+      setWarrantRatioError('Rasio waran tidak boleh 0');
+    } else {
+      setWarrantRatioError('');
+    }
+  }, [hasWarrant, warrantRatioOld, warrantRatioNew, language]);
 
   const isWarrantRatioValid = !hasWarrant || (warrantRatioOld && warrantRatioNew && !warrantRatioError);
   const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError && isWarrantRatioValid && (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)));
