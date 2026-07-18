@@ -152,7 +152,7 @@ const AdvancedSectionsAccordion: React.FC<Props> = ({
 
   return (
     <div className="card-calculator !p-0 overflow-hidden">
-      <div className="flex items-center gap-2 px-4 pt-4 pb-2">
+      <div className="flex items-center gap-2 px-3.5 pt-3 pb-2">
         <TrendingUp className="w-4 h-4 text-primary" />
         <h3 className="text-sm font-bold">
           {language === 'id' ? 'Analisis Lanjutan' : 'Advanced Analysis'}
@@ -168,7 +168,7 @@ const AdvancedSectionsAccordion: React.FC<Props> = ({
             value={item.id}
             className="border-b border-border/60 last:border-b-0"
           >
-            <AccordionTrigger className="px-3 py-3 hover:no-underline hover:bg-muted/40 rounded-lg transition-colors">
+            <AccordionTrigger className="px-3 py-2.5 hover:no-underline hover:bg-muted/40 rounded-lg transition-colors">
               <div className="flex items-start gap-3 flex-1 text-left">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                   {item.icon}
@@ -179,7 +179,7 @@ const AdvancedSectionsAccordion: React.FC<Props> = ({
                 </div>
               </div>
             </AccordionTrigger>
-            <AccordionContent className="px-3 pb-3">
+            <AccordionContent className="px-3 pb-2.5">
               {item.content}
             </AccordionContent>
           </AccordionItem>

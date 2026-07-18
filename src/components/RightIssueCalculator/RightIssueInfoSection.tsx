@@ -63,7 +63,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
 
   return (
     <section className="card-calculator animate-fade-in" data-tour="ri-info">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2.5">
         <h2 className="section-title mb-0 flex items-center">
           {t('rightIssue.title')}
           <InfoTooltip text={language === 'id' ? "Informasi tentang right issue yang diterbitkan emiten." : "Information about the right issue issued by the company."} />
@@ -79,7 +79,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
         )}
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-foreground flex items-center">
             {t('rightIssue.ratio')} ({t('rightIssue.ratioOld')} : {t('rightIssue.ratioNew')})
