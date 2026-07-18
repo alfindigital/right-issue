@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Hand, Type, Activity, Download, Upload } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Type, Download, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
