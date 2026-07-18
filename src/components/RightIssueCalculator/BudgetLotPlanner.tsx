@@ -3,6 +3,7 @@ import { Wallet, Target, TrendingUp, CheckCircle2, AlertCircle, ArrowRight, Save
 import { useLanguage } from '@/contexts/LanguageContext';
 import RatioInput from './RatioInput';
 import { parseDecimalId } from '@/lib/parseDecimal';
+import { ValidationResult } from '@/lib/validators';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import BudgetAllocationChart from './BudgetAllocationChart';
@@ -77,6 +78,23 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
   
   // Show all options
   const [showAllOptions, setShowAllOptions] = useState(false);
+
+  // Warrant ratio validation
+  const warrantRatioError = useMemo(() => {
+    if (!hasWarrant) return '';
+    const oldRaw = warrantRatioOld.trim();
+    const newRaw = warrantRatioNew.trim();
+    if (!oldRaw || !newRaw) return t('validation.warrantRatioMissing');
+    const wOld = parseDecimalId(warrantRatioOld);
+    const wNew = parseDecimalId(warrantRatioNew);
+    if (wOld === 0) return 'Rasio RI tidak boleh 0';
+    if (wNew === 0) return 'Rasio waran tidak boleh 0';
+    return '';
+  }, [hasWarrant, warrantRatioOld, warrantRatioNew, t]);
+
+  const warrantValidation: ValidationResult | undefined = warrantRatioError
+    ? { state: 'error', message: warrantRatioError }
+    : undefined;
   
   // Budget Planner History
   const { history, addToHistory, removeFromHistory, clearHistory } = useBudgetPlannerHistory();
@@ -336,26 +354,25 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
             <div className="animate-fade-in">
               <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
                 {t('rightIssue.warrantRatio')}
-                <span className="text-amber-500">*</span>
               </label>
               <div className="flex items-center gap-2">
                 <RatioInput
                   value={warrantRatioOld}
                   onChange={setWarrantRatioOld}
                   placeholder="RI"
-                  className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
+                  validation={warrantValidation}
                 />
                 <span className="text-sm font-medium text-muted-foreground">:</span>
                 <RatioInput
                   value={warrantRatioNew}
                   onChange={setWarrantRatioNew}
                   placeholder="Waran"
-                  className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
+                  validation={warrantValidation}
                 />
               </div>
-              {(!warrantRatioOld || !warrantRatioNew) && (
-                <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">
-                  {t('rightIssue.warrantRatioRequired')}
+              {warrantRatioError && (
+                <p id="bp-warrant-ratio-error" role="alert" className="text-[10px] text-destructive mt-0.5 animate-fade-in">
+                  {warrantRatioError}
                 </p>
               )}
             </div>
@@ -499,7 +516,7 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
                       {t('budgetPlanner.avgPriceRequired')}
                     </p>
                   ) : hasWarrant && (!warrantRatioOld || !warrantRatioNew) ? (
-                    <p className="text-[10px] text-amber-600 dark:text-amber-400 text-center">
+                    <p className="text-[10px] text-destructive text-center">
                       {t('validation.warrantRatioMissing')}
                     </p>
                   ) : null}

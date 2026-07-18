@@ -5,6 +5,7 @@ import InfoTooltip from './InfoTooltip';
 import PasteParserButton from './PasteParserButton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { ValidationResult } from '@/lib/validators';
 import type { QuickChip } from './MobileNumpad';
 
 interface RightIssueInfoSectionProps {
@@ -51,6 +52,10 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   simpleMode = false,
 }) => {
   const { t, language } = useLanguage();
+
+  const warrantValidation: ValidationResult | undefined = warrantRatioError
+    ? { state: 'error', message: warrantRatioError }
+    : undefined;
 
   const priceChips: QuickChip[] = [
     { label: '+100', apply: (d) => String((parseInt(d || '0', 10) || 0) + 100) },
@@ -163,7 +168,6 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-foreground flex items-center">
                   {t('rightIssue.warrantRatio')}
-                  <span className="text-amber-500 ml-0.5">*</span>
                   <InfoTooltip text={language === 'id' ? "Contoh: 1:1 berarti setiap 1 lembar RI mendapat 1 waran." : "Example: 1:1 means every 1 RI share receives 1 warrant."} />
                 </label>
                 <div className="flex items-center gap-2">
@@ -171,8 +175,8 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     value={warrantRatioOld}
                     onChange={onWarrantRatioOldChange}
                     placeholder="RI"
-                    className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
                     fieldKey="warrantRatioOld"
+                    validation={warrantValidation}
                     aria-label={language === 'id' ? 'Rasio RI waran' : 'Warrant RI ratio'}
                     aria-describedby={warrantRatioError ? 'warrant-ratio-error' : undefined}
                     aria-invalid={!!warrantRatioError}
@@ -182,19 +186,15 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     value={warrantRatioNew}
                     onChange={onWarrantRatioNewChange}
                     placeholder={language === 'id' ? "Waran" : "Warrant"}
-                    className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
                     fieldKey="warrantRatioNew"
+                    validation={warrantValidation}
                     aria-label={language === 'id' ? 'Rasio waran' : 'Warrant ratio'}
                     aria-describedby={warrantRatioError ? 'warrant-ratio-error' : undefined}
                     aria-invalid={!!warrantRatioError}
                   />
                 </div>
-                {warrantRatioError ? (
+                {warrantRatioError && (
                   <p id="warrant-ratio-error" role="alert" className="text-xs text-destructive mt-1 animate-fade-in">{warrantRatioError}</p>
-                ) : (!warrantRatioOld || !warrantRatioNew) && (
-                  <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">
-                    {t('rightIssue.warrantRatioRequired')}
-                  </p>
                 )}
               </div>
             </div>
