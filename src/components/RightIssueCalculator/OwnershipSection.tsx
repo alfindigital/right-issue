@@ -167,7 +167,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 <ReadOnlyField
                   label={language === 'id' ? 'Total Biaya Akuisisi' : 'Total Acquisition Cost'}
                   value={hmetdTotalCost}
-                  tooltip={language === 'id' ? "Total biaya = (harga HMETD × lembar) + (harga pelaksanaan RI × lembar). Ini adalah total modal yang Anda keluarkan." : "Total cost = (HMETD price × shares) + (RI exercise price × shares). This is your total capital outlay."}
+                  tooltip={language === 'id' ? "Total biaya = (harga HMETD × lembar) + (harga pelaksanaan RI × lembar). Diasumsikan HMETD/R ditebus penuh menjadi saham baru." : "Total cost = (HMETD price × shares) + (RI exercise price × shares). Assumes all HMETD/R are fully exercised into new shares."}
                 />
               )}
 
