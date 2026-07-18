@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Sparkles, Settings2, Check, Hand, Type, Activity, Download, Upload } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Hand, Type, Activity, Download, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,17 +24,13 @@ const EXPORT_KEYS = [
   'ri-calculator-autosave',
 ] as const;
 
-export type DisplayMode = 'simple' | 'pro';
-
 interface SettingsDropdownProps {
   onOpenKeyboardHelp: () => void;
   onOpenEmbed: () => void;
   onReplayTour?: () => void;
-  displayMode?: DisplayMode;
-  onDisplayModeChange?: (mode: DisplayMode) => void;
 }
 
-const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed, onReplayTour, displayMode, onDisplayModeChange }, ref) => {
+const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed, onReplayTour }, ref) => {
   const { language, setLanguage, t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDark, setIsDark] = useState(false);
@@ -199,21 +195,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     }
   };
 
-  const modeOptions: { value: DisplayMode; label: string; icon: React.ReactNode; desc: string }[] = [
-    {
-      value: 'simple',
-      label: language === 'id' ? 'Semua Field — Simple' : 'All Fields — Simple',
-      icon: <Sparkles className="w-4 h-4 mr-2 text-primary" />,
-      desc: language === 'id' ? 'Field dasar saja' : 'Basic fields only',
-    },
-    {
-      value: 'pro',
-      label: language === 'id' ? 'Semua Field — Pro' : 'All Fields — Pro',
-      icon: <Settings2 className="w-4 h-4 mr-2 text-primary" />,
-      desc: language === 'id' ? 'Termasuk waran & cum-date' : 'Includes warrants & cum-date',
-    },
-  ];
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -225,31 +206,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60">
-        {displayMode && onDisplayModeChange && (
-          <>
-            <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
-              {language === 'id' ? 'Mode Tampilan' : 'Display Mode'}
-            </DropdownMenuLabel>
-            {modeOptions.map((opt) => {
-              const active = displayMode === opt.value;
-              return (
-                <DropdownMenuItem
-                  key={opt.value}
-                  onClick={() => onDisplayModeChange(opt.value)}
-                  className="cursor-pointer flex items-start"
-                >
-                  {opt.icon}
-                  <span className="flex-1 flex flex-col">
-                    <span className="text-xs font-medium">{opt.label}</span>
-                    <span className="text-[10px] text-muted-foreground">{opt.desc}</span>
-                  </span>
-                  {active && <Check className="w-3.5 h-3.5 ml-2 text-primary flex-shrink-0 mt-0.5" />}
-                </DropdownMenuItem>
-              );
-            })}
-            <DropdownMenuSeparator />
-          </>
-        )}
         <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
           {isDark ? <Sun className="w-4 h-4 mr-2 text-amber-500" /> : <Moon className="w-4 h-4 mr-2 text-blue-500" />}
           {isDark
