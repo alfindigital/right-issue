@@ -6,7 +6,7 @@ import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
-import SettingsDropdown, { DisplayMode } from './SettingsDropdown';
+import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import BackToTopButton from './BackToTopButton';
@@ -172,20 +172,8 @@ const RightIssueCalculator: React.FC = () => {
     };
   }, [isMobile]);
   
-  // View mode (Simple vs Pro) — persists in localStorage
-  const [viewMode, setViewMode] = useState<ViewMode>(() => {
-    if (typeof window === 'undefined') return 'simple';
-    return (localStorage.getItem('ri-view-mode') as ViewMode) || 'simple';
-  });
-  useEffect(() => {
-    try { localStorage.setItem('ri-view-mode', viewMode); } catch { /* noop */ }
-  }, [viewMode]);
-
-  // Unified display mode for Settings menu
-  const displayMode: DisplayMode = viewMode;
-  const handleDisplayModeChange = useCallback((mode: DisplayMode) => {
-    setViewMode(mode);
-  }, []);
+  // View mode is always 'pro' — all fields visible.
+  const viewMode: ViewMode = 'pro';
 
   // Stock Code
   const [stockCode, setStockCode] = useState('');
