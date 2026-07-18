@@ -193,42 +193,12 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
           {language === 'id' ? 'Kenyamanan' : 'Comfort'}
         </DropdownMenuLabel>
         <DropdownMenuItem
-          onSelect={(e) => { e.preventDefault(); toggleOneHand(!oneHand); }}
-          className="cursor-pointer flex items-center justify-between gap-2"
-        >
-          <span className="flex items-center">
-            <Hand className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Mode satu tangan' : 'One-hand mode'}
-          </span>
-          <Switch
-            checked={oneHand}
-            onCheckedChange={toggleOneHand}
-            onClick={(e) => e.stopPropagation()}
-            aria-label={language === 'id' ? 'Mode satu tangan' : 'One-hand mode'}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={(e) => { e.preventDefault(); toggleReduceMotion(!reduceMotion); }}
-          className="cursor-pointer flex items-center justify-between gap-2"
-        >
-          <span className="flex items-center">
-            <Activity className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Kurangi animasi' : 'Reduce motion'}
-          </span>
-          <Switch
-            checked={reduceMotion}
-            onCheckedChange={toggleReduceMotion}
-            onClick={(e) => e.stopPropagation()}
-            aria-label={language === 'id' ? 'Kurangi animasi' : 'Reduce motion'}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem
           onSelect={(e) => e.preventDefault()}
           className="cursor-default flex items-center justify-between gap-2"
         >
           <span className="flex items-center">
             <Type className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Ukuran teks' : 'Text size'}
+            {language === 'id' ? 'Teks' : 'Text'}
           </span>
           <span className="flex items-center gap-1">
             {(['sm', 'md', 'lg'] as const).map((s) => (
