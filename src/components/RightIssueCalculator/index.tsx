@@ -799,7 +799,7 @@ const RightIssueCalculator: React.FC = () => {
   const renderCalculatorContent = () => {
     const isSimple = false;
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         <StockCodeInput value={stockCode} onChange={setStockCode} />
         <RightIssueInfoSection
           ratioOld={ratioOld} ratioNew={ratioNew} rightPrice={rightPrice} cumDatePrice={cumDatePrice}
