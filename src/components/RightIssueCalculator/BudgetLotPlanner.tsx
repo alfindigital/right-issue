@@ -354,26 +354,25 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
             <div className="animate-fade-in">
               <label className="text-xs text-muted-foreground mb-1 block flex items-center gap-1">
                 {t('rightIssue.warrantRatio')}
-                <span className="text-amber-500">*</span>
               </label>
               <div className="flex items-center gap-2">
                 <RatioInput
                   value={warrantRatioOld}
                   onChange={setWarrantRatioOld}
                   placeholder="RI"
-                  className={!warrantRatioOld ? 'border-amber-400 dark:border-amber-500' : ''}
+                  validation={warrantValidation}
                 />
                 <span className="text-sm font-medium text-muted-foreground">:</span>
                 <RatioInput
                   value={warrantRatioNew}
                   onChange={setWarrantRatioNew}
                   placeholder="Waran"
-                  className={!warrantRatioNew ? 'border-amber-400 dark:border-amber-500' : ''}
+                  validation={warrantValidation}
                 />
               </div>
-              {(!warrantRatioOld || !warrantRatioNew) && (
-                <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">
-                  {t('rightIssue.warrantRatioRequired')}
+              {warrantRatioError && (
+                <p id="bp-warrant-ratio-error" role="alert" className="text-[10px] text-destructive mt-0.5 animate-fade-in">
+                  {warrantRatioError}
                 </p>
               )}
             </div>
