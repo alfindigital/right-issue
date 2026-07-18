@@ -93,8 +93,9 @@ async def click_calculate(page):
 
 
 async def trigger_pdf_download(page):
-    """Open Export PDF menu and click 'Ringkas' — return the downloaded file path."""
-    trigger = page.get_by_role("button", name="Export PDF").first
+    """Open Share menu and click 'Ringkas' — return the downloaded file path."""
+    # The Share dropdown trigger is an icon-only button with aria-label='Share'.
+    trigger = page.get_by_role("button", name="Share").first
     await trigger.wait_for(state="visible", timeout=5000)
     await trigger.click()
 
