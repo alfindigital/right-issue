@@ -1,16 +1,19 @@
-import React, { useRef } from 'react';
-import { Download, Link2, Share2, ChevronDown, MessageCircle, Clipboard } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Download, Link2, Share2, ChevronDown, MessageCircle, Clipboard, FileText, FileBarChart2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import ExportTemplate from './ExportTemplate';
 import { createRoot } from 'react-dom/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { generateRightIssuePDF, type ExportPDFData } from '@/lib/exportPdf';
 
 interface ShareButtonsProps {
   resultRef: React.RefObject<HTMLDivElement>;
@@ -37,13 +40,31 @@ interface ShareButtonsProps {
     hasWarrant: boolean;
     warrantCount: string;
   };
+  pdfData?: ExportPDFData;
 }
 
-const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, exportData }) => {
+const ShareButtons: React.FC<ShareButtonsProps> = ({ isCalculated, shareData, exportData, pdfData }) => {
   const exportContainerRef = useRef<HTMLDivElement>(null);
   const { t, language } = useLanguage();
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   if (!isCalculated) return null;
+
+  const exportPdf = async (variant: 'full' | 'compact') => {
+    if (!pdfData) return;
+    setIsExportingPdf(true);
+    try {
+      const filename = await generateRightIssuePDF(pdfData, variant, language);
+      toast.success(
+        (language === 'id' ? 'PDF berhasil diunduh: ' : 'PDF downloaded: ') + filename,
+      );
+    } catch (err) {
+      if (import.meta.env.DEV) console.error(err);
+      toast.error(language === 'id' ? 'Gagal export PDF' : 'Failed to export PDF');
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
 
   const saveAsImage = async () => {
     try {
@@ -267,43 +288,80 @@ ${isPositive ? '✅' : '⚠️'} TERP ${exportData.theoreticalPrice} (${isPositi
           className="flex items-center gap-1 px-2 py-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white transition-colors text-xs font-medium"
           aria-label="Share"
         >
-          <Share2 className="w-3.5 h-3.5" />
+          {isExportingPdf ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Share2 className="w-3.5 h-3.5" />}
           <ChevronDown className="w-3 h-3" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="flex flex-row gap-1 p-2 w-auto min-w-0">
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="text-xs">
+          {language === 'id' ? 'Bagikan / Salin' : 'Share / Copy'}
+        </DropdownMenuLabel>
         <DropdownMenuItem
           onClick={saveAsImage}
-          className="cursor-pointer p-2 justify-center"
-          title={language === 'id' ? 'Download Gambar' : 'Download Image'}
-          aria-label={language === 'id' ? 'Download Gambar' : 'Download Image'}
+          className="gap-2 cursor-pointer"
         >
-          <Download className="w-4 h-4" />
+          <Download className="w-4 h-4 text-primary" />
+          <span className="text-sm">{language === 'id' ? 'Download Gambar' : 'Download Image'}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={copyImageToClipboard}
-          className="cursor-pointer p-2 justify-center"
-          title={language === 'id' ? 'Salin Gambar' : 'Copy Image'}
-          aria-label={language === 'id' ? 'Salin Gambar' : 'Copy Image'}
+          className="gap-2 cursor-pointer"
         >
-          <Clipboard className="w-4 h-4" />
+          <Clipboard className="w-4 h-4 text-primary" />
+          <span className="text-sm">{language === 'id' ? 'Salin Gambar' : 'Copy Image'}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={shareNative}
-          className="cursor-pointer p-2 justify-center"
-          title={language === 'id' ? 'Bagikan Link' : 'Share Link'}
-          aria-label={language === 'id' ? 'Bagikan Link' : 'Share Link'}
+          className="gap-2 cursor-pointer"
         >
-          <Link2 className="w-4 h-4" />
+          <Link2 className="w-4 h-4 text-primary" />
+          <span className="text-sm">{language === 'id' ? 'Bagikan Link' : 'Share Link'}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={shareToWhatsApp}
-          className="cursor-pointer p-2 justify-center"
-          title={language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
-          aria-label={language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}
+          className="gap-2 cursor-pointer"
         >
-          <MessageCircle className="w-4 h-4" />
+          <MessageCircle className="w-4 h-4 text-primary" />
+          <span className="text-sm">{language === 'id' ? 'Share ke WhatsApp' : 'Share to WhatsApp'}</span>
         </DropdownMenuItem>
+        {pdfData && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs">
+              {language === 'id' ? 'Export PDF' : 'Export PDF'}
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => exportPdf('compact')}
+              disabled={isExportingPdf}
+              className="gap-2 cursor-pointer"
+            >
+              <FileText className="w-4 h-4 text-primary" />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">
+                  {language === 'id' ? 'PDF Ringkas (1 hal)' : 'PDF Compact (1 page)'}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {language === 'id' ? 'Input utama + rekomendasi' : 'Main inputs + recommendation'}
+                </span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => exportPdf('full')}
+              disabled={isExportingPdf}
+              className="gap-2 cursor-pointer"
+            >
+              <FileBarChart2 className="w-4 h-4 text-primary" />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">
+                  {language === 'id' ? 'PDF Lengkap' : 'PDF Full Report'}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {language === 'id' ? 'Semua metrik & dilusi' : 'All metrics & dilution'}
+                </span>
+              </div>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
