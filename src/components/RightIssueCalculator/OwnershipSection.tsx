@@ -169,9 +169,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 />
               )}
 
-              <div className="p-3 rounded-lg bg-accent/30 border border-accent/50">
-                <p className="text-[11px] text-muted-foreground leading-relaxed flex items-start gap-1.5">
-                  <Lightbulb className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="p-3 rounded-lg bg-primary/10 border border-primary/25 shadow-sm">
+                <p className="text-[11px] font-medium text-foreground leading-relaxed flex items-start gap-1.5">
+                  <Lightbulb className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
                   <span>
                     {language === 'id'
                       ? 'Anda akan membeli HMETD dari pasar, lalu menebus saham baru dengan harga pelaksanaan RI. Biaya total = (harga HMETD × lembar) + (harga RI × lembar).'
