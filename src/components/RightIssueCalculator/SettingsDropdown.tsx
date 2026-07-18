@@ -238,11 +238,11 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
         </DropdownMenuLabel>
         <DropdownMenuItem onClick={handleExportData} className="cursor-pointer">
           <Download className="w-4 h-4 mr-2 text-primary" />
-          {language === 'id' ? 'Ekspor data (backup)' : 'Export data (backup)'}
+          {language === 'id' ? 'Ekspor data' : 'Export data'}
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleImportClick(); }} className="cursor-pointer">
           <Upload className="w-4 h-4 mr-2 text-primary" />
-          {language === 'id' ? 'Impor data (restore)' : 'Import data (restore)'}
+          {language === 'id' ? 'Impor data' : 'Import data'}
         </DropdownMenuItem>
         <input
           ref={fileInputRef}
