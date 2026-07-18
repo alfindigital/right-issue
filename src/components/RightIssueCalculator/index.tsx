@@ -260,7 +260,7 @@ const RightIssueCalculator: React.FC = () => {
     const wOld = parseDecimalId(warrantRatioOld);
     const wNew = parseDecimalId(warrantRatioNew);
     if (!wOldRaw || !wNewRaw) {
-      setWarrantRatioError(language === 'id' ? 'Rasio waran harus diisi' : 'Warrant ratio is required');
+      setWarrantRatioError(t('validation.warrantRatioMissing'));
     } else if (wOld === 0) {
       setWarrantRatioError('Rasio RI tidak boleh 0');
     } else if (wNew === 0) {
