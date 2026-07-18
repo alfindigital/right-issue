@@ -6,7 +6,7 @@ import ConclusionSection from './ConclusionSection';
 import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
-import SettingsDropdown, { DisplayMode } from './SettingsDropdown';
+import SettingsDropdown from './SettingsDropdown';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import BackToTopButton from './BackToTopButton';
@@ -172,20 +172,8 @@ const RightIssueCalculator: React.FC = () => {
     };
   }, [isMobile]);
   
-  // View mode (Simple vs Pro) — persists in localStorage
-  const [viewMode, setViewMode] = useState<ViewMode>(() => {
-    if (typeof window === 'undefined') return 'simple';
-    return (localStorage.getItem('ri-view-mode') as ViewMode) || 'simple';
-  });
-  useEffect(() => {
-    try { localStorage.setItem('ri-view-mode', viewMode); } catch { /* noop */ }
-  }, [viewMode]);
-
-  // Unified display mode for Settings menu
-  const displayMode: DisplayMode = viewMode;
-  const handleDisplayModeChange = useCallback((mode: DisplayMode) => {
-    setViewMode(mode);
-  }, []);
+  // View mode is always 'pro' — all fields visible.
+  const viewMode: ViewMode = 'pro';
 
   // Stock Code
   const [stockCode, setStockCode] = useState('');
@@ -487,14 +475,7 @@ const RightIssueCalculator: React.FC = () => {
     }
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, calculate]);
 
-  // Simple mode: auto-derive cumDatePrice as a neutral assumption when empty
-  useEffect(() => {
-    if (viewMode !== 'simple') return;
-    if (cumDatePrice) return;
-    const rp = parseInt(rightPrice) || 0;
-    if (rp <= 0) return;
-    setCumDatePrice(String(Math.round(rp * 1.3)));
-  }, [viewMode, rightPrice, cumDatePrice]);
+  // (Removed) Simple-mode cumDatePrice auto-fill — Pro mode uses explicit input.
 
   // Auto-calculate (debounced) — removes friction of pressing "Hitung"
   useEffect(() => {
@@ -678,7 +659,7 @@ const RightIssueCalculator: React.FC = () => {
   useEffect(() => {
     const base: FieldKey[] = ['ratioOld', 'ratioNew', 'rightPrice'];
     const order: FieldKey[] = [...base];
-    if (viewMode !== 'simple') order.push('cumDatePrice');
+    order.push('cumDatePrice');
     if (noOwnership) {
       order.push('hmetdLots', 'hmetdPrice');
     } else {
@@ -686,7 +667,7 @@ const RightIssueCalculator: React.FC = () => {
     }
     if (hasWarrant) order.push('warrantRatioOld', 'warrantRatioNew');
     setAutoAdvanceOrder(order);
-  }, [viewMode, noOwnership, hasWarrant]);
+  }, [noOwnership, hasWarrant]);
 
   // Smart paste detector — propose to fill the form from clipboard text
   // when calculator is empty and the announcement parser detects fields.
@@ -808,8 +789,6 @@ const RightIssueCalculator: React.FC = () => {
         onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
         onOpenEmbed={() => setEmbedOpen(true)}
         onReplayTour={replayTour}
-        displayMode={displayMode}
-        onDisplayModeChange={handleDisplayModeChange}
       />
       <KeyboardShortcutsHelp externalOpen={keyboardHelpOpen} onExternalOpenChange={setKeyboardHelpOpen} />
       <EmbedCodeModal externalOpen={embedOpen} onExternalOpenChange={setEmbedOpen} />
@@ -818,7 +797,7 @@ const RightIssueCalculator: React.FC = () => {
 
   // Render calculator content
   const renderCalculatorContent = () => {
-    const isSimple = viewMode === 'simple';
+    const isSimple = false;
     return (
       <div className="space-y-4">
         <StockCodeInput value={stockCode} onChange={setStockCode} />
@@ -927,18 +906,7 @@ const RightIssueCalculator: React.FC = () => {
           </>
         )}
 
-        {/* Simple mode: nudge to Pro for advanced analysis */}
-        {isSimple && isCalculated && (
-          <button
-            type="button"
-            onClick={() => setViewMode('pro')}
-            className="w-full text-center text-[11px] text-muted-foreground hover:text-primary transition-colors py-2 border border-dashed border-border rounded-xl"
-          >
-            {language === 'id'
-              ? 'Butuh analisis lanjutan? Beralih ke mode Pro →'
-              : 'Need deeper analysis? Switch to Pro mode →'}
-          </button>
-        )}
+        {/* Pro-only mode: no display-mode switch. */}
       </div>
     );
   };
@@ -999,8 +967,6 @@ const RightIssueCalculator: React.FC = () => {
                 onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
                 onOpenEmbed={() => setEmbedOpen(true)}
                 onReplayTour={replayTour}
-                displayMode={displayMode}
-                onDisplayModeChange={handleDisplayModeChange}
               />
             </div>
           </div>
