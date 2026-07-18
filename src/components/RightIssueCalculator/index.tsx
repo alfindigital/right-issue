@@ -104,10 +104,8 @@ const formatNumber = (value: number): string => {
 const RightIssueCalculator: React.FC = () => {
   const resultRef = useRef<HTMLDivElement>(null);
   const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
-  const { saveToStorage, loadFromStorage, clearStorage } = useAutoSave();
+  const { saveToStorage, clearStorage } = useAutoSave();
   const { t, language } = useLanguage();
-  const hasRestoredRef = useRef(false);
-  const pendingAutoCalculateRef = useRef(false);
   const isMobile = useIsMobile();
   
   // Tab state
@@ -238,67 +236,6 @@ const RightIssueCalculator: React.FC = () => {
     observer.observe(el);
     return () => observer.disconnect();
   }, [isCalculated]);
-
-  // Parse URL params or restore from auto-save on mount
-  useEffect(() => {
-    if (hasRestoredRef.current) return;
-    hasRestoredRef.current = true;
-
-    const params = new URLSearchParams(window.location.search);
-    const sc = params.get('sc');
-    const ro = params.get('ro');
-    const rn = params.get('rn');
-    const rp = params.get('rp');
-    const cp = params.get('cp');
-    const cs = params.get('cs');
-    const ca = params.get('ca');
-    const hw = params.get('hw');
-    const wro = params.get('wro');
-    const wrn = params.get('wrn');
-    const no = params.get('no');
-    const hl = params.get('hl');
-    const hp = params.get('hp');
-
-    if (sc) setStockCode(sc);
-    if (ro && rn && rp && cp && cs && ca) {
-      setRatioOld(ro);
-      setRatioNew(rn);
-      setRightPrice(rp);
-      setCumDatePrice(cp);
-      setCurrentLots(cs);
-      setCurrentAvgPrice(ca);
-    } else if (no === '1' && ro && rn && rp && cp && hl) {
-      setRatioOld(ro);
-      setRatioNew(rn);
-      setRightPrice(rp);
-      setCumDatePrice(cp);
-      setNoOwnership(true);
-      setHmetdLots(hl);
-      if (hp) setHmetdPrice(hp);
-    } else {
-      const saved = loadFromStorage();
-      if (saved) {
-        setStockCode(saved.stockCode);
-        setRatioOld(saved.ratioOld);
-        setRatioNew(saved.ratioNew);
-        setRightPrice(saved.rightPrice);
-        setCumDatePrice(saved.cumDatePrice);
-        setCurrentLots(saved.currentLots);
-        setCurrentAvgPrice(saved.currentAvgPrice);
-        setHasWarrant(saved.hasWarrant);
-        setWarrantRatioOld(saved.warrantRatioOld);
-        setWarrantRatioNew(saved.warrantRatioNew);
-        if (saved.noOwnership) setNoOwnership(true);
-        if (saved.hmetdLots) setHmetdLots(saved.hmetdLots);
-        if (saved.hmetdPrice) setHmetdPrice(saved.hmetdPrice);
-      }
-    }
-    if (hw === '1' && wro && wrn) {
-      setHasWarrant(true);
-      setWarrantRatioOld(wro);
-      setWarrantRatioNew(wrn);
-    }
-  }, [loadFromStorage]);
 
   // Auto-save
   useEffect(() => {
@@ -468,25 +405,6 @@ const RightIssueCalculator: React.FC = () => {
     });
   }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, stockCode, addToHistory, noOwnership, hmetdLots, hmetdPrice]);
 
-  useEffect(() => {
-    if (pendingAutoCalculateRef.current) {
-      pendingAutoCalculateRef.current = false;
-      calculate();
-    }
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, calculate]);
-
-  // (Removed) Simple-mode cumDatePrice auto-fill — Pro mode uses explicit input.
-
-  // Auto-calculate (debounced) — removes friction of pressing "Hitung"
-  useEffect(() => {
-    if (!isCalculateEnabled) return;
-    const handle = setTimeout(() => {
-      calculate();
-    }, 450);
-    return () => clearTimeout(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, noOwnership, hmetdLots, hmetdPrice, isCalculateEnabled]);
-
   // Load ELPI demo data — right issue terbaru IDX 2026 (rasio 200:57 @ Rp350).
   const loadDemo = useCallback(() => {
     setStockCode('ELPI');
@@ -597,9 +515,10 @@ const RightIssueCalculator: React.FC = () => {
     setCumDatePrice(data.cumDatePrice); setCurrentLots(String(data.lots)); setCurrentAvgPrice(data.currentAvgPrice);
     setHasWarrant(data.hasWarrant); setWarrantRatioOld(data.warrantRatioOld); setWarrantRatioNew(data.warrantRatioNew);
     setActiveTab('calculator');
-    pendingAutoCalculateRef.current = true;
+    // Defer calculate so state updates settle in the same render cycle.
+    setTimeout(() => calculate(), 0);
     toast({ title: t('budgetPlanner.applied'), description: `${data.lots} lot ${t('budgetPlanner.appliedDesc')}`, duration: 3000 });
-  }, [t]);
+  }, [t, calculate]);
 
   const loadFromHistory = useCallback((item: CalculationHistoryItem) => {
     setStockCode(item.stockCode || '');

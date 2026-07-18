@@ -27,6 +27,7 @@ STOCK_CODE = "BRIS"
 RATIO_OLD = "5"
 RATIO_NEW = "2"
 RIGHT_PRICE = "2500"
+CUM_DATE_PRICE = "3000"
 CURRENT_LOT = "10"
 AVG_PRICE = "3000"
 
@@ -58,12 +59,12 @@ async def dismiss_onboarding(page):
 
 
 async def fill_form(page):
-    ti = page.locator("input[type=text]")
-    await ti.nth(0).fill(STOCK_CODE)
-    await ti.nth(1).fill(RATIO_OLD)
-    await ti.nth(2).fill(RATIO_NEW)
+    await page.locator("#stock-code").fill(STOCK_CODE)
+    await page.locator("#ratioOld-input").fill(RATIO_OLD)
+    await page.locator("#ratioNew-input").fill(RATIO_NEW)
     await page.locator("#right-price").fill(RIGHT_PRICE)
-    await ti.nth(4).fill(CURRENT_LOT)
+    await page.locator("#cum-date-price").fill(CUM_DATE_PRICE)
+    await page.locator("#current-lots").fill(CURRENT_LOT)
     await page.locator("#current-avg-price").fill(AVG_PRICE)
 
 
@@ -71,6 +72,16 @@ async def read_inputs(page):
     return await page.evaluate(
         "() => [...document.querySelectorAll('input[type=text]')].map(i => i.value)"
     )
+
+
+async def click_hitung(page):
+    hitung = page.get_by_role("button", name="Hitung").first
+    await page.wait_for_function(
+        "() => [...document.querySelectorAll('button')].some(b => b.innerText.trim()==='Hitung' && !b.disabled)",
+        timeout=5000,
+    )
+    await hitung.click()
+    await page.wait_for_timeout(1200)
 
 
 async def main():
@@ -96,13 +107,7 @@ async def main():
         values_pre = await read_inputs(page)
         await page.screenshot(path=str(OUT / "fmp_01_filled.png"))
 
-        hitung = page.get_by_role("button", name="Hitung").first
-        await page.wait_for_function(
-            "() => [...document.querySelectorAll('button')].some(b => b.innerText.trim()==='Hitung' && !b.disabled)",
-            timeout=5000,
-        )
-        await hitung.click()
-        await page.wait_for_timeout(1200)
+        await click_hitung(page)
 
         body_pre = await page.evaluate("() => document.body.innerText")
         for needle in EXPECTED_RESULT_SUBSTRINGS:
@@ -137,28 +142,25 @@ async def main():
         inputs_after = await page.locator("input[type=text]:visible").count()
         ok(inputs_after >= 6, f"All full-mode inputs still visible after reload ({inputs_after})")
 
-        # Values re-hydrated.
+        # In the new behaviour, the form starts blank after a hard refresh.
         values_post = await read_inputs(page)
-        norm_post = [v.replace(".", "").replace(",", "") for v in values_post]
-        ok(STOCK_CODE in values_post, "Stock code persisted")
-        ok(RATIO_OLD in values_post, "Ratio-old persisted")
-        ok(RATIO_NEW in values_post, "Ratio-new persisted")
-        ok(RIGHT_PRICE in norm_post, "Right price persisted")
-        ok(CURRENT_LOT in values_post, "Current lot persisted")
-        ok(AVG_PRICE in norm_post, "Average price persisted")
+        non_empty_post = [v for v in values_post if v.strip()]
+        ok(len(non_empty_post) == 0, "Form is blank after hard refresh (no auto-restore)")
 
-        # --- 4. Results also persist: recompute (button remains 'Hitung', not 'Lanjut'/'Kembali') ---
-        # Exact-match to avoid catching "Analisis Lanjutan" copy.
-        step_nav_count = 0
-        for label in ("Lanjut", "Kembali", "Next", "Back", "Previous"):
-            step_nav_count += await page.get_by_role(
-                "button", name=re.compile(rf"^{label}$")
-            ).count()
-        ok(step_nav_count == 0, "No step-nav buttons rendered after reload")
+        # Full-mode still active (no wizard chrome, all inputs visible together).
+        body_reload = await page.evaluate("() => document.body.innerText")
+        for w in WIZARD_MARKERS:
+            ok(w not in body_reload, f"No wizard marker '{w}' after reload")
+        ok(
+            re.search(r"\b[1-9]\s*/\s*[3-9]\b", body_reload) is None,
+            "No step counter (N/M) after reload",
+        )
+        inputs_after = await page.locator("input[type=text]:visible").count()
+        ok(inputs_after >= 6, f"All full-mode inputs still visible after reload ({inputs_after})")
 
-        hitung2 = page.get_by_role("button", name="Hitung").first
-        await hitung2.click()
-        await page.wait_for_timeout(1200)
+        # --- 4. Re-fill and recompute to confirm the app still works after refresh ---
+        await fill_form(page)
+        await click_hitung(page)
         await page.evaluate("() => window.scrollTo(0, document.body.scrollHeight)")
         await page.wait_for_timeout(500)
 
@@ -170,10 +172,10 @@ async def main():
             "No ErrorBoundary fallback after reload + recalc",
         )
 
-        # Values did not drift after recalc.
+        # Values unchanged after recalc.
         values_final = await read_inputs(page)
         ok(
-            values_final == values_post,
+            values_final == values_pre,
             "Input values unchanged by post-reload recalc",
         )
 

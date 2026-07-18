@@ -128,12 +128,13 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   <InfoTooltip text={language === 'id' ? "Jumlah lot HMETD yang ingin dibeli. 1 lot HMETD = hak tebus 100 lembar saham baru." : "Number of HMETD lots to buy. 1 HMETD lot = right to subscribe 100 new shares."} />
                 </label>
                 <input
+                  id="hmetd-lots"
                   ref={hmetdLotsRef}
                   type="text"
                   value={hmetdLots ? new Intl.NumberFormat('id-ID').format(parseInt(hmetdLots)) : ''}
                   onChange={(e) => onHmetdLotsChange(e.target.value.replace(/\D/g, ''))}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); advanceFrom('hmetdLots'); } }}
-                  placeholder="0"
+                  placeholder="5"
                   className="input-calculator"
                   inputMode="numeric"
               />
@@ -154,6 +155,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 label={language === 'id' ? 'Harga HMETD per Lembar' : 'HMETD Price per Share'}
                 value={hmetdPrice}
                 onChange={onHmetdPriceChange}
+                placeholder="100"
                 tooltip={language === 'id' ? "Harga beli HMETD per lembar di pasar sekunder. Cek harga HMETD-R di broker Anda." : "HMETD purchase price per share in secondary market. Check HMETD-R price at your broker."}
                 fieldKey="hmetdPrice"
                 stepperStep={50}
@@ -193,12 +195,13 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   <InfoTooltip text={language === 'id' ? "1 lot = 100 lembar saham." : "1 lot = 100 shares."} />
                 </label>
                 <input
+                  id="current-lots"
                   ref={lotsRef}
                   type="text"
                   value={currentLots ? new Intl.NumberFormat('id-ID').format(parseInt(currentLots)) : ''}
                   onChange={(e) => onCurrentLotsChange(e.target.value.replace(/\D/g, ''))}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); advanceFrom('currentLots'); } }}
-                  placeholder="0"
+                  placeholder="20"
                   className="input-calculator"
                   inputMode="numeric"
                 />
@@ -219,6 +222,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 label={t('ownership.avgPrice')}
                 value={currentAvgPrice}
                 onChange={onCurrentAvgPriceChange}
+                placeholder="1000"
                 tooltip={t('ownership.avgPriceHelp')}
                 fieldKey="currentAvgPrice"
                 stepperStep={50}

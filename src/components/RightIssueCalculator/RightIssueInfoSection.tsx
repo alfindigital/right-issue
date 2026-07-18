@@ -89,7 +89,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             <RatioInput
               value={ratioOld}
               onChange={onRatioOldChange}
-              placeholder={language === 'id' ? "Lama" : "Old"}
+              placeholder="200"
               fieldKey="ratioOld"
               aria-label={language === 'id' ? 'Rasio lama' : 'Old ratio'}
               aria-describedby={ratioError ? 'ratio-error' : undefined}
@@ -99,7 +99,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             <RatioInput
               value={ratioNew}
               onChange={onRatioNewChange}
-              placeholder={language === 'id' ? "Baru" : "New"}
+              placeholder="57"
               fieldKey="ratioNew"
               aria-label={language === 'id' ? 'Rasio baru' : 'New ratio'}
               aria-describedby={ratioError ? 'ratio-error' : undefined}
@@ -116,6 +116,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           label={t('rightIssue.price')}
           value={rightPrice}
           onChange={onRightPriceChange}
+          placeholder="350"
           tooltip={t('rightIssue.priceHelp')}
           fieldKey="rightPrice"
           stepperStep={50}
@@ -129,6 +130,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
             label={t('rightIssue.cumPrice')}
             value={cumDatePrice}
             onChange={onCumDatePriceChange}
+            placeholder="1200"
             tooltip={t('rightIssue.cumPriceHelp')}
             fieldKey="cumDatePrice"
             stepperStep={50}

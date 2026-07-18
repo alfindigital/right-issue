@@ -5,8 +5,8 @@ Verifies:
   1. User can pick an IDX stock code (BRIS)
   2. User can enter right-issue parameters (ratio, harga tebus, lot, avg price)
   3. Calculation results render with the expected numbers
-  4. After a full page reload, form values are restored from localStorage
-     AND the calculation results re-render (form persistence + auto-recalc)
+  4. After a full page reload, the form starts blank and the user can re-enter
+     values to get results again (no auto-restore).
 
 How to run (from repo root, dev server must be on http://localhost:8080):
     python3 tests/e2e/right-issue-flow.spec.py
@@ -28,6 +28,7 @@ STOCK_CODE = "BRIS"
 RATIO_OLD = "5"
 RATIO_NEW = "2"
 RIGHT_PRICE = "2500"
+CUM_DATE_PRICE = "3000"
 CURRENT_LOT = "10"
 AVG_PRICE = "3000"
 
@@ -50,15 +51,24 @@ async def dismiss_onboarding(page):
 
 
 async def fill_form(page):
-    text_inputs = page.locator("input[type=text]")
-    # Order in DOM: 0=stock code, 1=ratio old, 2=ratio new,
-    # 3=#right-price, 4=jumlah lot, 5=#current-avg-price
-    await text_inputs.nth(0).fill(STOCK_CODE)
-    await text_inputs.nth(1).fill(RATIO_OLD)
-    await text_inputs.nth(2).fill(RATIO_NEW)
+    await page.locator("#stock-code").fill(STOCK_CODE)
+    await page.locator("#ratioOld-input").fill(RATIO_OLD)
+    await page.locator("#ratioNew-input").fill(RATIO_NEW)
     await page.locator("#right-price").fill(RIGHT_PRICE)
-    await text_inputs.nth(4).fill(CURRENT_LOT)
+    await page.locator("#cum-date-price").fill(CUM_DATE_PRICE)
+    await page.locator("#current-lots").fill(CURRENT_LOT)
     await page.locator("#current-avg-price").fill(AVG_PRICE)
+
+
+async def click_hitung(page):
+    hitung = page.get_by_role("button", name="Hitung").first
+    await hitung.wait_for(state="visible")
+    await page.wait_for_function(
+        "() => [...document.querySelectorAll('button')].some(b => b.innerText.trim()==='Hitung' && !b.disabled)",
+        timeout=5000,
+    )
+    await hitung.click()
+    await page.wait_for_timeout(1200)
 
 
 def assert_true(cond, msg):
@@ -83,23 +93,14 @@ async def main():
         # ---- Step 2: fill inputs & calculate ----
         await fill_form(page)
         await page.screenshot(path=str(OUT / "02_filled.png"))
-
-        # The Hitung button becomes enabled once required fields are valid.
-        hitung = page.get_by_role("button", name="Hitung").first
-        await hitung.wait_for(state="visible")
-        await page.wait_for_function(
-            "() => [...document.querySelectorAll('button')].some(b => b.innerText.trim()==='Hitung' && !b.disabled)",
-            timeout=5000,
-        )
-        await hitung.click()
-        await page.wait_for_timeout(1200)
+        await click_hitung(page)
         await page.screenshot(path=str(OUT / "03_results.png"))
 
         body = await page.evaluate("() => document.body.innerText")
         for needle in EXPECTED_SUBSTRINGS:
             assert_true(needle in body, f"Result body contains '{needle}'")
 
-        # ---- Step 3: reload & verify persistence + auto-recalc ----
+        # ---- Step 3: reload & verify blank start + re-calculate ----
         await page.reload(wait_until="domcontentloaded")
         await page.wait_for_timeout(1800)
         await dismiss_onboarding(page)
@@ -109,14 +110,14 @@ async def main():
         values_after_reload = await page.evaluate(
             "() => [...document.querySelectorAll('input[type=text]')].map(i => i.value)"
         )
-        # Normalize the currency-formatted values ("2.500" -> "2500") for comparison.
-        norm = [v.replace(".", "").replace(",", "") for v in values_after_reload]
-        assert_true(STOCK_CODE in values_after_reload, "Stock code persisted after reload")
-        assert_true(RATIO_OLD in values_after_reload, "Ratio old persisted after reload")
-        assert_true(RATIO_NEW in values_after_reload, "Ratio new persisted after reload")
-        assert_true(RIGHT_PRICE in norm, "Harga Pelaksanaan persisted after reload")
-        assert_true(CURRENT_LOT in values_after_reload, "Jumlah Lot persisted after reload")
-        assert_true(AVG_PRICE in norm, "Harga Rata-rata persisted after reload")
+        # In the new behaviour, the form starts empty after reload.
+        non_empty = [v for v in values_after_reload if v.strip()]
+        assert_true(len(non_empty) == 0, "Form is blank after reload (no auto-restore)")
+
+        # Re-fill and re-calculate to confirm the app still works after a hard refresh.
+        await fill_form(page)
+        await click_hitung(page)
+        await page.screenshot(path=str(OUT / "05_recalc_after_reload.png"))
 
         body_reload = await page.evaluate("() => document.body.innerText")
         for needle in EXPECTED_SUBSTRINGS:
