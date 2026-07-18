@@ -46,16 +46,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     }
     setHapticsOn(isHapticsEnabled());
 
-    // One-hand mode
-    const oh = localStorage.getItem('ri-one-hand') === '1';
-    setOneHand(oh);
-    document.documentElement.classList.toggle('one-hand-mode', oh);
-
-    // Reduce motion (opt-in)
-    const rm = localStorage.getItem('ri-reduce-motion') === '1';
-    setReduceMotion(rm);
-    document.documentElement.classList.toggle('reduce-motion', rm);
-
     // Type scale
     const ts = (localStorage.getItem('ri-type-scale') as 'sm' | 'md' | 'lg') || 'md';
     setTypeScale(ts);
