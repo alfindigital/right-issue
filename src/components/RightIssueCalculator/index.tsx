@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, lazy, Suspense, startTransition } from 'react';
 import { RotateCcw } from 'lucide-react';
-import ExportPDFButton from './ExportPDFButton';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
 import ConclusionSection from './ConclusionSection';
@@ -797,10 +796,7 @@ const RightIssueCalculator: React.FC = () => {
         isCalculated={isCalculated}
         shareData={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice }}
         exportData={{ currentTotalValue, newSharesCount: newLotsCount, newTotalValue, finalShares: finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, hasWarrant, warrantCount }}
-      />
-      <ExportPDFButton
-        isCalculated={isCalculated}
-        data={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, newLotsCount, finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, warrantCount, currentTotalValue, newTotalValue }}
+        pdfData={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, newLotsCount, finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, warrantCount, currentTotalValue, newTotalValue }}
       />
       <HistoryDropdown history={history} onSelectHistory={loadFromHistory} onRemoveHistory={removeFromHistory} onClearHistory={clearHistory} />
       {isCalculated && (
@@ -890,10 +886,7 @@ const RightIssueCalculator: React.FC = () => {
                 isCalculated={isCalculated}
                 shareData={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice }}
                 exportData={{ currentTotalValue, newSharesCount: newLotsCount, newTotalValue, finalShares: finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, hasWarrant, warrantCount }}
-              />
-              <ExportPDFButton
-                isCalculated={isCalculated}
-                data={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, newLotsCount, finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, warrantCount, currentTotalValue, newTotalValue }}
+                pdfData={{ stockCode, ratioOld, ratioNew, rightPrice, cumDatePrice, currentLots, currentAvgPrice, hasWarrant, warrantRatioOld, warrantRatioNew, newLotsCount, finalLots, finalAvgPrice, finalTotalValue, theoreticalPrice, recommendation, recommendationText, warrantCount, currentTotalValue, newTotalValue }}
               />
               <button onClick={reset} className="p-2 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground transition-colors" aria-label="Reset">
                 <RotateCcw className="w-4 h-4" />
