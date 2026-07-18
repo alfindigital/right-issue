@@ -516,7 +516,7 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
                       {t('budgetPlanner.avgPriceRequired')}
                     </p>
                   ) : hasWarrant && (!warrantRatioOld || !warrantRatioNew) ? (
-                    <p className="text-[10px] text-amber-600 dark:text-amber-400 text-center">
+                    <p className="text-[10px] text-destructive text-center">
                       {t('validation.warrantRatioMissing')}
                     </p>
                   ) : null}
