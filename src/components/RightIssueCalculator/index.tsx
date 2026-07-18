@@ -268,7 +268,7 @@ const RightIssueCalculator: React.FC = () => {
     } else {
       setWarrantRatioError('');
     }
-  }, [hasWarrant, warrantRatioOld, warrantRatioNew, language]);
+  }, [hasWarrant, warrantRatioOld, warrantRatioNew, t]);
 
   const isWarrantRatioValid = !hasWarrant || (warrantRatioOld && warrantRatioNew && !warrantRatioError);
   const isCalculateEnabled = !!(ratioOld && ratioNew && rightPrice && cumDatePrice && !ratioError && isWarrantRatioValid && (noOwnership ? hmetdLots : (currentLots && currentAvgPrice)));
