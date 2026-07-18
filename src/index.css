@@ -426,7 +426,7 @@
 
 /* === Comfort & Accessibility === */
 
-/* Reduce motion: honor system preference + opt-in `.reduce-motion` class. */
+/* Respect system preference for reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -435,23 +435,6 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
-  }
-}
-.reduce-motion *,
-.reduce-motion *::before,
-.reduce-motion *::after {
-  animation-duration: 0.001ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.001ms !important;
-  scroll-behavior: auto !important;
-}
-
-/* One-hand mode: push main content down so thumbs can reach the top
-   of the screen on tall phones. Toggleable via Settings. */
-@media (max-width: 767px) {
-  .one-hand-mode main {
-    padding-top: 28vh;
-    transition: padding-top 0.35s ease;
   }
 }
 

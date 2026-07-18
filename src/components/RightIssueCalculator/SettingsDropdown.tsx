@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Hand, Type, Activity, Download, Upload } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Type, Download, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,8 +32,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDark, setIsDark] = useState(false);
   const [hapticsOn, setHapticsOn] = useState(true);
-  const [oneHand, setOneHand] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
   const [typeScale, setTypeScale] = useState<'sm' | 'md' | 'lg'>('md');
   const hasVibrateApi = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 
@@ -47,16 +45,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
       if (!savedTheme) localStorage.setItem('theme', 'light');
     }
     setHapticsOn(isHapticsEnabled());
-
-    // One-hand mode
-    const oh = localStorage.getItem('ri-one-hand') === '1';
-    setOneHand(oh);
-    document.documentElement.classList.toggle('one-hand-mode', oh);
-
-    // Reduce motion (opt-in)
-    const rm = localStorage.getItem('ri-reduce-motion') === '1';
-    setReduceMotion(rm);
-    document.documentElement.classList.toggle('reduce-motion', rm);
 
     // Type scale
     const ts = (localStorage.getItem('ri-type-scale') as 'sm' | 'md' | 'lg') || 'md';
@@ -87,19 +75,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     setHapticsOn(next);
     setHapticsEnabled(next);
     if (next) haptic(15); // confirm with a tap when enabling
-  };
-
-  const toggleOneHand = (next: boolean) => {
-    setOneHand(next);
-    document.documentElement.classList.toggle('one-hand-mode', next);
-    localStorage.setItem('ri-one-hand', next ? '1' : '0');
-    if (next) haptic(15);
-  };
-
-  const toggleReduceMotion = (next: boolean) => {
-    setReduceMotion(next);
-    document.documentElement.classList.toggle('reduce-motion', next);
-    localStorage.setItem('ri-reduce-motion', next ? '1' : '0');
   };
 
   const changeTypeScale = (next: 'sm' | 'md' | 'lg') => {
@@ -218,42 +193,12 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
           {language === 'id' ? 'Kenyamanan' : 'Comfort'}
         </DropdownMenuLabel>
         <DropdownMenuItem
-          onSelect={(e) => { e.preventDefault(); toggleOneHand(!oneHand); }}
-          className="cursor-pointer flex items-center justify-between gap-2"
-        >
-          <span className="flex items-center">
-            <Hand className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Mode satu tangan' : 'One-hand mode'}
-          </span>
-          <Switch
-            checked={oneHand}
-            onCheckedChange={toggleOneHand}
-            onClick={(e) => e.stopPropagation()}
-            aria-label={language === 'id' ? 'Mode satu tangan' : 'One-hand mode'}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={(e) => { e.preventDefault(); toggleReduceMotion(!reduceMotion); }}
-          className="cursor-pointer flex items-center justify-between gap-2"
-        >
-          <span className="flex items-center">
-            <Activity className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Kurangi animasi' : 'Reduce motion'}
-          </span>
-          <Switch
-            checked={reduceMotion}
-            onCheckedChange={toggleReduceMotion}
-            onClick={(e) => e.stopPropagation()}
-            aria-label={language === 'id' ? 'Kurangi animasi' : 'Reduce motion'}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem
           onSelect={(e) => e.preventDefault()}
           className="cursor-default flex items-center justify-between gap-2"
         >
           <span className="flex items-center">
             <Type className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Ukuran teks' : 'Text size'}
+            {language === 'id' ? 'Teks' : 'Text'}
           </span>
           <span className="flex items-center gap-1">
             {(['sm', 'md', 'lg'] as const).map((s) => (
