@@ -87,13 +87,13 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   
   return (
     <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.1s' }}>
-      <h2 className="section-title flex items-center" data-tour="ownership">
+      <h2 className="section-title mb-2.5 flex items-center" data-tour="ownership">
         {t('ownership.title')}
         <InfoTooltip text={language === 'id' ? "Data kepemilikan saham Anda saat ini." : "Your current stock ownership data."} />
       </h2>
 
       {/* No Ownership Toggle */}
-      <label className="flex items-center gap-2 mb-4 cursor-pointer select-none group">
+      <label className="flex items-center gap-2 mb-3 cursor-pointer select-none group">
         <input
           type="checkbox"
           checked={noOwnership}
@@ -109,9 +109,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         />
       </label>
       
-      <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+      <div className="grid md:grid-cols-2 gap-3 md:gap-5">
         {/* Current Ownership or HMETD Input */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {noOwnership ? (
             <>
               <h3 className="subsection-title flex items-center">
@@ -245,7 +245,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         </div>
 
         {/* Right Issue Allocation */}
-        <div className={`space-y-3 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-50'}`}>
+        <div className={`space-y-2.5 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-50'}`}>
           <h3 className="subsection-title flex items-center">
             {noOwnership 
               ? (language === 'id' ? 'Saham Baru (dari HMETD)' : 'New Shares (from HMETD)')
@@ -289,13 +289,13 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         </div>
       </div>
 
-      <div className="my-4 border-t border-border" />
+      <div className="my-3 border-t border-border" />
 
       {/* Calculate button - desktop */}
       <button
         onClick={onCalculate}
         disabled={!isCalculateEnabled}
-        className="btn-calculate hidden md:block mb-4"
+        className="btn-calculate hidden md:block mb-3"
       >
         {t('ownership.calculate')}
       </button>
