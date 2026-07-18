@@ -103,9 +103,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
           {language === 'id' ? 'Belum punya saham ini (beli HMETD dari pasar)' : "Don't own this stock yet (buy HMETD from market)"}
         </span>
-        <InfoTooltip text={language === 'id' 
-          ? "Pilih ini jika Anda belum memiliki saham dan ingin membeli HMETD (hak memesan efek terlebih dahulu) dari pasar sekunder." 
-          : "Select this if you don't currently own the stock and want to buy HMETD (rights) from the secondary market."} 
+        <InfoTooltip text={language === 'id'
+          ? "Pilih ini jika Anda belum memiliki saham dan ingin membeli HMETD/R (hak memesan efek terlebih dahulu) dari pasar sekunder. Bisa ditebus menjadi saham baru atau dijual kembali."
+          : "Select this if you don't currently own the stock and want to buy HMETD/R (rights) from the secondary market. You can exercise them into new shares or sell them back."}
         />
       </label>
       
