@@ -5,7 +5,6 @@ import InfoTooltip from './InfoTooltip';
 import PasteParserButton from './PasteParserButton';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { haptic } from '@/lib/haptics';
 import type { QuickChip } from './MobileNumpad';
 
 interface RightIssueInfoSectionProps {
