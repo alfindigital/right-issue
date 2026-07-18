@@ -177,7 +177,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
 
       {/* Recommendation Banner */}
       {recommendation && (
-        <div className={`rounded-xl p-3.5 border transition-all duration-500 animate-fade-in ${
+        <div className={`rounded-xl p-3 border transition-all duration-500 animate-fade-in ${
           recommendation === 'positive'
             ? 'bg-gradient-to-r from-[hsl(142_76%_96%)] to-[hsl(142_76%_98%)] border-[hsl(var(--success))]/30 dark:from-[hsl(142_76%_10%)] dark:to-[hsl(142_76%_8%)] dark:border-[hsl(var(--success))]/20'
             : 'bg-gradient-to-r from-[hsl(38_92%_96%)] to-[hsl(38_92%_98%)] border-[hsl(var(--warning))]/30 dark:from-[hsl(38_92%_10%)] dark:to-[hsl(38_92%_8%)] dark:border-[hsl(var(--warning))]/20'
