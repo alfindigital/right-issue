@@ -11,14 +11,14 @@ const EmptyStateCard: React.FC<Props> = ({ onLoadDemo }) => {
 
   return (
     <div className="card-calculator animate-fade-in border-dashed">
-      <div className="flex flex-col items-center text-center py-6 px-3">
-        <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
+      <div className="flex flex-col items-center text-center py-5 px-3">
+        <div className="w-13 h-13 rounded-2xl bg-primary/10 flex items-center justify-center mb-2.5">
           <Sparkles className="w-7 h-7 text-primary" />
         </div>
         <h3 className="text-sm font-bold text-foreground mb-1">
           {language === 'id' ? 'Belum ada hasil' : 'No results yet'}
         </h3>
-        <p className="text-xs text-muted-foreground max-w-xs mb-4 leading-relaxed">
+        <p className="text-xs text-muted-foreground max-w-xs mb-3.5 leading-relaxed">
           {language === 'id'
             ? 'Isi rasio dan harga tebus untuk melihat estimasi otomatis. Atau coba contoh siap pakai di bawah.'
             : 'Fill in the ratio and exercise price to see an automatic estimate. Or try the ready-to-use example below.'}
