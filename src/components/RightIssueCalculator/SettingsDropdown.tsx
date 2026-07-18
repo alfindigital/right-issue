@@ -272,36 +272,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
             ))}
           </span>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={(e) => { e.preventDefault(); toggleAutoAdvance(!autoAdvance); }}
-          className="cursor-pointer flex items-center justify-between gap-2"
-        >
-          <span className="flex items-center">
-            <ArrowRight className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Auto-advance fokus' : 'Auto-advance focus'}
-          </span>
-          <Switch
-            checked={autoAdvance}
-            onCheckedChange={toggleAutoAdvance}
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Auto-advance"
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onSelect={(e) => { e.preventDefault(); toggleClipWatch(!clipWatch); }}
-          className="cursor-pointer flex items-center justify-between gap-2"
-        >
-          <span className="flex items-center">
-            <Clipboard className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Deteksi clipboard' : 'Clipboard detector'}
-          </span>
-          <Switch
-            checked={clipWatch}
-            onCheckedChange={toggleClipWatch}
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Clipboard watcher"
-          />
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onOpenKeyboardHelp} className="cursor-pointer">
           <Keyboard className="w-4 h-4 mr-2" />
