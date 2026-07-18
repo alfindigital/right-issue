@@ -62,9 +62,6 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
     { label: 'C', apply: () => '' },
   ];
 
-  const ratioPresetsOld = [1, 2, 4, 10];
-  const ratioPresetsNew = [1, 2, 3];
-  
   return (
     <section className="card-calculator animate-fade-in" data-tour="ri-info">
       <div className="flex items-center justify-between mb-3">
@@ -109,41 +106,6 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
               aria-describedby={ratioError ? 'ratio-error' : undefined}
               aria-invalid={!!ratioError}
             />
-          </div>
-          {/* Ratio preset chips */}
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pt-1.5 flex-wrap">
-            <span className="text-[10px] text-muted-foreground shrink-0 mr-1">
-              {language === 'id' ? 'Cepat:' : 'Quick:'}
-            </span>
-            {ratioPresetsOld.map((n) => (
-              <button
-                key={`old-${n}`}
-                type="button"
-                onClick={() => { haptic(6); onRatioOldChange(String(n)); }}
-                className={`shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold border transition-colors ${
-                  ratioOld === String(n)
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-transparent text-muted-foreground border-border hover:bg-muted'
-                }`}
-              >
-                {n}
-              </button>
-            ))}
-            <span className="text-[10px] text-muted-foreground shrink-0 mx-0.5">:</span>
-            {ratioPresetsNew.map((n) => (
-              <button
-                key={`new-${n}`}
-                type="button"
-                onClick={() => { haptic(6); onRatioNewChange(String(n)); }}
-                className={`shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold border transition-colors ${
-                  ratioNew === String(n)
-                    ? 'bg-primary text-primary-foreground border-primary'
-                    : 'bg-transparent text-muted-foreground border-border hover:bg-muted'
-                }`}
-              >
-                {n}
-              </button>
-            ))}
           </div>
           {ratioError && (
             <p id="ratio-error" role="alert" className="text-xs text-destructive mt-1 animate-fade-in">{ratioError}</p>
