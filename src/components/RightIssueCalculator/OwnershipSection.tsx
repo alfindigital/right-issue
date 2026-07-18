@@ -116,9 +116,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
             <>
               <h3 className="subsection-title flex items-center">
                 {language === 'id' ? 'Beli HMETD' : 'Buy HMETD'}
-                <InfoTooltip text={language === 'id' 
-                  ? "Masukkan jumlah lot HMETD yang ingin Anda beli dari pasar sekunder untuk ditebus menjadi saham baru." 
-                  : "Enter the number of HMETD lots you want to buy from the secondary market to exercise into new shares."} 
+                <InfoTooltip text={language === 'id'
+                  ? "Masukkan jumlah lot HMETD/R yang ingin Anda beli dari pasar sekunder. Biasanya untuk ditebus menjadi saham baru atau diperdagangkan kembali."
+                  : "Enter the number of HMETD/R lots you want to buy from the secondary market. Usually to exercise into new shares or trade back."}
                 />
               </h3>
               
