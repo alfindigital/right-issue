@@ -941,15 +941,15 @@ const RightIssueCalculator: React.FC = () => {
           backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%)',
         }} />
         
-        <div className="relative max-w-2xl mx-auto px-3 py-3 md:px-4 md:py-4">
+        <div className="relative max-w-2xl mx-auto px-3 py-2.5 md:px-4 md:py-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex-1 min-w-0 flex items-center gap-2">
-              <Logo size={24} color="#fff" className="flex-shrink-0" />
+              <Logo size={22} color="#fff" className="flex-shrink-0" />
               <div className="min-w-0">
-                <h1 className="text-base md:text-xl font-black tracking-tight text-primary-foreground truncate">
+                <h1 className="text-sm md:text-base font-black tracking-tight text-primary-foreground truncate">
                   {t('app.title')}
                 </h1>
-                <p className="text-[9px] md:text-xs text-primary-foreground/70 mt-0.5 truncate">
+                <p className="text-[8px] md:text-[10px] text-primary-foreground/70 mt-0.5 truncate">
                   {language === 'id' ? 'Simulasi Right Issue Cepat & Akurat' : 'Fast & Accurate Right Issue Simulation'}
                 </p>
               </div>
