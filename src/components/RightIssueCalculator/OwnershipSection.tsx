@@ -176,8 +176,8 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   <Lightbulb className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
                   <span>
                     {language === 'id'
-                      ? 'Anda akan membeli HMETD dari pasar, lalu menebus saham baru dengan harga pelaksanaan RI. Biaya total = (harga HMETD × lembar) + (harga RI × lembar).'
-                      : 'You will buy HMETD from the market, then exercise new shares at the RI price. Total cost = (HMETD price × shares) + (RI price × shares).'}
+                      ? 'Opsi ini menghitung biaya total jika Anda membeli HMETD/R dari pasar dan menebusnya menjadi saham baru: (harga HMETD × lembar) + (harga pelaksanaan RI × lembar). Jika hanya membeli untuk dijual kembali, biaya yang dikeluarkan hanya harga pembelian HMETD/R.'
+                      : 'This option calculates the total cost if you buy HMETD/R from the market and exercise them into new shares: (HMETD price × shares) + (RI exercise price × shares). If you only buy to resell, the cost is only the HMETD/R purchase price.'}
                   </span>
                 </p>
               </div>
