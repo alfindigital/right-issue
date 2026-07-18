@@ -162,10 +162,15 @@ async def main():
         await page.wait_for_timeout(1800)
         await dismiss_onboarding(page)
         await page.wait_for_timeout(500)
-        # Results dashboard is gated behind an explicit "Hitung" click; form
-        # values are restored from localStorage, so trigger recalc.
+        # The form is intentionally blank after reload (no auto-restore), so
+        # re-fill and re-calculate to verify all panels still render.
+        await fill_form(page)
         try:
             hitung_r = page.get_by_role("button", name="Hitung").first
+            await page.wait_for_function(
+                "() => [...document.querySelectorAll('button')].some(b => b.innerText.trim()==='Hitung' && !b.disabled)",
+                timeout=3000,
+            )
             await hitung_r.click(timeout=3000)
             await page.wait_for_timeout(1200)
         except Exception:
