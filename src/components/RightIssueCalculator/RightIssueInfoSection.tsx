@@ -176,6 +176,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     onChange={onWarrantRatioOldChange}
                     placeholder="RI"
                     fieldKey="warrantRatioOld"
+                    validation={warrantValidation}
                     aria-label={language === 'id' ? 'Rasio RI waran' : 'Warrant RI ratio'}
                     aria-describedby={warrantRatioError ? 'warrant-ratio-error' : undefined}
                     aria-invalid={!!warrantRatioError}
@@ -186,6 +187,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
                     onChange={onWarrantRatioNewChange}
                     placeholder={language === 'id' ? "Waran" : "Warrant"}
                     fieldKey="warrantRatioNew"
+                    validation={warrantValidation}
                     aria-label={language === 'id' ? 'Rasio waran' : 'Warrant ratio'}
                     aria-describedby={warrantRatioError ? 'warrant-ratio-error' : undefined}
                     aria-invalid={!!warrantRatioError}
