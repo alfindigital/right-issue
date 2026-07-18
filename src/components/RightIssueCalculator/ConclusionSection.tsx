@@ -29,18 +29,18 @@ const ConclusionSection: React.FC<ConclusionSectionProps> = ({
   
   return (
     <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.2s' }}>
-      <h2 className="section-title flex items-center">
+      <h2 className="section-title mb-2.5 flex items-center">
         {t('conclusion.title')}
         <InfoTooltip text={language === 'id' ? "Ringkasan dan analisis berdasarkan kalkulasi." : "Summary and analysis based on calculation."} />
       </h2>
       
-      <div className="space-y-1 mb-4">
+      <div className="space-y-1.5 mb-3">
         <SummaryItem label={t('conclusion.newLots')} value={`${newLots} lot`} tooltip={language === 'id' ? "Jumlah lot RI yang berhak ditebus." : "Number of RI lots entitled to exercise."} />
         <SummaryItem label={t('conclusion.exercisePrice')} value={exercisePrice} tooltip={language === 'id' ? "Harga per lembar untuk menebus RI." : "Price per share to exercise RI."} />
         <SummaryItem label={t('conclusion.totalCost')} value={totalCost} highlight tooltip={language === 'id' ? "Dana yang dibutuhkan untuk tebus semua jatah RI." : "Funds required to exercise all RI allocation."} />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-2 gap-2.5 mb-3">
         <div className="info-box">
           <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5 flex items-center">
             {t('conclusion.newAvg')}
@@ -59,7 +59,7 @@ const ConclusionSection: React.FC<ConclusionSectionProps> = ({
 
       {isCalculated && recommendation && (
         <>
-          <div className={`text-sm p-3 rounded-xl transition-all duration-300 ${
+          <div className={`text-sm p-2.5 rounded-xl transition-all duration-300 ${
             recommendation === 'positive' 
               ? 'bg-gradient-to-r from-green-100 to-green-50 border border-green-200 dark:from-green-900/30 dark:to-green-950/20 dark:border-green-800' 
               : 'bg-gradient-to-r from-amber-100 to-amber-50 border border-amber-200 dark:from-amber-900/30 dark:to-amber-950/20 dark:border-amber-800'
