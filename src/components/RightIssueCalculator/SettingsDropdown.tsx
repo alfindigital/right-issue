@@ -32,8 +32,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDark, setIsDark] = useState(false);
   const [hapticsOn, setHapticsOn] = useState(true);
-  const [oneHand, setOneHand] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
   const [typeScale, setTypeScale] = useState<'sm' | 'md' | 'lg'>('md');
   const hasVibrateApi = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 
