@@ -103,9 +103,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
           {language === 'id' ? 'Belum punya saham ini (beli HMETD dari pasar)' : "Don't own this stock yet (buy HMETD from market)"}
         </span>
-        <InfoTooltip text={language === 'id' 
-          ? "Pilih ini jika Anda belum memiliki saham dan ingin membeli HMETD (hak memesan efek terlebih dahulu) dari pasar sekunder." 
-          : "Select this if you don't currently own the stock and want to buy HMETD (rights) from the secondary market."} 
+        <InfoTooltip text={language === 'id'
+          ? "Pilih ini jika Anda belum memiliki saham dan ingin membeli HMETD/R (hak memesan efek terlebih dahulu) dari pasar sekunder. Bisa ditebus menjadi saham baru atau dijual kembali."
+          : "Select this if you don't currently own the stock and want to buy HMETD/R (rights) from the secondary market. You can exercise them into new shares or sell them back."}
         />
       </label>
       
@@ -116,9 +116,9 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
             <>
               <h3 className="subsection-title flex items-center">
                 {language === 'id' ? 'Beli HMETD' : 'Buy HMETD'}
-                <InfoTooltip text={language === 'id' 
-                  ? "Masukkan jumlah lot HMETD yang ingin Anda beli dari pasar sekunder untuk ditebus menjadi saham baru." 
-                  : "Enter the number of HMETD lots you want to buy from the secondary market to exercise into new shares."} 
+                <InfoTooltip text={language === 'id'
+                  ? "Masukkan jumlah lot HMETD/R yang ingin Anda beli dari pasar sekunder. Biasanya untuk ditebus menjadi saham baru atau diperdagangkan kembali."
+                  : "Enter the number of HMETD/R lots you want to buy from the secondary market. Usually to exercise into new shares or trade back."}
                 />
               </h3>
               
@@ -167,7 +167,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                 <ReadOnlyField
                   label={language === 'id' ? 'Total Biaya Akuisisi' : 'Total Acquisition Cost'}
                   value={hmetdTotalCost}
-                  tooltip={language === 'id' ? "Total biaya = (harga HMETD × lembar) + (harga pelaksanaan RI × lembar). Ini adalah total modal yang Anda keluarkan." : "Total cost = (HMETD price × shares) + (RI exercise price × shares). This is your total capital outlay."}
+                  tooltip={language === 'id' ? "Total biaya = (harga HMETD × lembar) + (harga pelaksanaan RI × lembar). Diasumsikan HMETD/R ditebus penuh menjadi saham baru." : "Total cost = (HMETD price × shares) + (RI exercise price × shares). Assumes all HMETD/R are fully exercised into new shares."}
                 />
               )}
 
@@ -176,8 +176,8 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
                   <Lightbulb className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
                   <span>
                     {language === 'id'
-                      ? 'Anda akan membeli HMETD dari pasar, lalu menebus saham baru dengan harga pelaksanaan RI. Biaya total = (harga HMETD × lembar) + (harga RI × lembar).'
-                      : 'You will buy HMETD from the market, then exercise new shares at the RI price. Total cost = (HMETD price × shares) + (RI price × shares).'}
+                      ? 'Opsi ini menghitung biaya total jika Anda membeli HMETD/R dari pasar dan menebusnya menjadi saham baru: (harga HMETD × lembar) + (harga pelaksanaan RI × lembar). Jika hanya membeli untuk dijual kembali, biaya yang dikeluarkan hanya harga pembelian HMETD/R.'
+                      : 'This option calculates the total cost if you buy HMETD/R from the market and exercise them into new shares: (HMETD price × shares) + (RI exercise price × shares). If you only buy to resell, the cost is only the HMETD/R purchase price.'}
                   </span>
                 </p>
               </div>
