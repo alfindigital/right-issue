@@ -31,16 +31,16 @@ STOCK_CODE = "BRIS"
 RATIO_OLD = "5"
 RATIO_NEW = "2"
 RIGHT_PRICE = "2500"
+CUM_DATE_PRICE = "3000"
 CURRENT_LOT = "10"
 AVG_PRICE = "3000"
-# The app defaults to "simple" view mode; cum-date-price is hidden and
-# auto-derived as rightPrice * 1.3 → 2500 * 1.3 = 3250.
-# TERP = (3250*5 + 2500*2) / 7 = 21250 / 7 = 3035.7... → rounded to 3036.
+# Pro mode requires explicit cum-date price.
+# TERP = (3000*5 + 2500*2) / 7 = 20000 / 7 = 2857.14 → rounded to 2.857.
 
 # Expected substrings in the extracted compact-PDF text.
 # Derived from the inputs above:
 #   Hak Lot Baru = 10 * 2/5 = 4 lot   → 400 shares
-#   TERP         = (3000*5 + 2500*2) / 7 = 2857
+#   TERP         = (3000*5 + 2500*2) / 7 = 2.857
 #   Dana Dibutuhkan = 400 * 2500 = 1.000.000
 EXPECTED_PDF_SUBSTRINGS = [
     "Right Issue Calculator",  # Report title
@@ -48,9 +48,9 @@ EXPECTED_PDF_SUBSTRINGS = [
     "Rasio RI",                # Input label
     "5:2",                     # Rendered ratio
     "4 lot",                   # Hak Lot Baru (RI allocation)
-    "Rp 3.036",                # TERP, id-ID formatted
+    "Rp 2.857",                # TERP, id-ID formatted
     "Rp 2.500",                # Harga Pelaksanaan
-    "Rp 3.250",                # Harga Cum Date (auto-derived in simple mode)
+    "Rp 3.000",                # Harga Cum Date (explicit in pro mode)
     "Rp 3.000",                # Harga Rata-rata (currentAvgPrice)
     "Rp 1.000.000",            # Dana Dibutuhkan = 400 shares * 2500
 ]
@@ -71,12 +71,12 @@ async def dismiss_onboarding(page):
 
 
 async def fill_form(page):
-    text_inputs = page.locator("input[type=text]")
-    await text_inputs.nth(0).fill(STOCK_CODE)
-    await text_inputs.nth(1).fill(RATIO_OLD)
-    await text_inputs.nth(2).fill(RATIO_NEW)
+    await page.locator("#stock-code").fill(STOCK_CODE)
+    await page.locator("#ratioOld-input").fill(RATIO_OLD)
+    await page.locator("#ratioNew-input").fill(RATIO_NEW)
     await page.locator("#right-price").fill(RIGHT_PRICE)
-    await text_inputs.nth(4).fill(CURRENT_LOT)
+    await page.locator("#cum-date-price").fill(CUM_DATE_PRICE)
+    await page.locator("#current-lots").fill(CURRENT_LOT)
     await page.locator("#current-avg-price").fill(AVG_PRICE)
 
 
@@ -93,8 +93,9 @@ async def click_calculate(page):
 
 
 async def trigger_pdf_download(page):
-    """Open Export PDF menu and click 'Ringkas' — return the downloaded file path."""
-    trigger = page.get_by_role("button", name="Export PDF").first
+    """Open Share menu and click 'Ringkas' — return the downloaded file path."""
+    # The Share dropdown trigger is an icon-only button with aria-label='Share'.
+    trigger = page.get_by_role("button", name="Share").first
     await trigger.wait_for(state="visible", timeout=5000)
     await trigger.click()
 
@@ -144,12 +145,23 @@ async def main():
         await click_calculate(page)
         await page.screenshot(path=str(OUT / "01_results.png"))
 
-        # ---- Step 2: reload — verify persistence + auto-recalc ----
+        # ---- Step 2: reload — verify blank start, then re-calculate ----
         await page.reload(wait_until="domcontentloaded")
         await page.wait_for_timeout(1800)
         await dismiss_onboarding(page)
         await page.wait_for_timeout(500)
         await page.screenshot(path=str(OUT / "02_after_reload.png"))
+
+        values_after_reload = await page.evaluate(
+            "() => [...document.querySelectorAll('input[type=text]')].map(i => i.value)"
+        )
+        non_empty = [v for v in values_after_reload if v.strip()]
+        assert_true(len(non_empty) == 0, "Form is blank after reload (no auto-restore)")
+
+        # Re-fill and re-calculate so the export can run from a fresh state.
+        await fill_form(page)
+        await click_calculate(page)
+        await page.screenshot(path=str(OUT / "02b_recalc_after_reload.png"))
 
         body_after_reload = await page.evaluate("() => document.body.innerText")
         assert_true("4 lot" in body_after_reload, "Jatah 4 lot re-rendered after reload")

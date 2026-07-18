@@ -106,6 +106,7 @@ const StockCodeInput: React.FC<StockCodeInputProps> = ({ value, onChange }) => {
       </div>
       <div ref={containerRef} className="relative">
         <input
+          id="stock-code"
           type="text"
           value={value}
           onChange={handleChange}

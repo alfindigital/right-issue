@@ -25,6 +25,7 @@ STOCK_CODE = "BRIS"
 RATIO_OLD = "5"
 RATIO_NEW = "2"
 RIGHT_PRICE = "2500"
+CUM_DATE_PRICE = "3000"
 CURRENT_LOT = "10"
 AVG_PRICE = "3000"
 
@@ -60,12 +61,12 @@ async def dismiss_onboarding(page):
 
 
 async def fill_form(page):
-    text_inputs = page.locator("input[type=text]")
-    await text_inputs.nth(0).fill(STOCK_CODE)
-    await text_inputs.nth(1).fill(RATIO_OLD)
-    await text_inputs.nth(2).fill(RATIO_NEW)
+    await page.locator("#stock-code").fill(STOCK_CODE)
+    await page.locator("#ratioOld-input").fill(RATIO_OLD)
+    await page.locator("#ratioNew-input").fill(RATIO_NEW)
     await page.locator("#right-price").fill(RIGHT_PRICE)
-    await text_inputs.nth(4).fill(CURRENT_LOT)
+    await page.locator("#cum-date-price").fill(CUM_DATE_PRICE)
+    await page.locator("#current-lots").fill(CURRENT_LOT)
     await page.locator("#current-avg-price").fill(AVG_PRICE)
 
 
@@ -161,10 +162,15 @@ async def main():
         await page.wait_for_timeout(1800)
         await dismiss_onboarding(page)
         await page.wait_for_timeout(500)
-        # Results dashboard is gated behind an explicit "Hitung" click; form
-        # values are restored from localStorage, so trigger recalc.
+        # The form is intentionally blank after reload (no auto-restore), so
+        # re-fill and re-calculate to verify all panels still render.
+        await fill_form(page)
         try:
             hitung_r = page.get_by_role("button", name="Hitung").first
+            await page.wait_for_function(
+                "() => [...document.querySelectorAll('button')].some(b => b.innerText.trim()==='Hitung' && !b.disabled)",
+                timeout=3000,
+            )
             await hitung_r.click(timeout=3000)
             await page.wait_for_timeout(1200)
         except Exception:

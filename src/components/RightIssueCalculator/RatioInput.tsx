@@ -64,20 +64,21 @@ const RatioInput = React.forwardRef<HTMLInputElement, RatioInputProps>(({
   const v = validation ?? validateRatio(value);
   const stateClass = validationClass(v.state);
 
-  return (
-    <input
-      ref={setRef}
-      type="text"
-      value={value}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      placeholder={placeholder}
-      className={`input-calculator flex-1 ${stateClass} ${className}`}
-      inputMode="decimal"
-      aria-label={ariaLabel ?? placeholder}
-      aria-describedby={ariaDescribedBy}
-      aria-invalid={ariaInvalid ?? v.state === 'error'}
-    />
+    return (
+      <input
+        ref={setRef}
+        id={fieldKey ? `${fieldKey}-input` : undefined}
+        type="text"
+        value={value}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        className={`input-calculator flex-1 ${stateClass} ${className}`}
+        inputMode="decimal"
+        aria-label={ariaLabel ?? placeholder}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={ariaInvalid ?? v.state === 'error'}
+      />
   );
 });
 
