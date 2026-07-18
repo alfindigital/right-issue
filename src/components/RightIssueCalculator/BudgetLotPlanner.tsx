@@ -3,6 +3,7 @@ import { Wallet, Target, TrendingUp, CheckCircle2, AlertCircle, ArrowRight, Save
 import { useLanguage } from '@/contexts/LanguageContext';
 import RatioInput from './RatioInput';
 import { parseDecimalId } from '@/lib/parseDecimal';
+import { ValidationResult } from '@/lib/validators';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import BudgetAllocationChart from './BudgetAllocationChart';
