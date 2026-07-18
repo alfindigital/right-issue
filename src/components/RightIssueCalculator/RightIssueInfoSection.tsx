@@ -145,6 +145,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
           <div className="flex items-center gap-2">
             <Checkbox
               id="has-warrant"
+              aria-label={language === 'id' ? "Right issue ini memberikan bonus waran" : "This right issue provides bonus warrants"}
               checked={hasWarrant}
               onCheckedChange={(checked) => onHasWarrantChange(checked === true)}
             />
