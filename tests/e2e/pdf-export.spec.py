@@ -144,12 +144,23 @@ async def main():
         await click_calculate(page)
         await page.screenshot(path=str(OUT / "01_results.png"))
 
-        # ---- Step 2: reload — verify persistence + auto-recalc ----
+        # ---- Step 2: reload — verify blank start, then re-calculate ----
         await page.reload(wait_until="domcontentloaded")
         await page.wait_for_timeout(1800)
         await dismiss_onboarding(page)
         await page.wait_for_timeout(500)
         await page.screenshot(path=str(OUT / "02_after_reload.png"))
+
+        values_after_reload = await page.evaluate(
+            "() => [...document.querySelectorAll('input[type=text]')].map(i => i.value)"
+        )
+        non_empty = [v for v in values_after_reload if v.strip()]
+        assert_true(len(non_empty) == 0, "Form is blank after reload (no auto-restore)")
+
+        # Re-fill and re-calculate so the export can run from a fresh state.
+        await fill_form(page)
+        await click_calculate(page)
+        await page.screenshot(path=str(OUT / "02b_recalc_after_reload.png"))
 
         body_after_reload = await page.evaluate("() => document.body.innerText")
         assert_true("4 lot" in body_after_reload, "Jatah 4 lot re-rendered after reload")
