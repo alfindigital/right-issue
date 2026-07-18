@@ -77,19 +77,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     if (next) haptic(15); // confirm with a tap when enabling
   };
 
-  const toggleOneHand = (next: boolean) => {
-    setOneHand(next);
-    document.documentElement.classList.toggle('one-hand-mode', next);
-    localStorage.setItem('ri-one-hand', next ? '1' : '0');
-    if (next) haptic(15);
-  };
-
-  const toggleReduceMotion = (next: boolean) => {
-    setReduceMotion(next);
-    document.documentElement.classList.toggle('reduce-motion', next);
-    localStorage.setItem('ri-reduce-motion', next ? '1' : '0');
-  };
-
   const changeTypeScale = (next: 'sm' | 'md' | 'lg') => {
     setTypeScale(next);
     document.documentElement.classList.remove('type-sm', 'type-md', 'type-lg');
