@@ -75,11 +75,11 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
   const diffPercent = avgNum > 0 ? (((terpNum - avgNum) / avgNum) * 100).toFixed(1) : '0';
 
   return (
-    <div className="space-y-3 animate-fade-in motion-reduce:animate-none" aria-live="polite">
+    <div className="space-y-2.5 animate-fade-in motion-reduce:animate-none" aria-live="polite">
       {/* Prominent Decision Banner — clear go/no-go at a glance */}
       {recommendation && (
         <div
-          className={`relative overflow-hidden rounded-2xl p-4 border-2 animate-fade-in ${
+          className={`relative overflow-hidden rounded-2xl p-3.5 border-2 animate-fade-in ${
             recommendation === 'positive'
               ? 'bg-gradient-to-br from-[hsl(142_76%_92%)] to-[hsl(142_76%_96%)] border-[hsl(var(--success))]/40 dark:from-[hsl(142_76%_14%)] dark:to-[hsl(142_76%_10%)]'
               : 'bg-gradient-to-br from-[hsl(38_92%_92%)] to-[hsl(38_92%_96%)] border-[hsl(var(--warning))]/40 dark:from-[hsl(38_92%_14%)] dark:to-[hsl(38_92%_10%)]'
@@ -114,7 +114,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       )}
 
       {/* Hero Metric */}
-      <div data-tour="terp" className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-primary/5 p-4">
+      <div data-tour="terp" className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-primary/5 p-3.5">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="relative">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
@@ -140,7 +140,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       </div>
 
       {/* Stat Grid */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 md:gap-3">
         <StatCard
           icon={Layers}
           label={language === 'id' ? 'Total Lot' : 'Total Lots'}
