@@ -11,9 +11,6 @@ import {
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Switch } from '@/components/ui/switch';
 import { isHapticsEnabled, setHapticsEnabled, haptic } from '@/lib/haptics';
-import { isAutoAdvanceEnabled, setAutoAdvanceEnabled } from '@/lib/autoAdvance';
-import { isClipWatchEnabled, setClipWatchEnabled } from '@/hooks/useClipboardWatcher';
-import { ArrowRight, Clipboard } from 'lucide-react';
 import { toast } from 'sonner';
 import { readRaw, writeRaw } from '@/lib/safeStorage';
 
@@ -38,8 +35,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
   const [oneHand, setOneHand] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [typeScale, setTypeScale] = useState<'sm' | 'md' | 'lg'>('md');
-  const [autoAdvance, setAutoAdvance] = useState(true);
-  const [clipWatch, setClipWatch] = useState(true);
   const hasVibrateApi = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 
   useEffect(() => {
@@ -68,9 +63,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     setTypeScale(ts);
     document.documentElement.classList.remove('type-sm', 'type-md', 'type-lg');
     document.documentElement.classList.add(`type-${ts}`);
-
-    setAutoAdvance(isAutoAdvanceEnabled());
-    setClipWatch(isClipWatchEnabled());
   }, []);
 
   const toggleTheme = () => {
@@ -116,18 +108,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
     document.documentElement.classList.add(`type-${next}`);
     localStorage.setItem('ri-type-scale', next);
     haptic(10);
-  };
-
-  const toggleAutoAdvance = (next: boolean) => {
-    setAutoAdvance(next);
-    setAutoAdvanceEnabled(next);
-    if (next) haptic(10);
-  };
-
-  const toggleClipWatch = (next: boolean) => {
-    setClipWatch(next);
-    setClipWatchEnabled(next);
-    if (next) haptic(10);
   };
 
   const handleExportData = () => {
