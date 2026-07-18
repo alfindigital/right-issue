@@ -63,9 +63,6 @@ const HistoryDropdown: React.FC<HistoryDropdownProps> = ({
           aria-label="History"
         >
           <History className="w-4 h-4" />
-          <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-            {history.length}
-          </span>
         </button>
       </PopoverTrigger>
       <PopoverContent 
