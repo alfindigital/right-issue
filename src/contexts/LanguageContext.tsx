@@ -251,7 +251,7 @@ const translations: Record<Language, Record<string, string>> = {
     'rightIssue.hasWarrant': 'With Warrant',
     'rightIssue.warrantRatio': 'Warrant Ratio',
     'rightIssue.warrantRatioHelp': 'Every {old} new shares receive {new} warrants',
-    'rightIssue.warrantRatioRequired': 'Required if with warrant',
+    
     'validation.warrantRatioMissing': 'Complete warrant ratio first',
     
     // Ownership
