@@ -78,6 +78,23 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
   
   // Show all options
   const [showAllOptions, setShowAllOptions] = useState(false);
+
+  // Warrant ratio validation
+  const warrantRatioError = useMemo(() => {
+    if (!hasWarrant) return '';
+    const oldRaw = warrantRatioOld.trim();
+    const newRaw = warrantRatioNew.trim();
+    if (!oldRaw || !newRaw) return t('validation.warrantRatioMissing');
+    const wOld = parseDecimalId(warrantRatioOld);
+    const wNew = parseDecimalId(warrantRatioNew);
+    if (wOld === 0) return 'Rasio RI tidak boleh 0';
+    if (wNew === 0) return 'Rasio waran tidak boleh 0';
+    return '';
+  }, [hasWarrant, warrantRatioOld, warrantRatioNew, t]);
+
+  const warrantValidation: ValidationResult | undefined = warrantRatioError
+    ? { state: 'error', message: warrantRatioError }
+    : undefined;
   
   // Budget Planner History
   const { history, addToHistory, removeFromHistory, clearHistory } = useBudgetPlannerHistory();
