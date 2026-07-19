@@ -594,38 +594,8 @@ const RightIssueCalculator: React.FC = () => {
     setAutoAdvanceOrder(order);
   }, [noOwnership, hasWarrant]);
 
-  // Smart paste detector — propose to fill the form from clipboard text
-  // when calculator is empty and the announcement parser detects fields.
-  const isFormEmpty =
-    !ratioOld && !ratioNew && !rightPrice && !cumDatePrice && !currentLots && !currentAvgPrice;
-  useClipboardWatcher({
-    shouldRun: () => activeTab === 'calculator' && isFormEmpty && !isCalculated,
-    onDetected: (parsed) => {
-      const fields: string[] = [];
-      if (parsed.ratioOld && parsed.ratioNew) fields.push(language === 'id' ? 'Rasio' : 'Ratio');
-      if (parsed.rightPrice) fields.push(language === 'id' ? 'Harga RI' : 'RI Price');
-      if (parsed.cumPrice) fields.push(language === 'id' ? 'Harga Cum' : 'Cum Price');
-      sonnerToast(
-        language === 'id'
-          ? 'Data RI terdeteksi di clipboard'
-          : 'RI data detected in clipboard',
-        {
-          description: `${fields.join(' · ')} — ${language === 'id' ? 'Terapkan ke form?' : 'Apply to form?'}`,
-          duration: 7000,
-          action: {
-            label: language === 'id' ? 'Terapkan' : 'Apply',
-            onClick: () => {
-              if (parsed.ratioOld) setRatioOld(parsed.ratioOld);
-              if (parsed.ratioNew) setRatioNew(parsed.ratioNew);
-              if (parsed.rightPrice) setRightPrice(parsed.rightPrice);
-              if (parsed.cumPrice) setCumDatePrice(parsed.cumPrice);
-              hapticSuccess();
-            },
-          },
-        },
-      );
-    },
-  });
+  // Smart paste (explicit paste-parser button in RightIssueInfoSection) — the
+  // ambient clipboard watcher was removed to keep behavior predictable.
 
   const replayTour = useCallback(() => {
     localStorage.removeItem(ONBOARDING_STORAGE_KEY);
