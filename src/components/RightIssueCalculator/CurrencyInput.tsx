@@ -1,6 +1,5 @@
 import React, { useState, lazy, Suspense, useEffect, useRef } from 'react';
 import InfoTooltip from './InfoTooltip';
-import VoiceInputButton from './VoiceInputButton';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { validatePrice, ValidationResult, validationClass } from '@/lib/validators';
 import { registerField, advanceFrom, FieldKey } from '@/lib/autoAdvance';
@@ -18,8 +17,6 @@ interface CurrencyInputProps {
   tooltip?: string;
   /** Pass custom validation result, defaults to validatePrice */
   validation?: ValidationResult;
-  /** Disable voice input button */
-  voiceInput?: boolean;
   /** Disable mobile numpad overlay */
   mobileNumpad?: boolean;
   /** Auto-advance key — if set, this input is registered and Done jumps to next empty field. */
@@ -39,7 +36,6 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
   placeholder = "0",
   tooltip,
   validation,
-  voiceInput = false,
   mobileNumpad = true,
   fieldKey,
   stepperStep,
@@ -111,17 +107,12 @@ const CurrencyInput = React.forwardRef<HTMLDivElement, CurrencyInputProps>(({
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`input-calculator pl-9 ${voiceInput ? 'pr-10' : ''} ${stateClass}`}
+          className={`input-calculator pl-9 ${stateClass}`}
           inputMode="numeric"
           readOnly={numpadEnabled}
           aria-invalid={v.state === 'error'}
           aria-describedby={v.state === 'error' && v.message ? `${id}-error` : undefined}
         />
-        {voiceInput && (
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
-            <VoiceInputButton onResult={(digits) => onChange(digits.replace(/\D/g, ''))} />
-          </div>
-        )}
       </div>
       {v.state === 'error' && v.message && (
         <p id={`${id}-error`} role="alert" className="text-[10px] text-destructive">{v.message}</p>
