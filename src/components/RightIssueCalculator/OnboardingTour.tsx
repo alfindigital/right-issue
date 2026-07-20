@@ -18,12 +18,9 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ forceRun = false, onFin
       setRun(true);
       return;
     }
-    if (typeof window === 'undefined') return;
-    const seen = localStorage.getItem(STORAGE_KEY);
-    if (!seen) {
-      // Delay to let initial layout settle
-      const t = setTimeout(() => setRun(true), 800);
-      return () => clearTimeout(t);
+    // Auto-tour disabled — only runs when user explicitly replays it.
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, '1');
     }
   }, [forceRun]);
 
