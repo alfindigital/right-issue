@@ -152,13 +152,13 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuItem onClick={toggleTheme} className="cursor-pointer">
-          {isDark ? <Sun className="w-4 h-4 mr-2 text-amber-500" /> : <Moon className="w-4 h-4 mr-2 text-blue-500" />}
+          {isDark ? <Sun className="w-4 h-4 mr-2 text-primary" /> : <Moon className="w-4 h-4 mr-2 text-primary" />}
           {isDark
             ? (language === 'id' ? 'Mode Terang' : 'Light Mode')
             : (language === 'id' ? 'Mode Gelap' : 'Dark Mode')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={toggleLanguage} className="cursor-pointer">
-          <Globe className="w-4 h-4 mr-2" />
+          <Globe className="w-4 h-4 mr-2 text-primary" />
           {language === 'id' ? 'English' : 'Bahasa Indonesia'}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -192,16 +192,16 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onOpenKeyboardHelp} className="cursor-pointer">
-          <Keyboard className="w-4 h-4 mr-2" />
+          <Keyboard className="w-4 h-4 mr-2 text-primary" />
           {t('shortcuts.title')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onOpenEmbed} className="cursor-pointer">
-          <Code className="w-4 h-4 mr-2" />
+          <Code className="w-4 h-4 mr-2 text-primary" />
           {language === 'id' ? 'Embed Widget' : 'Embed Widget'}
         </DropdownMenuItem>
         {onReplayTour && (
           <DropdownMenuItem onClick={onReplayTour} className="cursor-pointer">
-            <HelpCircle className="w-4 h-4 mr-2" />
+            <HelpCircle className="w-4 h-4 mr-2 text-primary" />
             {language === 'id' ? 'Tampilkan Tur Lagi' : 'Replay Tour'}
           </DropdownMenuItem>
         )}
