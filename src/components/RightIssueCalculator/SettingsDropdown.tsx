@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Vibrate, Type, Download, Upload } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Type, Download, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,8 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Switch } from '@/components/ui/switch';
-import { isHapticsEnabled, setHapticsEnabled, haptic } from '@/lib/haptics';
+import { haptic } from '@/lib/haptics';
 import { toast } from 'sonner';
 import { readRaw, writeRaw } from '@/lib/safeStorage';
 
