@@ -6,7 +6,7 @@ import App from "@/App";
 
 // Stub IntersectionObserver used by some children.
 beforeAll(() => {
-  window.IntersectionObserver = class {
+  (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = class {
     observe() {}
     unobserve() {}
     disconnect() {}

@@ -6,7 +6,7 @@ import App from "@/App";
 
 // jsdom is missing a few observer APIs that lazy children touch on mount.
 beforeAll(() => {
-  window.IntersectionObserver = class {
+  (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = class {
     observe() {}
     unobserve() {}
     disconnect() {}
