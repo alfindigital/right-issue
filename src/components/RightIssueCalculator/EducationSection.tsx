@@ -235,7 +235,7 @@ const GlossarySection: React.FC = () => {
 
 const GlossaryCard: React.FC<{ item: (typeof glossaryItems)[0] }> = ({ item }) => {
   const { language } = useLanguage();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   return (
     <div
@@ -368,42 +368,56 @@ const StepByStepSection: React.FC = () => {
 
 const FAQSection: React.FC = () => {
   const { language } = useLanguage();
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [openIndices, setOpenIndices] = useState<Set<number>>(
+    () => new Set(faqData.map((_, idx) => idx))
+  );
+
+  const toggle = (idx: number) => {
+    setOpenIndices((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-2">
-      {faqData.map((faq, idx) => (
-        <div
-          key={idx}
-          className={`rounded-xl border transition-all ${
-            openIdx === idx ? 'border-primary/30 bg-primary/5' : 'border-border bg-card'
-          }`}
-        >
-          <button
-            onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-            className="w-full flex items-start justify-between gap-3 p-3 text-left"
+      {faqData.map((faq, idx) => {
+        const isOpen = openIndices.has(idx);
+        return (
+          <div
+            key={idx}
+            className={`rounded-xl border transition-all ${
+              isOpen ? 'border-primary/30 bg-primary/5' : 'border-border bg-card'
+            }`}
           >
-            <div className="flex items-start gap-2 min-w-0">
-              <HelpCircle className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
-              <span className="text-sm font-medium text-foreground leading-snug">
-                {language === 'id' ? faq.id_q : faq.en_q}
-              </span>
-            </div>
-            <ChevronDown
-              className={`w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5 transition-transform ${
-                openIdx === idx ? 'rotate-180' : ''
-              }`}
-            />
-          </button>
-          {openIdx === idx && (
-            <div className="px-3 pb-3 pl-8 animate-fade-in">
-              <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
-                {language === 'id' ? faq.id_a : faq.en_a}
-              </p>
-            </div>
-          )}
-        </div>
-      ))}
+            <button
+              onClick={() => toggle(idx)}
+              className="w-full flex items-start justify-between gap-3 p-3 text-left"
+            >
+              <div className="flex items-start gap-2 min-w-0">
+                <HelpCircle className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-sm font-medium text-foreground leading-snug">
+                  {language === 'id' ? faq.id_q : faq.en_q}
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5 transition-transform ${
+                  isOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+            {isOpen && (
+              <div className="px-3 pb-3 pl-8 animate-fade-in">
+                <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {language === 'id' ? faq.id_a : faq.en_a}
+                </p>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
