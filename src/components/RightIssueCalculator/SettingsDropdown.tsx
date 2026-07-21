@@ -30,9 +30,7 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
   const { language, setLanguage, t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDark, setIsDark] = useState(false);
-  const [hapticsOn, setHapticsOn] = useState(true);
   const [typeScale, setTypeScale] = useState<'sm' | 'md' | 'lg'>('md');
-  const hasVibrateApi = typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -43,7 +41,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
       document.documentElement.classList.remove('dark');
       if (!savedTheme) localStorage.setItem('theme', 'light');
     }
-    setHapticsOn(isHapticsEnabled());
 
     // Type scale
     const ts = (localStorage.getItem('ri-type-scale') as 'sm' | 'md' | 'lg') || 'md';
@@ -68,12 +65,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
 
   const toggleLanguage = () => {
     setLanguage(language === 'id' ? 'en' : 'id');
-  };
-
-  const toggleHaptics = (next: boolean) => {
-    setHapticsOn(next);
-    setHapticsEnabled(next);
-    if (next) haptic(15); // confirm with a tap when enabling
   };
 
   const changeTypeScale = (next: 'sm' | 'md' | 'lg') => {
@@ -170,23 +161,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
           <Globe className="w-4 h-4 mr-2" />
           {language === 'id' ? 'English' : 'Bahasa Indonesia'}
         </DropdownMenuItem>
-        {hasVibrateApi && (
-          <DropdownMenuItem
-            onSelect={(e) => { e.preventDefault(); toggleHaptics(!hapticsOn); }}
-            className="cursor-pointer flex items-center justify-between gap-2"
-          >
-            <span className="flex items-center">
-              <Vibrate className="w-4 h-4 mr-2 text-primary" />
-              {language === 'id' ? 'Getaran' : 'Haptics'}
-            </span>
-            <Switch
-              checked={hapticsOn}
-              onCheckedChange={toggleHaptics}
-              onClick={(e) => e.stopPropagation()}
-              aria-label={language === 'id' ? 'Aktifkan getaran' : 'Enable haptics'}
-            />
-          </DropdownMenuItem>
-        )}
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
           {language === 'id' ? 'Kenyamanan' : 'Comfort'}
