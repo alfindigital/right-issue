@@ -6,7 +6,6 @@ import App from "@/App";
 
 // Stub IntersectionObserver used by some children.
 beforeAll(() => {
-  // @ts-expect-error jsdom missing API
   window.IntersectionObserver = class {
     observe() {}
     unobserve() {}

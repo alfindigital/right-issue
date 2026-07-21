@@ -6,7 +6,6 @@ import App from "@/App";
 
 // jsdom is missing a few observer APIs that lazy children touch on mount.
 beforeAll(() => {
-  // @ts-expect-error jsdom missing API
   window.IntersectionObserver = class {
     observe() {}
     unobserve() {}
