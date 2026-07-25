@@ -838,9 +838,13 @@ const RightIssueCalculator: React.FC = () => {
         
         <div className="relative max-w-2xl mx-auto px-3 py-2.5 md:px-4 md:py-3">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex-1 min-w-0 flex items-center gap-2">
-              <Logo size={22} color="#fff" className="flex-shrink-0" />
-              <div className="min-w-0">
+            <div className="flex-1 min-w-0 flex items-center gap-2.5">
+              <Logo
+                size={20}
+                badge
+                className="flex-shrink-0 text-primary-foreground"
+              />
+              <div className="min-w-0 leading-tight">
                 <h1 className="text-sm md:text-base font-black tracking-tight text-primary-foreground truncate">
                   {t('app.title')}
                 </h1>
