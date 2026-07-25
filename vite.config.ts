@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => ({
     ensureWhatIfTargetPriceBundled(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico"],
+      includeAssets: ["favicon.ico", "icon-16.png", "icon-32.png", "icon-180.png"],
       manifest: {
         name: "Kalkulator Right Issue",
         short_name: "RI Calc",
@@ -101,40 +101,29 @@ export default defineConfig(({ mode }) => ({
             short_name: "Hitung",
             description: "Buka kalkulator Right Issue",
             url: "/",
-            icons: [{ src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" }],
+            icons: [{ src: "/icon-192.png", sizes: "192x192", type: "image/png" }],
           },
           {
             name: "Budget Planner",
             short_name: "Budget",
             description: "Rencanakan alokasi pembelian saham",
             url: "/",
-            icons: [{ src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" }],
+            icons: [{ src: "/icon-192.png", sizes: "192x192", type: "image/png" }],
           },
           {
             name: "Panduan Edukasi",
             short_name: "Edukasi",
             description: "Pelajari mekanisme Right Issue IDX",
             url: "/",
-            icons: [{ src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" }],
+            icons: [{ src: "/icon-192.png", sizes: "192x192", type: "image/png" }],
           },
         ],
         icons: [
-          {
-            src: "/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "/pwa-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable",
-          },
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/icon-384.png", sizes: "384x384", type: "image/png" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {
