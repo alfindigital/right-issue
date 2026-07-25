@@ -15,7 +15,9 @@ const Logo: React.FC<LogoProps> = ({
 }) => {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 ${className}`}
+      className={`inline-flex items-center gap-1.5 ${
+        color ? "" : "text-primary dark:text-white"
+      } ${className}`}
       style={color ? { color } : undefined}
     >
       <svg
