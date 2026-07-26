@@ -142,9 +142,9 @@ export default defineConfig(({ mode }) => ({
         runtimeCaching: [
           {
             // Navigasi HTML: selalu coba jaringan dulu, cache hanya untuk fallback offline.
-            urlPattern: ({ request, url }: { request: Request; url: URL }) =>
+            urlPattern: ({ request, url, sameOrigin }: { request: Request; url: URL; sameOrigin: boolean }) =>
               request.mode === "navigate" &&
-              url.origin === self.location.origin &&
+              sameOrigin &&
               !url.pathname.startsWith("/~oauth") &&
               !url.pathname.startsWith("/api"),
             handler: "NetworkFirst",
@@ -157,8 +157,8 @@ export default defineConfig(({ mode }) => ({
           },
           {
             // Aset build ber-hash (immutable) → aman cache-first agar app shell jalan offline.
-            urlPattern: ({ url }: { url: URL }) =>
-              url.origin === self.location.origin && url.pathname.startsWith("/assets/"),
+            urlPattern: ({ url, sameOrigin }: { url: URL; sameOrigin: boolean }) =>
+              sameOrigin && url.pathname.startsWith("/assets/"),
             handler: "CacheFirst",
             options: {
               cacheName: "static-assets",
