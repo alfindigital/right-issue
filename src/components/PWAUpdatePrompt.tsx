@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { registerAppServiceWorker } from '@/lib/registerServiceWorker';
 
 export const PWAUpdatePrompt = () => {
   const [needRefresh, setNeedRefresh] = useState(false);
@@ -9,25 +10,19 @@ export const PWAUpdatePrompt = () => {
   const { t } = useLanguage();
 
   useEffect(() => {
-    const initSW = async () => {
-      try {
-        const { registerSW } = await import('virtual:pwa-register');
-        const update = registerSW({
-          onNeedRefresh() {
-            setNeedRefresh(true);
-          },
-          onOfflineReady() {
-            if (import.meta.env.DEV) console.log('App ready for offline use');
-          },
-        });
-        setUpdateSW(() => update);
-      } catch (error) {
-        // PWA not available in development
-        if (import.meta.env.DEV) console.log('PWA registration not available');
-      }
-    };
+    let cancelled = false;
 
-    initSW();
+    registerAppServiceWorker({
+      onNeedRefresh() {
+        setNeedRefresh(true);
+      },
+    }).then((update) => {
+      if (!cancelled && update) setUpdateSW(() => update);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleUpdate = async () => {
