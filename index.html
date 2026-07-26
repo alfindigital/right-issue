@@ -54,9 +54,15 @@
     </noscript>
 
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#0f172a" />
+    <!-- Brand blue browser/status bar in both themes (header is a blue gradient) -->
+    <meta name="theme-color" content="#0B64F3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B60E9" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0B64F3" />
+    <meta name="msapplication-TileColor" content="#0B64F3" />
+    <meta name="msapplication-navbutton-color" content="#0B64F3" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Lotmetrik" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png" />
 
