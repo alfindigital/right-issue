@@ -81,6 +81,10 @@ export default defineConfig(({ mode }) => ({
     ensureWhatIfTargetPriceBundled(),
     VitePWA({
       registerType: "autoUpdate",
+      filename: "sw.js",
+      // Registrasi hanya lewat src/lib/registerServiceWorker.ts (guarded wrapper).
+      injectRegister: null,
+      devOptions: { enabled: false },
       includeAssets: ["favicon.ico", "icon-16.png", "icon-32.png", "icon-180.png"],
       manifest: {
         name: "Kalkulator Right Issue",
@@ -131,11 +135,37 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         navigateFallback: "index.html",
-        navigateFallbackDenylist: [/^\/api/, /^\/~oauth/],
+        navigateFallbackDenylist: [/^\/api/, /^\/~oauth/, /^\/embed/],
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         runtimeCaching: [
+          {
+            // Navigasi HTML: selalu coba jaringan dulu, cache hanya untuk fallback offline.
+            urlPattern: ({ request, url }: { request: Request; url: URL }) =>
+              request.mode === "navigate" &&
+              url.origin === self.location.origin &&
+              !url.pathname.startsWith("/~oauth") &&
+              !url.pathname.startsWith("/api"),
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-navigations",
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+          {
+            // Aset build ber-hash (immutable) → aman cache-first agar app shell jalan offline.
+            urlPattern: ({ url }: { url: URL }) =>
+              url.origin === self.location.origin && url.pathname.startsWith("/assets/"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "static-assets",
+              expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "StaleWhileRevalidate",
