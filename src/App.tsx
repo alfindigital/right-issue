@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 const Admin = lazy(() => import("./pages/Admin"));
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
+import { InstallAppPrompt } from "./components/InstallAppButton";
 import Footer from "./components/Footer";
 import { AlertTriangle } from "lucide-react";
 
@@ -89,6 +90,7 @@ const RoutedApp = () => {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
+      {location.pathname !== "/embed" && <InstallAppPrompt />}
     </ErrorBoundary>
   );
 };
