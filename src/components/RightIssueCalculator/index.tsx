@@ -7,6 +7,7 @@ import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import SettingsDropdown from './SettingsDropdown';
+import { InstallAppButton, InstallAppPrompt } from '@/components/InstallAppButton';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import BackToTopButton from './BackToTopButton';
@@ -680,6 +681,7 @@ const RightIssueCalculator: React.FC = () => {
           <RotateCcw className="w-4 h-4" />
         </button>
       )}
+      <InstallAppButton />
       <SettingsDropdown
         onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
         onOpenEmbed={() => setEmbedOpen(true)}
@@ -862,6 +864,7 @@ const RightIssueCalculator: React.FC = () => {
             {/* Mobile: History + Settings only */}
             <div className="flex md:hidden items-center gap-1">
               <HistoryDropdown history={history} onSelectHistory={loadFromHistory} onRemoveHistory={removeFromHistory} onClearHistory={clearHistory} />
+              <InstallAppButton />
               <SettingsDropdown
                 onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
                 onOpenEmbed={() => setEmbedOpen(true)}
