@@ -104,6 +104,19 @@
     @apply border-border;
   }
 
+  /* Keep the root element painted with the brand background so overscroll
+     areas, the address-bar blend zone, and the pre-paint canvas never flash
+     white (or black) in any browser. */
+  html {
+    background-color: hsl(210 100% 97%);
+    color-scheme: light;
+  }
+
+  html.dark {
+    background-color: hsl(222 60% 9%);
+    color-scheme: dark;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Poppins', 'Poppins Fallback', -apple-system, BlinkMacSystemFont,
