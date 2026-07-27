@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App.tsx";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { watchThemeColor } from "./lib/themeColor";
 import "./index.css";
 
 // Preview safety: never let a service worker (or its Cache Storage) serve
@@ -43,6 +44,10 @@ const disableServiceWorkersInPreview = () => {
 };
 
 disableServiceWorkersInPreview();
+
+// Browser chrome (address bar / status bar / task switcher) follows the
+// in-app theme, not just the OS preference.
+watchThemeColor();
 
 // LanguageProvider is mounted at the root entry so every subtree — including
 // lazy routes and error boundaries that remount — always has the context.
