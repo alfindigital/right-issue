@@ -7,7 +7,7 @@ import WarrantResultSection from './WarrantSection';
 import LotOptimizationSection from './LotOptimizationSection';
 import HistoryDropdown from './HistoryDropdown';
 import SettingsDropdown from './SettingsDropdown';
-import { InstallAppButton, InstallAppPrompt } from '@/components/InstallAppButton';
+import { InstallAppButton } from '@/components/InstallAppButton';
 import ShareButtons from './ShareButtons';
 import StockCodeInput from './StockCodeInput';
 import BackToTopButton from './BackToTopButton';
