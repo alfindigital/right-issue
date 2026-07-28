@@ -67,7 +67,7 @@ const RightIssueInfoSection: React.FC<RightIssueInfoSectionProps> = ({
   ];
 
   return (
-    <section className="card-calculator animate-fade-in" data-tour="ri-info">
+    <section className="card-calculator animate-fade-in">
       <div className="flex items-center justify-between mb-2.5">
         <h2 className="section-title mb-0 flex items-center">
           {t('rightIssue.title')}

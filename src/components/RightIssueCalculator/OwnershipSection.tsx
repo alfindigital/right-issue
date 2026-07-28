@@ -87,7 +87,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
   
   return (
     <section className="card-calculator animate-fade-in" style={{ animationDelay: '0.1s' }}>
-      <h2 className="section-title mb-2.5 flex items-center" data-tour="ownership">
+      <h2 className="section-title mb-2.5 flex items-center">
         {t('ownership.title')}
         <InfoTooltip text={language === 'id' ? "Data kepemilikan saham Anda saat ini." : "Your current stock ownership data."} />
       </h2>
