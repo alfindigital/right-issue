@@ -22,8 +22,6 @@ import EmptyStateCard from './EmptyStateCard';
 import SmartResultBar from './SmartResultBar';
 import { ViewMode } from './ViewModeToggle';
 import AdvancedSectionsAccordion from './AdvancedSectionsAccordion';
-import { ONBOARDING_STORAGE_KEY } from './OnboardingTour';
-const OnboardingTour = lazy(() => import('./OnboardingTour'));
 import StickyCalculateBar from './StickyCalculateBar';
 import PullToRefreshIndicator from './PullToRefreshIndicator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -574,8 +572,6 @@ const RightIssueCalculator: React.FC = () => {
   // Settings modal states
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
   const [embedOpen, setEmbedOpen] = useState(false);
-  const [tourReplayKey, setTourReplayKey] = useState(0);
-  const [tourForceRun, setTourForceRun] = useState(false);
 
   // Back-gesture / Android back button closes modal first.
   useBackGestureClose(keyboardHelpOpen, () => setKeyboardHelpOpen(false));
@@ -597,12 +593,6 @@ const RightIssueCalculator: React.FC = () => {
 
   // Smart paste (explicit paste-parser button in RightIssueInfoSection) — the
   // ambient clipboard watcher was removed to keep behavior predictable.
-
-  const replayTour = useCallback(() => {
-    localStorage.removeItem(ONBOARDING_STORAGE_KEY);
-    setTourForceRun(true);
-    setTourReplayKey((k) => k + 1);
-  }, []);
 
   // Swipe between main tabs (mobile only)
   const TAB_ORDER = ['calculator', 'budget', 'education'];
@@ -685,7 +675,6 @@ const RightIssueCalculator: React.FC = () => {
       <SettingsDropdown
         onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
         onOpenEmbed={() => setEmbedOpen(true)}
-        onReplayTour={replayTour}
       />
       <KeyboardShortcutsHelp externalOpen={keyboardHelpOpen} onExternalOpenChange={setKeyboardHelpOpen} />
       <EmbedCodeModal externalOpen={embedOpen} onExternalOpenChange={setEmbedOpen} />
@@ -868,7 +857,6 @@ const RightIssueCalculator: React.FC = () => {
               <SettingsDropdown
                 onOpenKeyboardHelp={() => setKeyboardHelpOpen(true)}
                 onOpenEmbed={() => setEmbedOpen(true)}
-                onReplayTour={replayTour}
               />
             </div>
           </div>
@@ -929,13 +917,6 @@ const RightIssueCalculator: React.FC = () => {
       )}
 
       <BackToTopButton />
-      <Suspense fallback={null}>
-        <OnboardingTour
-          key={tourReplayKey}
-          forceRun={tourForceRun}
-          onFinish={() => setTourForceRun(false)}
-        />
-      </Suspense>
 
       {/* Pull-to-refresh indicator (mobile) */}
       <PullToRefreshIndicator
