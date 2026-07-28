@@ -292,35 +292,34 @@ const RightIssueCalculator: React.FC = () => {
 
     if (rOld === 0 || rNew === 0) return;
 
-    // In noOwnership mode, newShares = hmetdLots * 100 (direct purchase)
-    const newShares = noOwnership 
-      ? (parseInt(hmetdLots) || 0) * 100 
-      : Math.floor((shares / rOld) * rNew);
-    
-    const newLots = newShares / 100;
-    const isWholeLot = Number.isInteger(newLots);
+    // Satu sumber kebenaran: semua rumus dari src/lib/riMath.ts (ter-unit-test).
+    const ri = calcRightIssue({
+      ratioOld: rOld,
+      ratioNew: rNew,
+      riPrice,
+      cumPrice,
+      currentLots: lots,
+      currentAvgPrice: avgPrice,
+      noOwnership,
+      hmetdLots: parseInt(hmetdLots) || 0,
+      hmetdPrice: parseInt(hmetdPrice) || 0,
+    });
+
+    const { newShares, newLots, isWholeLot, totalShares, totalValue } = ri;
     setNewLotsCount(isWholeLot ? formatNumber(newLots) : newLots.toFixed(2).replace('.', ','));
     setNewAvgPrice(formatCurrency(riPrice));
-    
-    const newValue = newShares * riPrice;
-    setNewTotalValue(formatCurrency(newValue));
 
-    const totalShares = shares + newShares;
-    const totalLotsNum = totalShares / 100;
-    const isWholeFinalLot = Number.isInteger(totalLotsNum);
+    setNewTotalValue(formatCurrency(ri.newValue));
+
+    const totalLotsNum = ri.totalLots;
+    const isWholeFinalLot = ri.isWholeFinalLot;
     setFinalLots(isWholeFinalLot ? formatNumber(totalLotsNum) : totalLotsNum.toFixed(2).replace('.', ','));
-
-    const currentValue = shares * avgPrice;
-    // In noOwnership mode, include HMETD purchase cost in total investment
-    const hmetdPurchaseCost = noOwnership ? ((parseInt(hmetdPrice) || 0) * newShares) : 0;
-    const totalValue = currentValue + newValue + hmetdPurchaseCost;
     setFinalTotalValue(formatCurrency(totalValue));
 
-    const finalAvg = totalShares > 0 ? Math.round(totalValue / totalShares) : 0;
+    const finalAvg = ri.finalAvgPrice;
     setFinalAvgPrice(formatCurrency(finalAvg));
 
-    const terp = ((cumPrice * rOld) + (riPrice * rNew)) / (rOld + rNew);
-    const terpRounded = Math.round(terp);
+    const terpRounded = ri.terp;
     setTheoreticalPrice(formatCurrency(terpRounded));
 
     setNumericValues({ newSharesCount: newShares, totalShares, totalModal: totalValue, avgBaru: finalAvg, terp: terpRounded });
