@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, Keyboard, Code, Globe, HelpCircle, Type, Download, Upload } from 'lucide-react';
+import { Settings, Sun, Moon, Keyboard, Code, Globe, Type, Download, Upload } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,10 +23,9 @@ const EXPORT_KEYS = [
 interface SettingsDropdownProps {
   onOpenKeyboardHelp: () => void;
   onOpenEmbed: () => void;
-  onReplayTour?: () => void;
 }
 
-const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed, onReplayTour }, ref) => {
+const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>(({ onOpenKeyboardHelp, onOpenEmbed }, ref) => {
   const { language, setLanguage, t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isDark, setIsDark] = useState(false);
@@ -199,12 +198,6 @@ const SettingsDropdown = React.forwardRef<HTMLDivElement, SettingsDropdownProps>
           <Code className="w-4 h-4 mr-2 text-primary" />
           {language === 'id' ? 'Embed Widget' : 'Embed Widget'}
         </DropdownMenuItem>
-        {onReplayTour && (
-          <DropdownMenuItem onClick={onReplayTour} className="cursor-pointer">
-            <HelpCircle className="w-4 h-4 mr-2 text-primary" />
-            {language === 'id' ? 'Tampilkan Tur Lagi' : 'Replay Tour'}
-          </DropdownMenuItem>
-        )}
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
           {language === 'id' ? 'Data' : 'Data'}
