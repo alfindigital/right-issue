@@ -114,7 +114,7 @@ const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       )}
 
       {/* Hero Metric */}
-      <div data-tour="terp" className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-primary/5 p-3.5">
+      <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-card via-card to-primary/5 p-3.5">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="relative">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
