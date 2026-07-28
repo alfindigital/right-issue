@@ -8,6 +8,7 @@
  */
 
 const SW_URL = "/sw.js";
+const UPDATE_CHECK_INTERVAL_MS = 30 * 60 * 1000;
 
 type RegisterCallbacks = {
   onNeedRefresh?: () => void;
@@ -73,6 +74,25 @@ export const registerAppServiceWorker = async (
       immediate: true,
       onNeedRefresh: callbacks.onNeedRefresh,
       onOfflineReady: callbacks.onOfflineReady,
+      onRegisteredSW(_swUrl: string, registration?: ServiceWorkerRegistration) {
+        if (!registration) return;
+
+        // Perangkat yang sudah terpasang bisa punya SW baru yang menunggu
+        // sejak sesi sebelumnya — langsung tawarkan reload.
+        if (registration.waiting) callbacks.onNeedRefresh?.();
+
+        const checkForUpdate = () => {
+          registration.update().catch(() => undefined);
+        };
+
+        // Cek berkala + saat tab kembali aktif, supaya manifest/theme-color
+        // baru terpakai tanpa perlu install ulang.
+        window.setInterval(checkForUpdate, UPDATE_CHECK_INTERVAL_MS);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") checkForUpdate();
+        });
+        window.addEventListener("online", checkForUpdate);
+      },
     });
     return async () => {
       await updateSW(true);
