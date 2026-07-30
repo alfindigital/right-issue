@@ -102,7 +102,7 @@ const formatNumber = (value: number): string => {
 const RightIssueCalculator: React.FC = () => {
   const resultRef = useRef<HTMLDivElement>(null);
   const { history, addToHistory, removeFromHistory, clearHistory } = useCalculationHistory();
-  const { saveToStorage, clearStorage } = useAutoSave();
+  const { saveToStorage, clearStorage, loadFromStorage } = useAutoSave();
   const { t, language } = useLanguage();
   const isMobile = useIsMobile();
   
