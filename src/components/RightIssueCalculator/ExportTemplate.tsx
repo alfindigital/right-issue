@@ -236,7 +236,7 @@ const ExportTemplate: React.FC<ExportTemplateProps> = ({ data }) => {
             color: 'rgba(255,255,255,0.6)',
             letterSpacing: '0.5px'
           }}>
-            alfindigital.com
+            lotmetrik.my.id
           </span>
         </div>
         <p style={{ 

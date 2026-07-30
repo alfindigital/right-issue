@@ -13,6 +13,7 @@ import { OfflineIndicator } from "./components/OfflineIndicator";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
 import { InstallAppPrompt } from "./components/InstallAppButton";
 import Footer from "./components/Footer";
+import TelegramJoinPopup from "./components/TelegramJoinPopup";
 import { AlertTriangle } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -91,6 +92,7 @@ const RoutedApp = () => {
       </Routes>
       <Footer />
       {location.pathname !== "/embed" && <InstallAppPrompt />}
+      {location.pathname !== "/embed" && <TelegramJoinPopup />}
     </ErrorBoundary>
   );
 };

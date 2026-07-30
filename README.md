@@ -3,7 +3,7 @@
 Kalkulator Right Issue (HMETD) untuk saham IDX: hitung jatah RI, TERP,
 dilusi, warrant, dan rekomendasi tebus vs jual HMETD.
 
-- Live: https://rightissue.alfindigital.com
+- Live: https://lotmetrik.my.id
 - Mirror: https://rightissue.lovable.app
 
 ## Fitur inti
@@ -30,4 +30,4 @@ E2E: `python tests/e2e/right-issue-flow.spec.py` (butuh Playwright).
 
 ## Lisensi
 
-© Lotmetrik by alfindigital.
+© Lotmetrik.

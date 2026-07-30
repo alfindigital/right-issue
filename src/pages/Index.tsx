@@ -12,7 +12,7 @@ const webAppJsonLd = {
   description:
     'Kalkulator Right Issue (HMETD) saham IDX: hitung jatah lot, biaya tebus, TERP, dilusi, warrant, dan rekomendasi tebus.',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'IDR' },
-  publisher: { '@type': 'Organization', name: 'alfindigital' },
+  publisher: { '@type': 'Organization', name: 'lotmetrik' },
 };
 
 const faqJsonLd = {
