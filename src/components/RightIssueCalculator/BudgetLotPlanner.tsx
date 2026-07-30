@@ -251,7 +251,7 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
           {/* Stock Code Input - Optional */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">
-              {t('stockCode.label')} <span className="text-muted-foreground/60">({t('stockCode.optional')})</span>
+              {t('stockCode.label')} <span className="text-muted-foreground">({t('stockCode.optional')})</span>
             </label>
             <input
               type="text"
@@ -331,7 +331,7 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
               className={`input-calculator ${!currentAvgPrice && budget ? 'border-amber-400 dark:border-amber-500' : ''}`}
               inputMode="numeric"
             />
-            <p className="text-[10px] text-muted-foreground/70 mt-0.5">
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               {t('budgetPlanner.currentAvgPriceHelp')}
             </p>
           </div>
@@ -429,7 +429,7 @@ const BudgetLotPlanner = React.forwardRef<HTMLDivElement, BudgetLotPlannerProps>
             />
           </div>
           
-          <p className="text-[10px] text-muted-foreground/70">
+          <p className="text-[10px] text-muted-foreground">
             {includeExerciseFund 
               ? t('budgetPlanner.includeExerciseDesc')
               : t('budgetPlanner.excludeExerciseDesc')

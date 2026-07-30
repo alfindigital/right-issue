@@ -249,7 +249,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         </div>
 
         {/* Right Issue Allocation */}
-        <div className={`space-y-2.5 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-50'}`}>
+        <div className={`space-y-2.5 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-90'}`}>
           <h3 className="subsection-title flex items-center">
             {noOwnership 
               ? (language === 'id' ? 'Saham Baru (dari HMETD)' : 'New Shares (from HMETD)')
@@ -304,7 +304,7 @@ const OwnershipSection: React.FC<OwnershipSectionProps> = ({
         {t('ownership.calculate')}
       </button>
 
-      <div className={`space-y-1 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-70'}`}>
+      <div className={`space-y-1 transition-all duration-500 ${isCalculated ? 'opacity-100 translate-y-0' : 'opacity-90'}`}>
         <SummaryItem label={language === 'id' ? 'Total Lot Akhir' : 'Final Total Lots'} value={`${finalLots} lot`} animated={isCalculated} tooltip={language === 'id' ? "Jumlah lot setelah tebus RI." : "Number of lots after exercising RI."} />
         <SummaryItem label={language === 'id' ? 'Avg Akhir' : 'Final Avg'} value={finalAvgPrice} animated={isCalculated} delay={100} tooltip={language === 'id' ? "Harga rata-rata setelah tebus RI." : "Average price after exercising RI."} />
         <SummaryItem label={language === 'id' ? 'Total Value Akhir' : 'Final Total Value'} value={finalTotalValue} highlight animated={isCalculated} delay={200} tooltip={language === 'id' ? "Total nilai investasi setelah tebus RI." : "Total investment value after exercising RI."} />
