@@ -5,7 +5,7 @@
  * otherwise no-ops in production and logs in development. Add Plausible to
  * `index.html` when ready:
  *
- *   <script defer data-domain="rightissue.alfindigital.com"
+ *   <script defer data-domain="lotmetrik.my.id"
  *     src="https://plausible.io/js/script.js"></script>
  *
  * No PII or raw input values are ever sent — only categorical labels.

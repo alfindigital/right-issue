@@ -6,7 +6,7 @@ import { useActiveRights, type ActiveRight } from '@/hooks/useActiveRights';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const BASE_URL = 'https://rightissue.alfindigital.com';
+const BASE_URL = 'https://lotmetrik.my.id';
 
 const formatCurrency = (n: number) => `Rp ${new Intl.NumberFormat('id-ID').format(n)}`;
 

@@ -6,7 +6,7 @@
 
 Aplikasi web (Progressive Web App) yang dapat diakses dari browser desktop maupun mobile, tanpa registrasi, tanpa biaya, dan dapat dipakai offline setelah dibuka sekali. Tersedia dalam Bahasa Indonesia (default) dan Bahasa Inggris.
 
-Pengembang: alfindigital (https://alfindigital.com).
+Pengembang: lotmetrik (https://lotmetrik.my.id).
 
 ## Cara menghitung Right Issue (rumus utama)
 
