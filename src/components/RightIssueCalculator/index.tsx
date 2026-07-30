@@ -171,28 +171,33 @@ const RightIssueCalculator: React.FC = () => {
   // View mode is always 'pro' — all fields visible.
   const viewMode: ViewMode = 'pro';
 
+  // Restore the auto-saved draft (if any) once, before the first render of the fields.
+  const draftRef = useRef<ReturnType<typeof loadFromStorage> | undefined>(undefined);
+  if (draftRef.current === undefined) draftRef.current = loadFromStorage();
+  const draft = draftRef.current;
+
   // Stock Code
-  const [stockCode, setStockCode] = useState('');
-  
+  const [stockCode, setStockCode] = useState(draft?.stockCode ?? '');
+
   // Right Issue Info
-  const [ratioOld, setRatioOld] = useState('');
-  const [ratioNew, setRatioNew] = useState('');
-  const [rightPrice, setRightPrice] = useState('');
-  const [cumDatePrice, setCumDatePrice] = useState('');
+  const [ratioOld, setRatioOld] = useState(draft?.ratioOld ?? '');
+  const [ratioNew, setRatioNew] = useState(draft?.ratioNew ?? '');
+  const [rightPrice, setRightPrice] = useState(draft?.rightPrice ?? '');
+  const [cumDatePrice, setCumDatePrice] = useState(draft?.cumDatePrice ?? '');
 
   // Current Ownership (in lots)
-  const [currentLots, setCurrentLots] = useState('');
-  const [currentAvgPrice, setCurrentAvgPrice] = useState('');
-  
+  const [currentLots, setCurrentLots] = useState(draft?.currentLots ?? '');
+  const [currentAvgPrice, setCurrentAvgPrice] = useState(draft?.currentAvgPrice ?? '');
+
   // No ownership mode (buy HMETD from market)
-  const [noOwnership, setNoOwnership] = useState(false);
-  const [hmetdLots, setHmetdLots] = useState('');
-  const [hmetdPrice, setHmetdPrice] = useState('');
+  const [noOwnership, setNoOwnership] = useState(draft?.noOwnership ?? false);
+  const [hmetdLots, setHmetdLots] = useState(draft?.hmetdLots ?? '');
+  const [hmetdPrice, setHmetdPrice] = useState(draft?.hmetdPrice ?? '');
 
   // Warrant
-  const [hasWarrant, setHasWarrant] = useState(false);
-  const [warrantRatioOld, setWarrantRatioOld] = useState('');
-  const [warrantRatioNew, setWarrantRatioNew] = useState('');
+  const [hasWarrant, setHasWarrant] = useState(draft?.hasWarrant ?? false);
+  const [warrantRatioOld, setWarrantRatioOld] = useState(draft?.warrantRatioOld ?? '');
+  const [warrantRatioNew, setWarrantRatioNew] = useState(draft?.warrantRatioNew ?? '');
   const [warrantCount, setWarrantCount] = useState('0');
 
   // Calculated Values
