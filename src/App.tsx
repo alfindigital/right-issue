@@ -11,6 +11,7 @@ import Embed from "./pages/Embed";
 import RiTicker from "./pages/RiTicker";
 import NotFound from "./pages/NotFound";
 const Admin = lazy(() => import("./pages/Admin"));
+const Education = lazy(() => import("./pages/Education"));
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { PWAUpdatePrompt } from "./components/PWAUpdatePrompt";
 import { InstallAppPrompt } from "./components/InstallAppButton";
@@ -84,6 +85,14 @@ const RoutedApp = () => {
         <Route path="/" element={<Index />} />
         <Route path="/embed" element={<Embed />} />
         <Route path="/ri/:ticker" element={<RiTicker />} />
+        <Route
+          path="/edukasi"
+          element={
+            <Suspense fallback={<div className="min-h-dvh flex items-center justify-center text-sm text-muted-foreground">Loading…</div>}>
+              <Education />
+            </Suspense>
+          }
+        />
         <Route
           path="/admin"
           element={
