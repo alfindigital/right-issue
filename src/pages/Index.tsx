@@ -78,7 +78,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Rumus Right Issue & Kalkulator TERP Saham IDX | alfin</title>
+        <title>Rumus Right Issue & Kalkulator TERP Saham IDX | Lotmetrik</title>
         <meta
           name="description"
           content="Hitung rumus right issue otomatis: jatah HMETD, TERP, dilusi & warrant saham IDX. Kalkulator gratis berbahasa Indonesia untuk investor pasar modal."
