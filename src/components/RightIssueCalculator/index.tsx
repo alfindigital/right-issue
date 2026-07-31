@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, lazy, Suspense, startTransition } from 'react';
 import { RotateCcw } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { calcRightIssue } from '@/lib/riMath';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
