@@ -5,8 +5,9 @@ import { ArrowLeft, Calculator, TrendingUp, Info, Clock, Database } from 'lucide
 import { useActiveRights, type ActiveRight } from '@/hooks/useActiveRights';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SITE_URL as BASE_URL } from '@/lib/siteUrl';
 
-const BASE_URL = 'https://lotmetrik.my.id';
+
 
 const formatCurrency = (n: number) => `Rp ${new Intl.NumberFormat('id-ID').format(n)}`;
 

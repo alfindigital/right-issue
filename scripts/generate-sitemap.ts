@@ -24,10 +24,11 @@ async function fetchActiveRights(): Promise<ActiveRight[]> {
   }
 }
 
-const today = new Date().toISOString().split("T")[0];
-
+// No <lastmod>: the project has no authoritative per-page modification
+// timestamp, and a build-time date would be a misleading signal.
 const staticEntries: SitemapEntry[] = [
-  { path: "/", changefreq: "weekly", priority: "1.0", lastmod: new Date().toISOString().split("T")[0] },
+  { path: "/", changefreq: "weekly", priority: "1.0" },
+  { path: "/edukasi", changefreq: "monthly", priority: "0.7" },
 ];
 
 function generateSitemap(entries: SitemapEntry[]) {
@@ -58,7 +59,6 @@ async function main() {
     path: `/ri/${r.code.toUpperCase()}`,
     changefreq: "daily",
     priority: "0.8",
-    lastmod: today,
   }));
   const entries = [...staticEntries, ...dynamicEntries];
   writeFileSync(resolve("public/sitemap.xml"), generateSitemap(entries));

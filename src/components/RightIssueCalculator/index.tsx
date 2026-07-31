@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, lazy, Suspense, startTransition } from 'react';
 import { RotateCcw } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { calcRightIssue } from '@/lib/riMath';
 import RightIssueInfoSection from './RightIssueInfoSection';
 import OwnershipSection from './OwnershipSection';
@@ -905,6 +906,16 @@ const RightIssueCalculator: React.FC = () => {
               <Suspense fallback={<EducationSkeleton />}>
                 <EducationSection />
               </Suspense>
+              <div className="mt-4 text-center">
+                <Link
+                  to="/edukasi"
+                  className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+                >
+                  {language === 'id'
+                    ? 'Buka halaman edukasi lengkap →'
+                    : 'Open the full education page →'}
+                </Link>
+              </div>
             </TabsContent>
           )}
         </Tabs>
