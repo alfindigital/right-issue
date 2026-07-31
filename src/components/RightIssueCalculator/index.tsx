@@ -905,6 +905,16 @@ const RightIssueCalculator: React.FC = () => {
               <Suspense fallback={<EducationSkeleton />}>
                 <EducationSection />
               </Suspense>
+              <div className="mt-4 text-center">
+                <Link
+                  to="/edukasi"
+                  className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+                >
+                  {language === 'id'
+                    ? 'Buka halaman edukasi lengkap →'
+                    : 'Open the full education page →'}
+                </Link>
+              </div>
             </TabsContent>
           )}
         </Tabs>
