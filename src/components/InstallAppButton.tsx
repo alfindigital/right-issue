@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Download, X, Share, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useInstallPrompt } from '@/hooks/useInstallPrompt';
+import { track } from '@/lib/analytics';
 
 const useCopy = () => {
   const { language } = useLanguage();
@@ -85,6 +86,22 @@ export const InstallAppPrompt = () => {
   const [open, setOpen] = useState(false);
   const c = useCopy();
 
+  const visible = canInstall && !dismissed;
+  useEffect(() => {
+    if (visible) track('install_prompt_shown');
+  }, [visible]);
+
+  const handleDismiss = () => {
+    track('install_dismissed');
+    dismiss();
+  };
+
+  const handleInstall = () => {
+    track('install_accepted', { mode: needsManualSteps ? 'manual' : 'native' });
+    if (needsManualSteps) setOpen(true);
+    else promptInstall();
+  };
+
   if (!canInstall || dismissed) return null;
 
   return (
@@ -98,18 +115,18 @@ export const InstallAppPrompt = () => {
             <p className="text-sm font-semibold text-foreground">{c.title}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{c.desc}</p>
           </div>
-          <button onClick={dismiss} aria-label={c.later} className="text-muted-foreground hover:text-foreground p-1">
+          <button onClick={handleDismiss} aria-label={c.later} className="text-muted-foreground hover:text-foreground p-1">
             <X className="w-4 h-4" />
           </button>
         </div>
         <div className="flex gap-2 mt-3">
-          <Button variant="outline" size="sm" className="flex-1" onClick={dismiss}>
+          <Button variant="outline" size="sm" className="flex-1" onClick={handleDismiss}>
             {c.later}
           </Button>
           <Button
             size="sm"
             className="flex-1"
-            onClick={() => (needsManualSteps ? setOpen(true) : promptInstall())}
+            onClick={handleInstall}
           >
             {c.install}
           </Button>

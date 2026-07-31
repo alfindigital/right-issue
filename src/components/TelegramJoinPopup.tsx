@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Send } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 const STORAGE_KEY = "lotmetrik_tg_popup_v1";
 const DURATION = 10_000;
@@ -17,13 +18,15 @@ export default function TelegramJoinPopup() {
     return () => clearTimeout(t);
   }, []);
 
-  const close = () => {
+  const close = (reason: "dismissed" | "joined" = "dismissed") => {
     setOpen(false);
+    track(reason === "joined" ? "telegram_popup_joined" : "telegram_popup_dismissed");
     try { localStorage.setItem(STORAGE_KEY, "1"); } catch { /* noop */ }
   };
 
   useEffect(() => {
     if (!open) return;
+    track("telegram_popup_shown");
     const start = performance.now();
     const tick = (now: number) => {
       const pct = Math.max(0, 100 - ((now - start) / DURATION) * 100);
@@ -49,14 +52,14 @@ export default function TelegramJoinPopup() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="tg-popup-title"
-      onClick={close}
+      onClick={() => close()}
     >
       <div
         className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-card shadow-xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          onClick={close}
+          onClick={() => close()}
           aria-label="Tutup"
           className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
@@ -78,14 +81,14 @@ export default function TelegramJoinPopup() {
             href="https://t.me/lotmetrik"
             target="_blank"
             rel="noopener noreferrer"
-            onClick={close}
+            onClick={() => close("joined")}
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             <Send className="h-4 w-4" />
             Gabung Channel Telegram
           </a>
           <button
-            onClick={close}
+            onClick={() => close()}
             className="mt-2 w-full text-xs text-muted-foreground underline-offset-2 hover:underline"
           >
             Nanti saja

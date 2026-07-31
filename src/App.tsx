@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Component, lazy, Suspense, type ErrorInfo, type ReactNode } from "react";
+import { useEffect } from "react";
+import { trackPageView } from "@/lib/analytics";
 import Index from "./pages/Index";
 import Embed from "./pages/Embed";
 import RiTicker from "./pages/RiTicker";
@@ -73,6 +75,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
 const RoutedApp = () => {
   const location = useLocation();
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location.pathname]);
   return (
     <ErrorBoundary key={location.pathname}>
       <Routes>

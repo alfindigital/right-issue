@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { track } from '@/lib/analytics';
 
 const LanguageToggle: React.FC = () => {
   const { language, setLanguage } = useLanguage();
@@ -11,7 +12,9 @@ const LanguageToggle: React.FC = () => {
     setIsAnimating(true);
     
     setTimeout(() => {
-      setLanguage(language === 'id' ? 'en' : 'id');
+      const next = language === 'id' ? 'en' : 'id';
+      track('language_changed', { to: next });
+      setLanguage(next);
       
       setTimeout(() => {
         setIsAnimating(false);
