@@ -66,3 +66,13 @@ export function track(event: AnalyticsEvent, props?: Record<string, string | num
     /* never throw from analytics */
   }
 }
+
+/** Tags the current SPA route so Clarity sessions can be filtered by page. */
+export function trackPageView(path: string) {
+  try {
+    if (typeof window === 'undefined') return;
+    window.clarity?.('set', 'page', path);
+  } catch {
+    /* never throw from analytics */
+  }
+}
