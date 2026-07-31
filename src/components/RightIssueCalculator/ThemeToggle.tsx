@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Sun, Moon } from 'lucide-react';
+import { track } from '@/lib/analytics';
 
 const ThemeToggle: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
@@ -28,6 +29,7 @@ const ThemeToggle: React.FC = () => {
     document.documentElement.style.transition = 'background-color 0.4s ease, color 0.4s ease';
     
     setTimeout(() => {
+      track('theme_changed', { to: isDark ? 'light' : 'dark' });
       setIsDark(!isDark);
       if (isDark) {
         document.documentElement.classList.remove('dark');
