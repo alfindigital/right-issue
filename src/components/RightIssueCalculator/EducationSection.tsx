@@ -426,7 +426,7 @@ const FAQSection: React.FC = () => {
 
 type SubTab = 'glossary' | 'steps' | 'faq';
 
-const EducationSection = React.forwardRef<HTMLDivElement, {}>((props, ref) => {
+const EducationSection = React.forwardRef<HTMLDivElement, Record<string, never>>((props, ref) => {
   const { language } = useLanguage();
   const [subTab, setSubTab] = useState<SubTab>('steps');
 

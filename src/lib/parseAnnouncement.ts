@@ -61,9 +61,9 @@ function normalizeDate(raw: string): string {
     const y = m1[3].length === 2 ? `20${m1[3]}` : m1[3];
     if (mo !== '00') return `${y}-${mo}-${d}`;
   }
-  const m2 = cleaned.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+  const m2 = cleaned.match(/^(\d{4})[/\-.](\d{1,2})[/\-.](\d{1,2})$/);
   if (m2) return `${m2[1]}-${m2[2].padStart(2, '0')}-${m2[3].padStart(2, '0')}`;
-  const m3 = cleaned.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+  const m3 = cleaned.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/);
   if (m3) {
     const d = m3[1].padStart(2, '0');
     const mo = m3[2].padStart(2, '0');
@@ -77,7 +77,7 @@ interface Candidate<T> { value: T; score: number; }
 
 function pickRatio(t: string): Candidate<[string, string]> | null {
   const candidates: Candidate<[string, string]>[] = [];
-  const reA = /(?:rasio|ratio|perbandingan)[^\d]{0,30}(\d{1,5})\s*[:\/\-]\s*(\d{1,5})/gi;
+  const reA = /(?:rasio|ratio|perbandingan)[^\d]{0,30}(\d{1,5})\s*[:/\-]\s*(\d{1,5})/gi;
   for (const m of t.matchAll(reA)) {
     if (+m[1] === 0 || +m[2] === 0) continue;
     candidates.push({ value: [m[1], m[2]], score: 10 + contextScore(t, m.index ?? 0) });

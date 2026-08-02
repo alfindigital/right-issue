@@ -8,6 +8,8 @@ const GSC_VERIFICATION_TOKEN = "J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw";
 
 // Guard: fail build if WhatIfTargetPrice component is missing from the output bundle.
 // Ensures the lazy-loaded module is actually emitted and can be fetched at runtime.
+type BundleEntry = { type?: string; modules?: Record<string, unknown>; code?: string };
+
 const ensureWhatIfTargetPriceBundled = () => {
   const MARKER = "WhatIfTargetPrice";
   const SOURCE_HINT = "src/components/RightIssueCalculator/WhatIfTargetPrice";
@@ -18,14 +20,14 @@ const ensureWhatIfTargetPriceBundled = () => {
     moduleParsed(info: { id: string }) {
       if (info.id.includes(SOURCE_HINT)) sawSourceModule = true;
     },
-    generateBundle(_options: unknown, bundle: Record<string, any>) {
+    generateBundle(_options: unknown, bundle: Record<string, BundleEntry>) {
       if (!sawSourceModule) {
         throw new Error(
           `[ensure-whatif-target-price-bundled] ${SOURCE_HINT}.tsx tidak ikut ter-compile. ` +
             `Pastikan komponen masih di-import (mis. lewat React.lazy) sebelum build.`,
         );
       }
-      const hasChunk = Object.values(bundle).some((chunk: any) => {
+      const hasChunk = Object.values(bundle).some((chunk: BundleEntry) => {
         if (chunk.type !== "chunk") return false;
         const modules = chunk.modules ? Object.keys(chunk.modules) : [];
         if (modules.some((m) => m.includes(SOURCE_HINT))) return true;

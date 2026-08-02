@@ -13,7 +13,7 @@ const TTL_MS = 5 * 60 * 1000
 function sanitize(q: unknown): string | null {
   if (typeof q !== 'string') return null
   const s = q.trim()
-  if (!/^[A-Za-z0-9.\-]{1,10}$/.test(s)) return null
+  if (!/^[A-Za-z0-9.-]{1,10}$/.test(s)) return null
   return s
 }
 
@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
       })
       if (resp.ok) {
         const json = await resp.json()
-        const docs: any[] = json?.finance?.result?.[0]?.documents ?? []
+        const docs: Record<string, string | undefined>[] = json?.finance?.result?.[0]?.documents ?? []
         for (const it of docs) {
           const sym: string = it?.symbol ?? ''
           if (!sym.endsWith('.JK')) continue
