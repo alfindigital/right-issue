@@ -41,7 +41,7 @@ export default function TelegramJoinPopup() {
       if (raf.current) cancelAnimationFrame(raf.current);
       window.removeEventListener("keydown", onKey);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [open]);
 
   if (!open) return null;

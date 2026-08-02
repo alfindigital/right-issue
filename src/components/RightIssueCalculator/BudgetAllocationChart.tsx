@@ -27,7 +27,11 @@ const BudgetAllocationChart: React.FC<BudgetAllocationChartProps> = ({
     ...(remainingBudget > 0 ? [{ name: t('budgetPlanner.remaining'), value: remainingBudget, color: 'hsl(var(--muted-foreground))' }] : []),
   ].filter(d => d.value > 0);
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  type Slice = { name: string; value: number; color: string };
+  type TooltipProps = { active?: boolean; payload?: { payload: Slice }[] };
+  type LegendProps = { payload?: { color?: string; value?: string; payload: Slice }[] };
+
+  const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const percentage = ((data.value / totalBudget) * 100).toFixed(1);
@@ -42,10 +46,10 @@ const BudgetAllocationChart: React.FC<BudgetAllocationChartProps> = ({
     return null;
   };
 
-  const CustomLegend = ({ payload }: any) => {
+  const CustomLegend = ({ payload }: LegendProps) => {
     return (
       <div className="flex flex-wrap justify-center gap-3 mt-2">
-        {payload.map((entry: any, index: number) => {
+        {(payload ?? []).map((entry, index) => {
           const percentage = ((entry.payload.value / totalBudget) * 100).toFixed(0);
           return (
             <div key={index} className="flex items-center gap-1.5">

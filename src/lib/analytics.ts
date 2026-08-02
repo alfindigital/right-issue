@@ -59,7 +59,7 @@ export function track(event: AnalyticsEvent, props?: Record<string, string | num
       return;
     }
     if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
+       
       console.debug('[analytics]', event, props ?? {});
     }
   } catch {

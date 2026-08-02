@@ -7,14 +7,29 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, Send, CheckCircle2, XCircle, Lock } from "lucide-react";
 
+type GscCall = { status: number; ok: boolean; body: Record<string, unknown> | null };
+
+type SitemapBody = {
+  lastSubmitted?: string;
+  lastDownloaded?: string;
+  errors?: number;
+  warnings?: number;
+  contents?: { submitted?: number | string; indexed?: number | string }[];
+};
+
+type AnalyticsRow = { keys?: string[]; clicks?: number; impressions?: number; ctr?: number; position?: number };
+
 type StatusResp = {
   site: string;
-  verification: { status: number; ok: boolean; body: any };
-  sites: { status: number; ok: boolean; body: any };
-  sitemap: { status: number; ok: boolean; body: any };
-  analytics: { status: number; ok: boolean; body: any };
+  verification: GscCall;
+  sites: GscCall;
+  sitemap: GscCall;
+  analytics: GscCall;
   metaTag?: { ok: boolean; status?: number; found?: boolean; token?: string | null; expected?: string; matches?: boolean; error?: string };
 };
+
+const errMessage = (e: unknown, fallback: string) =>
+  e instanceof Error && e.message ? e.message : fallback;
 
 export default function Admin() {
   // Password kept in memory only — never persisted to storage (no XSS/extension exposure).
@@ -42,8 +57,8 @@ export default function Admin() {
       if (res?.error) throw new Error(res.error);
       setData(res);
       setAuthed(true);
-    } catch (e: any) {
-      const msg = e?.message || "Failed to load";
+    } catch (e: unknown) {
+      const msg = errMessage(e, "Failed to load");
       setError(msg);
       if (/unauthorized|401/i.test(msg)) {
         setAuthed(false);
@@ -63,8 +78,8 @@ export default function Admin() {
         toast.error(`Gagal submit: ${res?.status} ${JSON.stringify(res?.body)?.slice(0, 120)}`);
       }
       await loadStatus();
-    } catch (e: any) {
-      toast.error(e?.message || "Gagal submit sitemap");
+    } catch (e: unknown) {
+      toast.error(errMessage(e, "Gagal submit sitemap"));
     } finally {
       setSubmitting(false);
     }
@@ -101,12 +116,12 @@ export default function Admin() {
   }
 
   const verified = data?.verification?.ok;
-  const sitemap = data?.sitemap?.body as any;
+  const sitemap = data?.sitemap?.body as SitemapBody | null | undefined;
   const sitemapOk = data?.sitemap?.ok;
-  const sitesList = (data?.sites?.body as any)?.siteEntry || [];
-  const analytics = (data?.analytics?.body as any)?.rows || [];
-  const totalClicks = analytics.reduce((s: number, r: any) => s + (r.clicks || 0), 0);
-  const totalImpr = analytics.reduce((s: number, r: any) => s + (r.impressions || 0), 0);
+  const sitesList = ((data?.sites?.body as { siteEntry?: { siteUrl?: string }[] } | null)?.siteEntry) ?? [];
+  const analytics: AnalyticsRow[] = ((data?.analytics?.body as { rows?: AnalyticsRow[] } | null)?.rows) ?? [];
+  const totalClicks = analytics.reduce((s, r) => s + (r.clicks || 0), 0);
+  const totalImpr = analytics.reduce((s, r) => s + (r.impressions || 0), 0);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -141,11 +156,13 @@ export default function Admin() {
               <Badge variant={verified ? "default" : "destructive"}>
                 {verified ? "Verified" : `Not verified (${data?.verification?.status})`}
               </Badge>
-              {verified && (data?.verification?.body as any)?.owners && (
-                <p className="text-muted-foreground">Owner: {(data?.verification?.body as any).owners.join(", ")}</p>
+              {verified && (data?.verification?.body as { owners?: string[] } | null)?.owners && (
+                <p className="text-muted-foreground">
+                  Owner: {(data?.verification?.body as { owners: string[] }).owners.join(", ")}
+                </p>
               )}
               <p className="text-muted-foreground">
-                Terdaftar di GSC: {sitesList.find((s: any) => s.siteUrl === data?.site) ? "Ya" : "Tidak"}
+                Terdaftar di GSC: {sitesList.find((s) => s.siteUrl === data?.site) ? "Ya" : "Tidak"}
               </p>
             </CardContent>
           </Card>
@@ -198,8 +215,8 @@ export default function Admin() {
                   <p>Last submitted: {sitemap?.lastSubmitted ? new Date(sitemap.lastSubmitted).toLocaleString("id-ID") : "—"}</p>
                   <p>Last downloaded: {sitemap?.lastDownloaded ? new Date(sitemap.lastDownloaded).toLocaleString("id-ID") : "—"}</p>
                   <p>URLs ditemukan: {sitemap?.contents?.[0]?.submitted ?? "—"} | diindeks: {sitemap?.contents?.[0]?.indexed ?? "—"}</p>
-                  {sitemap?.errors > 0 && <p className="text-destructive">Errors: {sitemap.errors}</p>}
-                  {sitemap?.warnings > 0 && <p className="text-amber-600">Warnings: {sitemap.warnings}</p>}
+                  {(sitemap?.errors ?? 0) > 0 && <p className="text-destructive">Errors: {sitemap?.errors}</p>}
+                  {(sitemap?.warnings ?? 0) > 0 && <p className="text-amber-600">Warnings: {sitemap?.warnings}</p>}
                 </div>
               )}
             </CardContent>
