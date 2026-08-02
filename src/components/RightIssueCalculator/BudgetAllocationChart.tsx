@@ -29,7 +29,7 @@ const BudgetAllocationChart: React.FC<BudgetAllocationChartProps> = ({
 
   type Slice = { name: string; value: number; color: string };
   type TooltipProps = { active?: boolean; payload?: { payload: Slice }[] };
-  type LegendProps = { payload?: { color?: string; payload: Slice }[] };
+  type LegendProps = { payload?: { color?: string; value?: string; payload: Slice }[] };
 
   const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (active && payload && payload.length) {
