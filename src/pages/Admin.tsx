@@ -156,11 +156,13 @@ export default function Admin() {
               <Badge variant={verified ? "default" : "destructive"}>
                 {verified ? "Verified" : `Not verified (${data?.verification?.status})`}
               </Badge>
-              {verified && (data?.verification?.body as any)?.owners && (
-                <p className="text-muted-foreground">Owner: {(data?.verification?.body as any).owners.join(", ")}</p>
+              {verified && (data?.verification?.body as { owners?: string[] } | null)?.owners && (
+                <p className="text-muted-foreground">
+                  Owner: {(data?.verification?.body as { owners: string[] }).owners.join(", ")}
+                </p>
               )}
               <p className="text-muted-foreground">
-                Terdaftar di GSC: {sitesList.find((s: any) => s.siteUrl === data?.site) ? "Ya" : "Tidak"}
+                Terdaftar di GSC: {sitesList.find((s) => s.siteUrl === data?.site) ? "Ya" : "Tidak"}
               </p>
             </CardContent>
           </Card>
