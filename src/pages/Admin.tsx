@@ -215,8 +215,8 @@ export default function Admin() {
                   <p>Last submitted: {sitemap?.lastSubmitted ? new Date(sitemap.lastSubmitted).toLocaleString("id-ID") : "—"}</p>
                   <p>Last downloaded: {sitemap?.lastDownloaded ? new Date(sitemap.lastDownloaded).toLocaleString("id-ID") : "—"}</p>
                   <p>URLs ditemukan: {sitemap?.contents?.[0]?.submitted ?? "—"} | diindeks: {sitemap?.contents?.[0]?.indexed ?? "—"}</p>
-                  {sitemap?.errors > 0 && <p className="text-destructive">Errors: {sitemap.errors}</p>}
-                  {sitemap?.warnings > 0 && <p className="text-amber-600">Warnings: {sitemap.warnings}</p>}
+                  {(sitemap?.errors ?? 0) > 0 && <p className="text-destructive">Errors: {sitemap?.errors}</p>}
+                  {(sitemap?.warnings ?? 0) > 0 && <p className="text-amber-600">Warnings: {sitemap?.warnings}</p>}
                 </div>
               )}
             </CardContent>
