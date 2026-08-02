@@ -7,14 +7,29 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, Send, CheckCircle2, XCircle, Lock } from "lucide-react";
 
+type GscCall = { status: number; ok: boolean; body: Record<string, unknown> | null };
+
+type SitemapBody = {
+  lastSubmitted?: string;
+  lastDownloaded?: string;
+  errors?: number;
+  warnings?: number;
+  contents?: { submitted?: number | string; indexed?: number | string }[];
+};
+
+type AnalyticsRow = { keys?: string[]; clicks?: number; impressions?: number; ctr?: number; position?: number };
+
 type StatusResp = {
   site: string;
-  verification: { status: number; ok: boolean; body: any };
-  sites: { status: number; ok: boolean; body: any };
-  sitemap: { status: number; ok: boolean; body: any };
-  analytics: { status: number; ok: boolean; body: any };
+  verification: GscCall;
+  sites: GscCall;
+  sitemap: GscCall;
+  analytics: GscCall;
   metaTag?: { ok: boolean; status?: number; found?: boolean; token?: string | null; expected?: string; matches?: boolean; error?: string };
 };
+
+const errMessage = (e: unknown, fallback: string) =>
+  e instanceof Error && e.message ? e.message : fallback;
 
 export default function Admin() {
   // Password kept in memory only — never persisted to storage (no XSS/extension exposure).
