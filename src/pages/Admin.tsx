@@ -57,8 +57,8 @@ export default function Admin() {
       if (res?.error) throw new Error(res.error);
       setData(res);
       setAuthed(true);
-    } catch (e: any) {
-      const msg = e?.message || "Failed to load";
+    } catch (e: unknown) {
+      const msg = errMessage(e, "Failed to load");
       setError(msg);
       if (/unauthorized|401/i.test(msg)) {
         setAuthed(false);
@@ -78,8 +78,8 @@ export default function Admin() {
         toast.error(`Gagal submit: ${res?.status} ${JSON.stringify(res?.body)?.slice(0, 120)}`);
       }
       await loadStatus();
-    } catch (e: any) {
-      toast.error(e?.message || "Gagal submit sitemap");
+    } catch (e: unknown) {
+      toast.error(errMessage(e, "Gagal submit sitemap"));
     } finally {
       setSubmitting(false);
     }
@@ -116,12 +116,12 @@ export default function Admin() {
   }
 
   const verified = data?.verification?.ok;
-  const sitemap = data?.sitemap?.body as any;
+  const sitemap = data?.sitemap?.body as SitemapBody | null | undefined;
   const sitemapOk = data?.sitemap?.ok;
-  const sitesList = (data?.sites?.body as any)?.siteEntry || [];
-  const analytics = (data?.analytics?.body as any)?.rows || [];
-  const totalClicks = analytics.reduce((s: number, r: any) => s + (r.clicks || 0), 0);
-  const totalImpr = analytics.reduce((s: number, r: any) => s + (r.impressions || 0), 0);
+  const sitesList = ((data?.sites?.body as { siteEntry?: { siteUrl?: string }[] } | null)?.siteEntry) ?? [];
+  const analytics: AnalyticsRow[] = ((data?.analytics?.body as { rows?: AnalyticsRow[] } | null)?.rows) ?? [];
+  const totalClicks = analytics.reduce((s, r) => s + (r.clicks || 0), 0);
+  const totalImpr = analytics.reduce((s, r) => s + (r.impressions || 0), 0);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
