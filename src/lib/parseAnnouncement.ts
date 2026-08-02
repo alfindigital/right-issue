@@ -77,7 +77,7 @@ interface Candidate<T> { value: T; score: number; }
 
 function pickRatio(t: string): Candidate<[string, string]> | null {
   const candidates: Candidate<[string, string]>[] = [];
-  const reA = /(?:rasio|ratio|perbandingan)[^\d]{0,30}(\d{1,5})\s*[:/\-]\s*(\d{1,5})/gi;
+  const reA = /(?:rasio|ratio|perbandingan)[^\d]{0,30}(\d{1,5})\s*[:/-]\s*(\d{1,5})/gi;
   for (const m of t.matchAll(reA)) {
     if (+m[1] === 0 || +m[2] === 0) continue;
     candidates.push({ value: [m[1], m[2]], score: 10 + contextScore(t, m.index ?? 0) });
