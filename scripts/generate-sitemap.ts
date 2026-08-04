@@ -1,7 +1,7 @@
 import { writeFileSync } from "fs";
 import { resolve } from "path";
 
-const BASE_URL = "https://rightissue.lovable.app";
+const BASE_URL = "https://rightissue.alfindigital.com";
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://ybfgzwoblgcnkkyubkms.supabase.co";
 
 interface SitemapEntry {

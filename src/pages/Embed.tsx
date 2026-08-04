@@ -63,23 +63,23 @@ const Embed: React.FC = () => {
           name="description"
           content="Widget mini kalkulator Right Issue saham IDX yang bisa di-embed di blog atau situs lain via iframe. Mendukung tema light/dark dan bahasa ID/EN."
         />
-        <link rel="canonical" href="https://rightissue.lovable.app/embed" />
+        <link rel="canonical" href="https://rightissue.alfindigital.com/embed" />
         <meta name="robots" content="noindex,follow" />
         <meta property="og:title" content="Embed Widget Kalkulator Right Issue IDX" />
         <meta
           property="og:description"
           content="Widget mini kalkulator Right Issue saham IDX yang bisa di-embed via iframe."
         />
-        <meta property="og:url" content="https://rightissue.lovable.app/embed" />
+        <meta property="og:url" content="https://rightissue.alfindigital.com/embed" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://rightissue.lovable.app/og-embed.png" />
+        <meta property="og:image" content="https://rightissue.alfindigital.com/og-embed.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Embed Widget Kalkulator Right Issue IDX" />
         <meta
           name="twitter:description"
           content="Widget mini kalkulator Right Issue saham IDX yang bisa di-embed via iframe."
         />
-        <meta name="twitter:image" content="https://rightissue.lovable.app/og-embed.png" />
+        <meta name="twitter:image" content="https://rightissue.alfindigital.com/og-embed.png" />
       </Helmet>
       <main className="min-h-screen flex items-center justify-center p-2">
         <MiniCalculator />

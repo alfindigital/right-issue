@@ -4,7 +4,7 @@
  *
  * Keep this in sync with `BASE_URL` in `scripts/generate-sitemap.ts`.
  */
-export const SITE_URL = 'https://rightissue.lovable.app';
+export const SITE_URL = 'https://rightissue.alfindigital.com';
 
 /** Builds an absolute URL from a root-relative path (e.g. `/edukasi`). */
 export const absUrl = (path = '/') =>
