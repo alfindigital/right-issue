@@ -1,8 +1,8 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const SITE = 'https://rightissue.lovable.app/';
+const SITE = 'https://rightissue.alfindigital.com/';
 const SITE_ENC = encodeURIComponent(SITE);
-const SITEMAP_URL = 'https://rightissue.lovable.app/sitemap.xml';
+const SITEMAP_URL = 'https://rightissue.alfindigital.com/sitemap.xml';
 const SITEMAP_ENC = encodeURIComponent(SITEMAP_URL);
 const GW = 'https://connector-gateway.lovable.dev/google_search_console';
 const EXPECTED_META_TOKEN = 'J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw';

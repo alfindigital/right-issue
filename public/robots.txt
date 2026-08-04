@@ -15,4 +15,4 @@ Allow: /
 Disallow: /admin
 Disallow: /embed
 
-Sitemap: https://rightissue.lovable.app/sitemap.xml
+Sitemap: https://rightissue.alfindigital.com/sitemap.xml
