@@ -1,7 +1,27 @@
 {
-  "name": "vite_react_shadcn_ts",
-  "private": true,
+  "name": "right-issue",
+  "private": false,
   "version": "0.0.0",
+  "description": "Lotmetrik — Right Issue (HMETD) calculator for IDX/BEI stocks. Calculate allotment, TERP, dilution, warrants, and get buy/sell recommendations.",
+  "license": "MIT",
+  "homepage": "https://lotmetrik.my.id",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alfindigital/right-issue.git"
+  },
+  "keywords": [
+    "right-issue",
+    "HMETD",
+    "saham",
+    "IDX",
+    "BEI",
+    "TERP",
+    "kalkulator",
+    "calculator",
+    "stock",
+    "indonesia",
+    "finance"
+  ],
   "type": "module",
   "scripts": {
     "predev": "bunx tsx scripts/generate-sitemap.ts",

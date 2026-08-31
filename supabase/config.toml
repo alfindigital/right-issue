@@ -1,4 +1,4 @@
-project_id = "ybfgzwoblgcnkkyubkms"
+project_id = "your_supabase_project_id"
 
 [functions.gsc-admin]
 verify_jwt = false

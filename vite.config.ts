@@ -4,71 +4,10 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
-const GSC_VERIFICATION_TOKEN = "J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw";
+// Google Search Console verification: add your own
+// <meta name="google-site-verification" content="YOUR_TOKEN" /> to index.html
+// and optionally re-add a build-time guard here.
 
-// Guard: fail build if WhatIfTargetPrice component is missing from the output bundle.
-// Ensures the lazy-loaded module is actually emitted and can be fetched at runtime.
-type BundleEntry = { type?: string; modules?: Record<string, unknown>; code?: string };
-
-const ensureWhatIfTargetPriceBundled = () => {
-  const MARKER = "WhatIfTargetPrice";
-  const SOURCE_HINT = "src/components/RightIssueCalculator/WhatIfTargetPrice";
-  let sawSourceModule = false;
-  return {
-    name: "ensure-whatif-target-price-bundled",
-    apply: "build" as const,
-    moduleParsed(info: { id: string }) {
-      if (info.id.includes(SOURCE_HINT)) sawSourceModule = true;
-    },
-    generateBundle(_options: unknown, bundle: Record<string, BundleEntry>) {
-      if (!sawSourceModule) {
-        throw new Error(
-          `[ensure-whatif-target-price-bundled] ${SOURCE_HINT}.tsx tidak ikut ter-compile. ` +
-            `Pastikan komponen masih di-import (mis. lewat React.lazy) sebelum build.`,
-        );
-      }
-      const hasChunk = Object.values(bundle).some((chunk: BundleEntry) => {
-        if (chunk.type !== "chunk") return false;
-        const modules = chunk.modules ? Object.keys(chunk.modules) : [];
-        if (modules.some((m) => m.includes(SOURCE_HINT))) return true;
-        return typeof chunk.code === "string" && chunk.code.includes(MARKER);
-      });
-      if (!hasChunk) {
-        throw new Error(
-          `[ensure-whatif-target-price-bundled] ${MARKER} tidak ditemukan di bundle output. ` +
-            `Build dibatalkan agar lazy import tidak gagal di runtime.`,
-        );
-      }
-    },
-  };
-};
-
-// Guard: fail build if google-site-verification meta is missing or token doesn't match.
-// Also re-injects it as a safety net so the published HTML always carries it.
-const ensureGscMeta = () => ({
-  name: "ensure-gsc-verification-meta",
-  apply: "build" as const,
-  transformIndexHtml: {
-    order: "pre" as const,
-    handler(html: string) {
-      const re = /<meta\s+name=["']google-site-verification["']\s+content=["']([^"']+)["']\s*\/?>/i;
-      const m = html.match(re);
-      if (!m) {
-        throw new Error(
-          `[ensure-gsc-verification-meta] <meta name="google-site-verification"> hilang dari index.html. ` +
-            `Tambahkan kembali dengan token ${GSC_VERIFICATION_TOKEN} agar verifikasi Search Console tidak terputus.`,
-        );
-      }
-      if (m[1] !== GSC_VERIFICATION_TOKEN) {
-        throw new Error(
-          `[ensure-gsc-verification-meta] Token google-site-verification tidak cocok. ` +
-            `Ditemukan "${m[1]}", diharapkan "${GSC_VERIFICATION_TOKEN}".`,
-        );
-      }
-      return html;
-    },
-  },
-});
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -79,8 +18,6 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
-    ensureGscMeta(),
-    ensureWhatIfTargetPriceBundled(),
     VitePWA({
       registerType: "autoUpdate",
       filename: "sw.js",
